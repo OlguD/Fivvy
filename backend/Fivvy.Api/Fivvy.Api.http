@@ -1,0 +1,6 @@
+@Fivvy.Api_HostAddress = http://localhost:5183
+
+GET {{Fivvy.Api_HostAddress}}/
+Accept: application/json
+
+###
