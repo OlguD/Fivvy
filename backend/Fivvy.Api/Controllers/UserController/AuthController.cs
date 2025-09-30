@@ -5,6 +5,7 @@ using Fivvy.Api.Models;
 using Fivvy.Api.Repositories;
 using Fivvy.Api.Models.RequestModels;
 using Fivvy.Api.Utils;
+using Fivvy.Api.Helpers;
 
 namespace Fivvy.Api.Controllers;
 
@@ -12,10 +13,12 @@ namespace Fivvy.Api.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
+    private readonly JwtHelper _jwtHelper;
     private readonly IUserRepository _userRepository;
 
-    public AuthController(IUserRepository userRepository)
+    public AuthController(JwtHelper jwtHelper, IUserRepository userRepository)
     {
+        _jwtHelper = jwtHelper;
         _userRepository = userRepository;
     }
 
@@ -26,9 +29,10 @@ public class AuthController : ControllerBase
         var user = await _userRepository.GetUserByUsername(request.Username);
         if (user != null && BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
         {
-            return Ok(user);
+            var token = _jwtHelper.GenerateToken(user.Id.ToString(), user.Email);
+            return Ok(new { token, user = new { user.Id, user.Email } });
         }
-        return BadRequest("Invalid credentials");
+        return Unauthorized("Invalid credentials");
     }
 
     [HttpPost("register")]

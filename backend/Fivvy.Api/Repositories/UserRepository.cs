@@ -26,7 +26,7 @@ public class UserRepository : IUserRepository
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Username == username);
-            
+
             if (user == null)
             {
                 throw new UserNotFoundException();
@@ -68,4 +68,19 @@ public class UserRepository : IUserRepository
             throw new Exception("An error occured", error);
         }
     }
+
+
+    public async Task<UserModel> GetUserProfile(string username)
+    {
+        var userProfile = await _context.Users.FirstOrDefaultAsync(u =>
+            u.Username == username
+        );
+
+        if (userProfile == null)
+        {
+            throw new UserNotFoundException();
+        }
+        return userProfile;
+    }
+
 }
