@@ -78,7 +78,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<JwtHelper>(); // Bu satırı ekleyin
+builder.Services.AddScoped<JwtHelper>();
 // builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 // builder.Services.AddScoped<IPDFRepository, PDFRepository>();
 

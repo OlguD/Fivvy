@@ -1,8 +1,8 @@
 
 namespace Fivvy.Api.Exceptions;
 
-public class UserAlreadyExists : Exception
+public class UsernameAlreadyExists : Exception
 {
-    public UserAlreadyExists() : base("User already exists") { }
-    public UserAlreadyExists(string message, Exception innerException) : base(message, innerException) { }
+    public UsernameAlreadyExists() : base("Username already exists") { }
+    public UsernameAlreadyExists(string message, Exception innerException) : base(message, innerException) { }
 }

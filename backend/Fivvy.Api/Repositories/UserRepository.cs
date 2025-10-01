@@ -2,16 +2,20 @@ using Fivvy.Api.Models;
 using Fivvy.Api.Data;
 using Fivvy.Api.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Fivvy.Api.Helpers;
+using System.Security.Claims;
 
 namespace Fivvy.Api.Repositories;
 
 public class UserRepository : IUserRepository
 {
     private readonly AppDbContext _context;
+    private readonly JwtHelper _jwtHelper;
 
-    public UserRepository(AppDbContext context)
+    public UserRepository(AppDbContext context, JwtHelper jwtHelper)
     {
         _context = context;
+        _jwtHelper = jwtHelper;
     }
 
 
@@ -43,12 +47,20 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            var existingUser = await _context.Users.
-                FirstOrDefaultAsync(u => u.Username == user.Username);
+            var existingUsername = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Username == user.Username);
 
-            if (existingUser != null)
+            var existingEmail = await _context.Users
+                    .FirstOrDefaultAsync(e => e.Email == user.Email);
+
+            if (existingUsername != null)
             {
-                throw new UserAlreadyExists();
+                throw new UsernameAlreadyExists();
+            }
+
+            if (existingEmail != null)
+            {
+                throw new EmailAlreadyExists();
             }
 
             if (string.IsNullOrEmpty(user.Username) ||
@@ -70,17 +82,43 @@ public class UserRepository : IUserRepository
     }
 
 
-    public async Task<UserModel> GetUserProfile(string username)
+    public async Task<UserModel> Profile(string token)
     {
-        var userProfile = await _context.Users.FirstOrDefaultAsync(u =>
-            u.Username == username
-        );
-
-        if (userProfile == null)
+        try
         {
-            throw new UserNotFoundException();
+            var userId = ExtractUserIdFromToken(token);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                throw new UserNotFoundException();
+            }
+
+            user.Password = string.Empty;
+            return user;
         }
-        return userProfile;
+        catch (Exception error)
+        {
+            throw new Exception("Profile retrieval failed", error);
+        }
     }
 
+    private int ExtractUserIdFromToken(string token)
+    {
+        var principal = _jwtHelper.ValidateToken(token);
+
+        if (principal == null)
+        {
+            throw new UnauthorizedAccessException("Invalid token");
+        }
+
+        var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+        {
+            throw new UnauthorizedAccessException("Invalid user ID in token");
+        }
+        return userId;
+    } 
 }

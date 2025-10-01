@@ -23,7 +23,7 @@ public class AuthController : ControllerBase
     }
 
 
-    [HttpPost("login")]
+    [HttpPost("auth/login")]
     public async Task<IActionResult> UserLoginAsync([FromForm] LoginRequestModel request)
     {
         var user = await _userRepository.GetUserByUsername(request.Username);
@@ -35,7 +35,7 @@ public class AuthController : ControllerBase
         return Unauthorized("Invalid credentials");
     }
 
-    [HttpPost("register")]
+    [HttpPost("auth/register")]
     public async Task<IActionResult> UserRegisterAsync([FromForm] RegisterRequestModel request)
     {
         if (ValidatePassword.validatePassword(request.Password, request.ValidatePassword))
