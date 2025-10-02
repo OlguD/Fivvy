@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fivvy.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250930211518_InitialCreate")]
+    [Migration("20251001204758_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

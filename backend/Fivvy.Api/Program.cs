@@ -25,8 +25,9 @@ builder.Services.AddSwaggerGen(c =>
         Description = "JWT Authorization header using Bearer scheme",
         Name = "Authorization",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
     });
 
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
@@ -49,6 +50,7 @@ builder.Services.AddSwaggerGen(c =>
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secret = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret is not configured");
 var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JWT Issuer is not configured");
+var audience = jwtSettings["Audience"] ?? throw new InvalidOperationException("JWT Audience is not configured");
 
 builder.Services.AddAuthentication(options =>
 {
@@ -64,7 +66,7 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = issuer,
-        ValidAudience = issuer,
+        ValidAudience = audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
         ClockSkew = TimeSpan.Zero
     };
@@ -79,8 +81,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<JwtHelper>();
-// builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
-// builder.Services.AddScoped<IPDFRepository, PDFRepository>();
 
 builder.Services.AddControllers();
 
@@ -90,7 +90,6 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
@@ -99,8 +98,9 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
+// DOĞRU SIRALAMA - Bu çok önemli!
+app.UseAuthentication();  // Önce authentication
+app.UseAuthorization();   // Sonra authorization
+app.MapControllers();     // En son controllers
+
 app.Run();

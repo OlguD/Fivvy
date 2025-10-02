@@ -10,7 +10,7 @@ using Fivvy.Api.Helpers;
 namespace Fivvy.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController : ControllerBase
 {
     private readonly JwtHelper _jwtHelper;
@@ -23,7 +23,7 @@ public class AuthController : ControllerBase
     }
 
 
-    [HttpPost("auth/login")]
+    [HttpPost("login")]
     public async Task<IActionResult> UserLoginAsync([FromForm] LoginRequestModel request)
     {
         var user = await _userRepository.GetUserByUsername(request.Username);
@@ -35,20 +35,18 @@ public class AuthController : ControllerBase
         return Unauthorized("Invalid credentials");
     }
 
-    [HttpPost("auth/register")]
+    [HttpPost("register")]
     public async Task<IActionResult> UserRegisterAsync([FromForm] RegisterRequestModel request)
     {
         if (ValidatePassword.validatePassword(request.Password, request.ValidatePassword))
         {
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
             var user = new UserModel
             {
                 Username = request.Username,
                 Name = request.Name,
                 Surname = request.Surname,
                 Email = request.Email,
-                Password = hashedPassword,
+                Password = request.Password,
                 // Clients = [],
                 // Invoices = [],
                 // Projects = [],

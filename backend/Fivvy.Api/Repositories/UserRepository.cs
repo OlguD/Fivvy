@@ -4,6 +4,8 @@ using Fivvy.Api.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Fivvy.Api.Helpers;
 using System.Security.Claims;
+using Fivvy.Api.Models.RequestModels;
+using Fivvy.Api.Utils;
 
 namespace Fivvy.Api.Repositories;
 
@@ -18,6 +20,32 @@ public class UserRepository : IUserRepository
         _jwtHelper = jwtHelper;
     }
 
+    public async Task<UserModel> GetUserById(string userId)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new Exception("userId cannot be empty");
+            }
+
+            var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(i => i.Id == int.Parse(userId));
+
+            if (existingUser != null)
+            {    
+                return existingUser;
+            }
+            else
+            {
+                throw new UserNotFoundException();
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
 
     public async Task<UserModel> GetUserByUsername(string username)
     {
@@ -72,6 +100,8 @@ public class UserRepository : IUserRepository
                 throw new InvalidOperationException();
             }
 
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
         }
@@ -120,5 +150,42 @@ public class UserRepository : IUserRepository
             throw new UnauthorizedAccessException("Invalid user ID in token");
         }
         return userId;
-    } 
+    }
+
+
+    public async Task<UserModel> UpdateProfile(string token, UpdateProfileRequestModel updateUser)
+    {
+        try
+        {
+            var userId = ExtractUserIdFromToken(token);
+            
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                throw new UserNotFoundException();
+            }
+
+            if (!ValidatePassword.validatePassword(updateUser.Password, updateUser.PasswordVerify))
+            {
+                throw new InvalidOperationException("Password must be the same");
+            }
+
+            user.Username = updateUser.Username;
+            user.Name = updateUser.Name;
+            user.Surname = updateUser.Surname;
+            user.Email = updateUser.Email;
+            user.Password = BCrypt.Net.BCrypt.HashPassword(updateUser.Password);
+
+            await _context.SaveChangesAsync();
+
+            user.Password = string.Empty;
+            return user;
+        }
+        catch (Exception error)
+        {
+            throw new Exception("Profile update failed", error);
+        }
+    }
 }

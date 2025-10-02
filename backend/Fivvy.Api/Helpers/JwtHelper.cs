@@ -18,12 +18,13 @@ public class JwtHelper
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secret = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret is not configured");
-        var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JWT Issuer is not configured"); // Bu satırı düzeltin
-        var expiryMinutesStr = jwtSettings["ExpiryMinutes"] ?? throw new InvalidOperationException("JWT ExpiryMinutes is not configured");
+        var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JWT Issuer is not configured");
+        var audience = jwtSettings["Audience"] ?? throw new InvalidOperationException("JWT Audience is not configured");
+        var expiryMinutesStr = jwtSettings["ExpiryMinutes"] ?? "60";
 
         if (!int.TryParse(expiryMinutesStr, out var expiryMinutes))
         {
-            throw new InvalidOperationException("JWT ExpiryMinutes must be a valid integer");
+            expiryMinutes = 60;
         }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
@@ -39,7 +40,7 @@ public class JwtHelper
 
         var token = new JwtSecurityToken(
             issuer: issuer,
-            audience: issuer,
+            audience: audience, // Audience'i doğru kullan
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(expiryMinutes),
             signingCredentials: credentials
@@ -54,7 +55,8 @@ public class JwtHelper
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var secret = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret is not configured");
-            var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JWT Issuer is not configured"); // Bu satırı da düzeltin
+            var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JWT Issuer is not configured");
+            var audience = jwtSettings["Audience"] ?? throw new InvalidOperationException("JWT Audience is not configured");
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
@@ -66,7 +68,7 @@ public class JwtHelper
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = issuer,
-                ValidAudience = issuer,
+                ValidAudience = audience,
                 IssuerSigningKey = key,
                 ClockSkew = TimeSpan.Zero
             };
