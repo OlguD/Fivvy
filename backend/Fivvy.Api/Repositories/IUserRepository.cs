@@ -7,5 +7,6 @@ public interface IUserRepository
     Task AddUserAsync(UserModel user);
     Task<UserModel> Profile(string token);
     Task<UserModel> UpdateProfile(string token, UpdateProfileRequestModel updateUser);
-    Task<UserModel> GetUserById(string userId);
+    Task<UserModel> GetUserById(int userId);
+    int ExtractUserIdFromToken(string token);
 }

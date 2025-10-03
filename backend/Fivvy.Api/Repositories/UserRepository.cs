@@ -20,17 +20,12 @@ public class UserRepository : IUserRepository
         _jwtHelper = jwtHelper;
     }
 
-    public async Task<UserModel> GetUserById(string userId)
+    public async Task<UserModel> GetUserById(int userId)
     {
         try
         {
-            if (string.IsNullOrEmpty(userId))
-            {
-                throw new Exception("userId cannot be empty");
-            }
-
             var existingUser = await _context.Users
-                    .FirstOrDefaultAsync(i => i.Id == int.Parse(userId));
+                    .FirstOrDefaultAsync(i => i.Id == userId);
 
             if (existingUser != null)
             {    
@@ -83,12 +78,12 @@ public class UserRepository : IUserRepository
 
             if (existingUsername != null)
             {
-                throw new UsernameAlreadyExists();
+                throw new UsernameAlreadyExistsException();
             }
 
             if (existingEmail != null)
             {
-                throw new EmailAlreadyExists();
+                throw new EmailAlreadyExistsException();
             }
 
             if (string.IsNullOrEmpty(user.Username) ||
@@ -134,7 +129,7 @@ public class UserRepository : IUserRepository
         }
     }
 
-    private int ExtractUserIdFromToken(string token)
+    public int ExtractUserIdFromToken(string token)
     {
         var principal = _jwtHelper.ValidateToken(token);
 
