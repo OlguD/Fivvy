@@ -27,6 +27,8 @@ public class ClientRepository : IClientRepository
 
             var clients = await _context.Clients
                 .Include(c => c.User)
+                .Include(c => c.Projects)
+                .Include(c => c.Invoices)
                 .Where(c => c.UserId == userId)
                 .ToListAsync();
 

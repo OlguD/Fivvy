@@ -113,6 +113,10 @@ public class UserRepository : IUserRepository
         {
             var userId = ExtractUserIdFromToken(token);
             var user = await _context.Users
+                .Include(u => u.Clients)
+                    .ThenInclude(c => c.Projects)
+                .Include(u => u.Clients)
+                    .ThenInclude(c => c.Invoices)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null)
