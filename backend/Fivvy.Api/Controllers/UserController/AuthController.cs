@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using BCrypt.Net;
 
 using Fivvy.Api.Models;
-using Fivvy.Api.Repositories;
 using Fivvy.Api.Models.RequestModels;
 using Fivvy.Api.Utils;
 using Fivvy.Api.Helpers;
