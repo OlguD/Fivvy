@@ -1,11 +1,10 @@
 
 
-using Fivvy.Api.Helpers;
 using Fivvy.Api.Models;
 using Fivvy.Api.Models.RequestModels;
 using Fivvy.Api.Repositories;
+using Fivvy.Api.Utils;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fivvy.Api.Controllers;
@@ -28,14 +27,10 @@ public class ProjectController : ControllerBase
     {
         try
         {
-            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-            if (string.IsNullOrEmpty(authHeader))
+            if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
             {
                 return Unauthorized("Token not found");
             }
-            var token = authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
-                ? authHeader.Substring(7)
-                : authHeader;
 
             var projects = await _projectRepository.GetAllProjectsAsync(token);
             return Ok(projects);
@@ -53,16 +48,10 @@ public class ProjectController : ControllerBase
     {
         try
         {
-            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-            if (string.IsNullOrEmpty(authHeader))
+            if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
             {
                 return Unauthorized("Token not found");
             }
-
-            // Bearer prefix'i varsa kaldır, yoksa token'ı olduğu gibi kullan
-            var token = authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
-                ? authHeader.Substring(7) // "Bearer " 7 karakter
-                : authHeader;
 
             var newProjectModel = new ProjectModel
             {
@@ -95,16 +84,10 @@ public class ProjectController : ControllerBase
     {
         try
         {
-            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-            if (string.IsNullOrEmpty(authHeader))
+            if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
             {
                 return Unauthorized("Token not found");
             }
-
-            // Bearer prefix'i varsa kaldır, yoksa token'ı olduğu gibi kullan
-            var token = authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
-                ? authHeader.Substring(7) // "Bearer " 7 karakter
-                : authHeader;
 
             var updateProject = new ProjectModel
             {
@@ -137,17 +120,10 @@ public class ProjectController : ControllerBase
     {
         try
         {
-
-            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-            if (string.IsNullOrEmpty(authHeader))
+            if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
             {
                 return Unauthorized("Token not found");
             }
-
-            // Bearer prefix'i varsa kaldır, yoksa token'ı olduğu gibi kullan
-            var token = authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
-                ? authHeader.Substring(7) // "Bearer " 7 karakter
-                : authHeader;
 
             if (await _projectRepository.DeleteProjectAsync(request.ProjectId, token))
             {

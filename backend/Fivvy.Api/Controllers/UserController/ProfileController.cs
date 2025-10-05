@@ -1,7 +1,5 @@
 
-using System.Security.Claims;
-using Fivvy.Api.Exceptions;
-using Fivvy.Api.Models;
+using Fivvy.Api.Utils;
 using Fivvy.Api.Models.RequestModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,17 +24,10 @@ public class ProfileController : ControllerBase
     {
         try
         {
-            // Token'ı header'dan al
-            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-            if (string.IsNullOrEmpty(authHeader))
+            if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
             {
                 return Unauthorized("Token not found");
             }
-
-            // Bearer prefix'i varsa kaldır, yoksa token'ı olduğu gibi kullan
-            var token = authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) 
-                ? authHeader.Substring(7) // "Bearer " 7 karakter
-                : authHeader;
 
             var user = await _userRepository.Profile(token);
             return Ok(user);
@@ -50,20 +41,14 @@ public class ProfileController : ControllerBase
 
     [HttpPut("me/update-profile")]
     [Authorize]
-    public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileRequestModel request)
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequestModel request)
     {
         try
         {
-            // Token'ı header'dan al
-            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-            if (string.IsNullOrEmpty(authHeader))
+            if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
             {
                 return Unauthorized("Token not found");
             }
-
-            var token = authHeader.StartsWith("Bearer")
-                ? authHeader.Replace("Bearer ", "")
-                : authHeader;
 
             var user = await _userRepository.UpdateProfile(token, request);
             return Ok(user);

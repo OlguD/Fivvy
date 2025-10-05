@@ -1,5 +1,5 @@
 
-using Fivvy.Api.Helpers;
+using Fivvy.Api.Utils;
 using Fivvy.Api.Models;
 using Fivvy.Api.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -23,14 +23,10 @@ public class ClientController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetAllClients()
     {
-        var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-        if (string.IsNullOrEmpty(authHeader))
+        if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
         {
             return Unauthorized("Token not found");
         }
-        var token = authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
-            ? authHeader.Substring(7) // "Bearer " 7 karakter
-            : authHeader;
 
         var ClientList = await _clientRepository.GetAllClientsAsync(token);
         return Ok(ClientList);
@@ -41,14 +37,11 @@ public class ClientController : ControllerBase
     [Authorize]
     public async Task<IActionResult> AddClient([FromBody] AddClientRequestModel request)
     {
-        var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-        if (string.IsNullOrEmpty(authHeader))
+
+        if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
         {
             return Unauthorized("Token not found");
         }
-        var token = authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
-            ? authHeader.Substring(7) // "Bearer " 7 karakter
-            : authHeader;
 
         if (string.IsNullOrEmpty(request.Email)) request.Email = "Email";
         if (string.IsNullOrEmpty(request.Phone)) request.Phone = "Phone Number";
@@ -75,14 +68,10 @@ public class ClientController : ControllerBase
     [Authorize]
     public async Task<IActionResult> UpdateClient([FromBody] UpdateClientRequestModel request)
     {
-        var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-        if (string.IsNullOrEmpty(authHeader))
+        if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
         {
             return Unauthorized("Token not found");
         }
-        var token = authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
-            ? authHeader.Substring(7) // "Bearer " 7 karakter
-            : authHeader;
 
         if (await _clientRepository.UpdateClientAsync(request.clientId, token, request.clientModel))
         {
@@ -96,14 +85,10 @@ public class ClientController : ControllerBase
     [Authorize]
     public async Task<IActionResult> RemoveClient([FromBody] RemoveClientRequestModel request)
     {
-        var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-        if (string.IsNullOrEmpty(authHeader))
+        if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
         {
             return Unauthorized("Token not found");
         }
-        var token = authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
-            ? authHeader.Substring(7) // "Bearer " 7 karakter
-            : authHeader;
 
         if (await _clientRepository.RemoveClient(request.clientId, token))
         {
