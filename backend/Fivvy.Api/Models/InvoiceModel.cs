@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+
 namespace Fivvy.Api.Models;
 
 public class InvoiceModel
@@ -9,5 +11,7 @@ public class InvoiceModel
     public DateTime InvoiceDate { get; set; }
     public decimal Amount { get; set; }
     public int ClientId { get; set; }
+
+    [JsonIgnore]
     public ClientModel? Client { get; set; }
 }

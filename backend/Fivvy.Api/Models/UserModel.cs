@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+
 namespace Fivvy.Api.Models;
 
 public class UserModel
@@ -12,11 +14,9 @@ public class UserModel
     public required string Password { get; set; }
 
     public ICollection<ClientModel> Clients { get; set; } = new List<ClientModel>();
-    public ICollection<ProjectModel> Projects { get; set; } = new List<ProjectModel>();
-    public ICollection<InvoiceModel> Invoices { get; set; } = new List<InvoiceModel>();
 
     public float TotalIncome;
     public string Role { get; set; } = "user";
 
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

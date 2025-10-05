@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+
 namespace Fivvy.Api.Models;
 
 public class ProjectModel
@@ -10,5 +12,7 @@ public class ProjectModel
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public int ClientId { get; set; }
-    // public ClientModel? Client { get; set; }
+
+    [JsonIgnore]
+    public ClientModel? Client { get; set; }
 }
