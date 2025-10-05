@@ -42,12 +42,17 @@ public class ProjectRepository : IProjectRepository
             var userId = _userRepository.ExtractUserIdFromToken(token);
             var ownsClient = await _context.Clients.AnyAsync(c => c.Id == projectModel.ClientId && c.UserId == userId);
 
-            if (!ownsClient) throw new ClientNotFoundException();
+            if (!ownsClient) throw new ForbiddenProjectAccessException();
 
             if (string.IsNullOrWhiteSpace(projectModel.ProjectName) ||
                 string.IsNullOrWhiteSpace(projectModel.Description))
             {
                 throw new Exception("Project name and description are required");
+            }
+
+            if (projectModel.StartDate > projectModel.EndDate)
+            {
+                throw new Exception("Project's start date cannot be greater than end date");
             }
 
             var newProject = new ProjectModel
@@ -81,7 +86,7 @@ public class ProjectRepository : IProjectRepository
 
             var ownsProject = await _context.Clients.AnyAsync(c => c.Id == project.ClientId && c.UserId == userId);
 
-            if (!ownsProject) throw new ProjectNotFoundException();
+            if (!ownsProject) throw new ForbiddenProjectAccessException();
 
             _context.Projects.Remove(project);
             await _context.SaveChangesAsync();
@@ -105,7 +110,7 @@ public class ProjectRepository : IProjectRepository
             var ownsProject = await _context.Clients.AnyAsync(c => c.Id == project.ClientId && c.UserId == userId);
 
             // TODO buralara exception olarak user not have this project exception'i eklenebilir.
-            if (!ownsProject) throw new ProjectNotFoundException();
+            if (!ownsProject) throw new ForbiddenProjectAccessException();
 
             project.ProjectName = projectModel.ProjectName;
             project.Description = projectModel.Description;

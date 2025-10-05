@@ -4,8 +4,10 @@ using Fivvy.Api.Models;
 using Fivvy.Api.Models.RequestModels;
 using Fivvy.Api.Repositories;
 using Fivvy.Api.Utils;
+using Fivvy.Api.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace Fivvy.Api.Controllers;
 
@@ -34,6 +36,10 @@ public class ProjectController : ControllerBase
 
             var projects = await _projectRepository.GetAllProjectsAsync(token);
             return Ok(projects);
+        }
+        catch (ForbiddenProjectAccessException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
         }
         catch (Exception ex)
         {
@@ -71,6 +77,10 @@ public class ProjectController : ControllerBase
                 return BadRequest();
             }
         }
+        catch (ForbiddenProjectAccessException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
         catch
         {
             return BadRequest();
@@ -107,6 +117,10 @@ public class ProjectController : ControllerBase
                 return BadRequest();
             }
         }
+        catch (ForbiddenProjectAccessException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
@@ -133,6 +147,10 @@ public class ProjectController : ControllerBase
             {
                 return BadRequest();
             }
+        }
+        catch (ForbiddenProjectAccessException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
         }
         catch (Exception ex)
         {
