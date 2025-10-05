@@ -4,6 +4,11 @@ namespace Fivvy.Api.Models.RequestModels;
 
 public class AddProjectRequestModel
 {
-    public required ProjectModel Project { get; set; }
+    public string ProjectName { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    // public int ClientId { get; set; }
+    // public ClientModel? Client { get; set; }
     public required int ClientId { get; set; }
 }

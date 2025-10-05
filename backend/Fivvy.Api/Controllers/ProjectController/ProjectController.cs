@@ -15,11 +15,9 @@ namespace Fivvy.Api.Controllers;
 public class ProjectController : ControllerBase
 {
     private readonly IProjectRepository _projectRepository;
-    private readonly JwtHelper _jwtHelper;
 
-    public ProjectController(IProjectRepository projectRepository, JwtHelper jwtHelper)
+    public ProjectController(IProjectRepository projectRepository)
     {
-        _jwtHelper = jwtHelper;
         _projectRepository = projectRepository;
     }
 
@@ -50,7 +48,8 @@ public class ProjectController : ControllerBase
 
     [HttpPost("add-project")]
     [Authorize]
-    public async Task<IActionResult> AddProject([FromForm] AddProjectRequestModel request)
+    // TODO AddProjectRequestModel'i entegre et. Burada sorun var. 
+    public async Task<IActionResult> AddProject([FromBody] AddProjectRequestModel request)
     {
         try
         {
@@ -65,7 +64,16 @@ public class ProjectController : ControllerBase
                 ? authHeader.Substring(7) // "Bearer " 7 karakter
                 : authHeader;
 
-            if (await _projectRepository.AddProjectAsync(request.Project, token, request.ClientId))
+            var newProjectModel = new ProjectModel
+            {
+                ProjectName = request.ProjectName,
+                Description = request.Description,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                ClientId = request.ClientId
+            };
+
+            if (await _projectRepository.AddProjectAsync(newProjectModel, token))
             {
                 return Ok();
             }
@@ -74,16 +82,16 @@ public class ProjectController : ControllerBase
                 return BadRequest();
             }
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception(ex.Message);
+            return BadRequest();
         }
     }
 
 
-    [HttpPut("update-project/{projectId}")]
+    [HttpPut("update-project")]
     [Authorize]
-    public async Task<IActionResult> UpdateProject(int projectId, [FromForm] ProjectModel request)
+    public async Task<IActionResult> UpdateProject([FromBody] ProjectUpdateRequestModel request)
     {
         try
         {
@@ -98,7 +106,16 @@ public class ProjectController : ControllerBase
                 ? authHeader.Substring(7) // "Bearer " 7 karakter
                 : authHeader;
 
-            if (await _projectRepository.UpdateProjectAsync(projectId, token, request))
+            var updateProject = new ProjectModel
+            {
+                ProjectName = request.ProjectName,
+                Description = request.Description,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                ClientId = request.ClientId
+            };
+
+            if (await _projectRepository.UpdateProjectAsync(request.ProjectId, token, updateProject))
             {
                 return Ok();
             }
@@ -114,9 +131,9 @@ public class ProjectController : ControllerBase
     }
 
 
-    [HttpDelete("remove-project/{projectId}")]
+    [HttpDelete("remove-project")]
     [Authorize]
-    public async Task<IActionResult> RemoveProject(int projectId)
+    public async Task<IActionResult> RemoveProject(RemoveProjectRequestModel request)
     {
         try
         {
@@ -132,7 +149,7 @@ public class ProjectController : ControllerBase
                 ? authHeader.Substring(7) // "Bearer " 7 karakter
                 : authHeader;
 
-            if (await _projectRepository.DeleteProjectAsync(projectId, token))
+            if (await _projectRepository.DeleteProjectAsync(request.ProjectId, token))
             {
                 return Ok();
             }

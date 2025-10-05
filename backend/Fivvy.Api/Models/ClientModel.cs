@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 namespace Fivvy.Api.Models;
 
 
@@ -15,8 +16,12 @@ public class ClientModel
     public DateTime CreatedAt { get; set; }
 
     public int UserId { get; set; }
+
+    [JsonIgnore]
     public UserModel? User { get; set; }
 
+    [JsonIgnore]
     public ICollection<ProjectModel> Projects { get; set; } = new List<ProjectModel>();
+    [JsonIgnore]
     public ICollection<InvoiceModel> Invoices { get; set; } = new List<InvoiceModel>();
 }

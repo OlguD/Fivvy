@@ -43,7 +43,6 @@ public class ClientRepository : IClientRepository
         try
         {
             var userId = _userRepository.ExtractUserIdFromToken(token);
-            var user = await _userRepository.GetUserById(userId);
 
             var newClient = new ClientModel
             {
@@ -54,49 +53,41 @@ public class ClientRepository : IClientRepository
                 Address = clientModel.Address,
                 CreatedAt = DateTime.Now,
                 UserId = userId,
-                User = user
             };
 
             _context.Clients.Add(newClient);
             await _context.SaveChangesAsync();
             return true;
         }
-        catch (Exception ex)
+        catch (DbUpdateException ex)
         {
-            throw new Exception($"An error occured while adding client: {ex.Message}");
+            var details = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"An error occured while adding client: {details}", ex);
         }
     }
 
 
-    public async Task<bool> UpdateClient(int clientId, string token, ClientModel clientModel)
+    public async Task<bool> UpdateClientAsync(int clientId, string token, ClientModel clientModel)
     {
         try
         {
             var userId = _userRepository.ExtractUserIdFromToken(token);
-            var user = await _userRepository.GetUserById(userId);
-            var updateClient = await _context.Clients
-                .Where(c => c.Id == clientId && c.UserId == userId)
-                .FirstOrDefaultAsync();
+            var existingClient = await _context.Clients
+                .FirstOrDefaultAsync(c => c.Id == clientId && c.UserId == userId);
 
-            if (updateClient != null)
+            if (existingClient == null)
             {
-                var newClient = new ClientModel
-                {
-                    CompanyName = clientModel.CompanyName,
-                    ContactName = clientModel.ContactName,
-                    Email = clientModel.Email,
-                    Phone = clientModel.Phone,
-                    Address = clientModel.Address,
-                    CreatedAt = DateTime.Now,
-                    UserId = userId,
-                    User = user
-                };
-
-                _context.Clients.Update(newClient);
-                await _context.SaveChangesAsync();
-                return true;
+                return false;
             }
-            return false;
+
+            existingClient.CompanyName = clientModel.CompanyName;
+            existingClient.ContactName = clientModel.ContactName;
+            existingClient.Email = clientModel.Email;
+            existingClient.Phone = clientModel.Phone;
+            existingClient.Address = clientModel.Address;
+
+            await _context.SaveChangesAsync();
+            return true;
         }
         catch (Exception ex)
         {

@@ -23,13 +23,11 @@ public class ProjectRepository : IProjectRepository
         {
             var userId = _userRepository.ExtractUserIdFromToken(token);
 
-            var userProjects = await _context.Projects
-                .Include(p => p.Client)
-                .ThenInclude(c => c != null ? c.User : null)
-                .Where(p => p.Client != null && p.Client.User != null && p.Client.User.Id == userId)
+            return await _context.Projects
+                .Where(p => _context.Clients.Any(c => c.Id == p.ClientId && c.UserId == userId))
+                .AsNoTracking()
                 .ToListAsync();
 
-            return userProjects;
         }
         catch (Exception ex)
         {
@@ -37,46 +35,33 @@ public class ProjectRepository : IProjectRepository
         }
     }
 
-    public async Task<bool> AddProjectAsync(ProjectModel projectModel, string token, int clientId)
+    public async Task<bool> AddProjectAsync(ProjectModel projectModel, string token)
     {
         try
         {
             var userId = _userRepository.ExtractUserIdFromToken(token);
-            var existingUser = _context.Users
-                .FirstOrDefault(u => u.Id == userId);
+            var ownsClient = await _context.Clients.AnyAsync(c => c.Id == projectModel.ClientId && c.UserId == userId);
 
-            if (existingUser != null)
+            if (!ownsClient) throw new ClientNotFoundException();
+
+            if (string.IsNullOrWhiteSpace(projectModel.ProjectName) ||
+                string.IsNullOrWhiteSpace(projectModel.Description))
             {
-                var existingClient = existingUser.Clients.FirstOrDefault(c => c.Id == clientId);
-                if (existingClient != null)
-                {
-                    if (!string.IsNullOrEmpty(projectModel.ProjectName) &&
-                        !string.IsNullOrEmpty(projectModel.Description))
-                    {
-                        var newProject = new ProjectModel
-                        {
-                            ProjectName = projectModel.ProjectName,
-                            Description = projectModel.Description,
-                            StartDate = projectModel.StartDate,
-                            EndDate = projectModel.EndDate,
-                            Client = existingClient
-                        };
-
-                        _context.Projects.Add(newProject);
-                        await _context.SaveChangesAsync();
-                        return true;
-                    }
-                    else
-                    {
-                        throw new Exception("Project name and description are required");
-                    }
-                }
-                else
-                {
-                    throw new ClientNotFoundException();
-                }
+                throw new Exception("Project name and description are required");
             }
-            throw new UserNotFoundException();
+
+            var newProject = new ProjectModel
+            {
+                ProjectName = projectModel.ProjectName,
+                Description = projectModel.Description,
+                StartDate = projectModel.StartDate,
+                EndDate = projectModel.EndDate,
+                ClientId = projectModel.ClientId
+            };
+
+            _context.Projects.Add(newProject);
+            await _context.SaveChangesAsync();
+            return true;
         }
         catch (Exception ex)
         {
@@ -90,18 +75,17 @@ public class ProjectRepository : IProjectRepository
         try
         {
             var userId = _userRepository.ExtractUserIdFromToken(token);
-            var existingProject = await _context.Projects
-                .Include(p => p.Client)
-                .ThenInclude(c => c!= null ? c.User : null)
-                .FirstOrDefaultAsync(p => p.Id == projectId);
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
 
-            if (existingProject != null && existingProject.Client?.User?.Id == userId)
-            {
-                _context.Projects.Remove(existingProject);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            throw new ProjectNotFoundException();
+            if (project == null) throw new ProjectNotFoundException();
+
+            var ownsProject = await _context.Clients.AnyAsync(c => c.Id == project.ClientId && c.UserId == userId);
+
+            if (!ownsProject) throw new ProjectNotFoundException();
+
+            _context.Projects.Remove(project);
+            await _context.SaveChangesAsync();
+            return true;
         }
         catch (Exception ex)
         {
@@ -114,26 +98,22 @@ public class ProjectRepository : IProjectRepository
         try
         {
             var userId = _userRepository.ExtractUserIdFromToken(token);
-            var existingProject = await _context.Projects
-                .Include(p => p.Client)
-                .ThenInclude(c => c!= null ? c.User : null)
-                .FirstOrDefaultAsync(p => p.Id == projectId);
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
 
-            if (existingProject != null && existingProject.Client?.User?.Id == userId)
-            {
-                existingProject.ProjectName = projectModel.ProjectName;
-                existingProject.Description = projectModel.Description;
-                existingProject.StartDate = projectModel.StartDate;
-                existingProject.EndDate = projectModel.EndDate;
+            if (project == null) throw new ProjectNotFoundException();
 
-                // Client degisikligi icin (opsiyonel)
-                // existingProject.Client = projectModel.Client;
+            var ownsProject = await _context.Clients.AnyAsync(c => c.Id == project.ClientId && c.UserId == userId);
 
-                _context.Projects.Update(existingProject);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            throw new ProjectNotFoundException();
+            // TODO buralara exception olarak user not have this project exception'i eklenebilir.
+            if (!ownsProject) throw new ProjectNotFoundException();
+
+            project.ProjectName = projectModel.ProjectName;
+            project.Description = projectModel.Description;
+            project.StartDate = projectModel.StartDate;
+            project.EndDate = projectModel.EndDate;
+
+            await _context.SaveChangesAsync();
+            return true;
         }
         catch (Exception ex)
         {
