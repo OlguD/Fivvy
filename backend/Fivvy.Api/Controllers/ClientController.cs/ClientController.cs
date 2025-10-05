@@ -43,9 +43,9 @@ public class ClientController : ControllerBase
             return Unauthorized("Token not found");
         }
 
-        if (string.IsNullOrEmpty(request.Email)) request.Email = "Email";
-        if (string.IsNullOrEmpty(request.Phone)) request.Phone = "Phone Number";
-        if (string.IsNullOrEmpty(request.Address)) request.Address = "Address";
+        if (string.IsNullOrWhiteSpace(request.Email)) request.Email = "Email";
+        if (string.IsNullOrWhiteSpace(request.Phone)) request.Phone = "Phone Number";
+        if (string.IsNullOrWhiteSpace(request.Address)) request.Address = "Address";
 
         var clientModel = new ClientModel
         {
