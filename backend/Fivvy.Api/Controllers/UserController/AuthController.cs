@@ -22,19 +22,19 @@ public class AuthController : ControllerBase
 
 
     [HttpPost("login")]
-    public async Task<IActionResult> UserLoginAsync([FromForm] LoginRequestModel request)
+    public async Task<IActionResult> UserLoginAsync([FromBody] LoginRequestModel request)
     {
         var user = await _userRepository.GetUserByUsername(request.Username);
         if (user != null && BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
         {
             var token = _jwtHelper.GenerateToken(user.Id.ToString(), user.Email);
-            return Ok(new { token, user = new { user.Id, user.Email } });
+            return Ok(new { token, user = new { user.Id, user.Email, user.Username } });
         }
         return Unauthorized("Invalid credentials");
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> UserRegisterAsync([FromForm] RegisterRequestModel request)
+    public async Task<IActionResult> UserRegisterAsync([FromBody] RegisterRequestModel request)
     {
         if (ValidatePassword.validatePassword(request.Password, request.ValidatePassword))
         {

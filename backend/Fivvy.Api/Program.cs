@@ -85,6 +85,15 @@ builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<JwtHelper>();
 
 builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -101,6 +110,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // DOĞRU SIRALAMA - Bu çok önemli!
+app.UseCors("AllowFrontend");
 app.UseAuthentication();  // Önce authentication
 app.UseAuthorization();   // Sonra authorization
 app.MapControllers();     // En son controllers
