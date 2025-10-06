@@ -54,6 +54,50 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## Theming
+
+The application ships with a light/dark theme system driven by design tokens in `src/styles.css`. Theme state is handled through the `ThemeService`, which synchronizes the active theme with `localStorage` and applies it to the document root. To let users switch themes, drop the standalone `<fvy-theme-toggle />` component anywhere in a template; it uses the service under the hood.
+
+Key points:
+
+- Update or extend color variables inside the `:root` and `[data-theme='dark']` blocks in `styles.css`.
+- Inject `ThemeService` when you need to set a specific theme programmatically: `const theme = inject(ThemeService); theme.setTheme('dark');`.
+- All global and shared styles consume the same CSS variables to keep both themes consistent.
+
+## Shared UI elements
+
+Common form controls live under `src/app/shared`. They are standalone, so import them directly where needed:
+
+- `FvyButtonDirective` – apply to `<button fvyButton>` or `<a fvyButton>` for consistent button styling. Optional inputs: `variant="primary | secondary | ghost"`, `size="sm | md | lg"`, and `[fullWidth]`.
+- `FvyInputDirective` – apply to form inputs with `fvyInput` to get themed focus, error, and disabled states.
+- `FormFieldComponent` – wrap inputs with `<fvy-form-field>` to display labels, hints, and validation messages without duplicating markup.
+- `ThemeToggleComponent` – renders the theme switcher button mentioned above.
+
+Using these primitives keeps login, register, and future pages visually aligned while reducing repetitive HTML/CSS.
+
+## Dashboard experience
+
+The dashboard (`src/app/pages/dashboard`) ships as a standalone component that consumes the shared button directive and `AuthService`. It presents:
+
+- A hero card greeting the authenticated user with quick actions.
+- Metric cards for revenue, invoices, projects, and new clients.
+- A custom SVG line chart visualising the last 7 months of revenue (no external charting dependency).
+- A conic-gradient donut illustrating invoice payment health, with legend details.
+- Recent activity feed, team presence list, and actionable quick links.
+
+All layouts are responsive and respect the global theme tokens. Add real data by swapping out the mock arrays in `dashboard.component.ts` with API calls once endpoints are ready.
+
+## Backend integration
+
+Authentication pages are wired to the ASP.NET API running at `http://localhost:5183` (configured in `app.config.ts`). To point at a different server, change the value provided for the `API_BASE_URL` injection token.
+
+Endpoints the frontend calls:
+
+- `POST /api/auth/login` with `{ username, password }` – expects credentials like `admin/admin` in development and returns `{ token, user }`.
+- `POST /api/auth/register` with `{ username, name, surname, email, password, validatePassword }` – creates a new user and returns 200 OK on success.
+
+The `AuthService` persists returned JWTs and user info in `localStorage`, exposes a `logout()` helper, and unifies error messages surfaced to the UI.
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

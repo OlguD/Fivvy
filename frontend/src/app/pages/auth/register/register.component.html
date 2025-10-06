@@ -1,0 +1,145 @@
+<div class="auth-layout auth-login auth-layout--register">
+  <mat-card class="auth-card auth-card--split mat-elevation-z0">
+    <div class="auth-card__grid">
+      <aside class="auth-card__hero">
+        <span class="auth-card__badge auth-card__badge--hero">Beta</span>
+        <h2 class="auth-card__hero-title">Fivvy ile projelerini tek yerden yönet</h2>
+        <p class="auth-card__hero-subtitle">
+          SaaS odaklı iş akışını hızlandıran modern müşteri, proje ve faturalandırma araçları.
+        </p>
+        <p class="auth-card__hero-footer">14 gün ücretsiz dene · Kredi kartı gerekmez</p>
+      </aside>
+
+      <section class="auth-card__content">
+        <header class="auth-card__content-head">
+          <h1 class="auth-card__title">Create your Fivvy account ✨</h1>
+          <p class="auth-card__subtitle">
+            Ekibini Fivvy'ye davet etmek ve projelerini yönetmek için kaydol.
+          </p>
+        </header>
+
+        <form class="auth-form auth-form--register" [formGroup]="registerForm" (ngSubmit)="onSubmit()" (keydown.enter)="onSubmit()">
+          <div *ngIf="submitError" class="auth-alert auth-alert--error">
+            {{ submitError }}
+          </div>
+
+          <div class="auth-form__grid">
+            <mat-form-field appearance="outline" class="auth-form__field">
+              <mat-label>Username</mat-label>
+              <input matInput formControlName="username" placeholder="fivvy-user" autocomplete="username" />
+              <!-- <mat-hint>Kurumsal e-posta adresini kullan.</mat-hint> -->
+              <mat-error *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('required')">
+                Username is required.
+              </mat-error>
+              <mat-error *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('duplicate')">
+                This username is already taken. Try another one.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="auth-form__field">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" placeholder="you@fivvy.com" autocomplete="email" />
+              <!-- <mat-hint>Kurumsal e-posta adresini kullan.</mat-hint> -->
+              <mat-error *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('required')">
+                Email is required.
+              </mat-error>
+              <mat-error *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('email')">
+                Please enter a valid email address.
+              </mat-error>
+              <mat-error *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('duplicate')">
+                This email is already registered. Try signing in instead.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="auth-form__field">
+              <mat-label>Name</mat-label>
+              <input matInput formControlName="name" placeholder="John" autocomplete="given-name" />
+              <!-- <mat-hint>Kurumsal e-posta adresini kullan.</mat-hint> -->
+              <mat-error *ngIf="registerForm.get('name')?.touched && registerForm.get('name')?.hasError('required')">
+                Name is required.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="auth-form__field">
+              <mat-label>Surname</mat-label>
+              <input matInput formControlName="surname" placeholder="Delph" autocomplete="family-name" />
+              <!-- <mat-hint>Kurumsal e-posta adresini kullan.</mat-hint> -->
+              <mat-error *ngIf="registerForm.get('surname')?.touched && registerForm.get('surname')?.hasError('required')">
+                Surname is required.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="auth-form__field">
+              <mat-label>Password</mat-label>
+              <input
+                matInput
+                [type]="passwordVisible ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="••••••••"
+                autocomplete="new-password"
+              />
+              <button
+                type="button"
+                mat-icon-button
+                matSuffix
+                (click)="togglePasswordVisibility('password')"
+                [attr.aria-label]="passwordVisible ? 'Hide password' : 'Show password'"
+                [attr.aria-pressed]="passwordVisible"
+              >
+                <mat-icon>{{ passwordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')">
+                Password is required.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="auth-form__field">
+              <mat-label>Confirm password</mat-label>
+              <input
+                matInput
+                [type]="confirmPasswordVisible ? 'text' : 'password'"
+                formControlName="validatePassword"
+                placeholder="••••••••"
+                autocomplete="new-password"
+              />
+              <button
+                type="button"
+                mat-icon-button
+                matSuffix
+                (click)="togglePasswordVisibility('confirm')"
+                [attr.aria-label]="confirmPasswordVisible ? 'Hide confirm password' : 'Show confirm password'"
+                [attr.aria-pressed]="confirmPasswordVisible"
+              >
+                <mat-icon>{{ confirmPasswordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <!-- <mat-hint align="start" class="auth-form__hint">
+                Şifren en az 8 karakter olmalı ve bir büyük harf içermesi önerilir.
+              </mat-hint> -->
+              <mat-error *ngIf="registerForm.get('validatePassword')?.touched && registerForm.get('validatePassword')?.hasError('required')">
+                Please confirm your password.
+              </mat-error>
+              <mat-error *ngIf="registerForm.get('validatePassword')?.touched && registerForm.get('validatePassword')?.hasError('mismatch')">
+                Passwords must match.
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <button
+            type="submit"
+            mat-raised-button
+            color="primary"
+            class="fvy-button fvy-button--primary fvy-button--full auth-form__submit"
+            [disabled]="registerForm.invalid"
+          >
+            Create account
+          </button>
+        </form>
+
+        <footer class="auth-card__footer auth-card__footer--content">
+          <span>Already have an account?</span>
+          <a class="auth-link" routerLink="/auth/login">Log in</a>
+        </footer>
+      </section>
+    </div>
+  </mat-card>
+</div>

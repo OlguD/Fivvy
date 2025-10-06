@@ -1,0 +1,36 @@
+.auth-login .mat-mdc-card {
+  background: var(--surface-card);
+  border-radius: 1.5rem;
+  box-shadow: var(--surface-shadow);
+}
+
+.auth-form__field .mat-mdc-form-field-subscript-wrapper {
+  margin-inline: 0.25rem;
+}
+
+.auth-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 999px;
+  color: var(--saas-primary-700);
+  background: rgba(99, 102, 241, 0.12);
+}
+
+@media (max-width: 600px) {
+  .auth-layout {
+    padding: 1.5rem;
+  }
+
+  .auth-card {
+    padding: 2rem;
+    gap: 1.5rem;
+  }
+}
+
+.auth-link {
+    cursor: pointer;
+}

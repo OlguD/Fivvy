@@ -1,4 +1,431 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Global theme tokens */
+:root {
+	color-scheme: light;
+	--app-bg: #f5f7fb;
+	--app-text: #0f172a;
+	--surface-card: rgba(255, 255, 255, 0.86);
+	--surface-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
+	--primary: #2563eb;
+	--primary-strong: #1d4ed8;
+	--mdc-theme-primary: var(--primary);
+	--mdc-theme-secondary: var(--primary);
+	--auth-login-bg: radial-gradient(circle at top, #f8fafc, #e2e8f0);
+	--auth-login-text: #0f172a;
+	--field-label: #1e293b;
+	--field-text: #0f172a;
+	--field-border: rgba(15, 23, 42, 0.12);
+	--field-bg: rgba(255, 255, 255, 0.95);
+	--field-focus-border: rgba(37, 99, 235, 0.65);
+	--field-focus-shadow: rgba(37, 99, 235, 0.18);
+	--field-error-border: #ef4444;
+	--field-error-text: #b91c1c;
+	--btn-text: #ffffff;
+	--btn-gradient: linear-gradient(135deg, #2563eb, #4f46e5);
+	--btn-hover-shadow: 0 16px 32px rgba(37, 99, 235, 0.25);
+	--btn-disabled-bg: rgba(148, 163, 184, 0.6);
+	--btn-disabled-text: rgba(255, 255, 255, 0.8);
+		--btn-secondary-bg: rgba(37, 99, 235, 0.1);
+		--btn-secondary-border: rgba(37, 99, 235, 0.35);
+		--btn-secondary-text: #1d4ed8;
+		--btn-ghost-hover: rgba(15, 23, 42, 0.06);
+		--input-disabled-bg: rgba(148, 163, 184, 0.18);
+		--input-disabled-text: rgba(100, 116, 139, 0.9);
+	--footer-text: rgba(15, 23, 42, 0.9);
+	--link-hover: rgba(37, 99, 235, 0.12);
+	--divider: rgba(15, 23, 42, 0.08);
+}
+
+[data-theme='dark'] {
+	color-scheme: dark;
+	--app-bg: #020617;
+	--app-text: #e2e8f0;
+	--surface-card: rgba(15, 23, 42, 0.8);
+	--surface-shadow: 0 28px 52px rgba(2, 6, 23, 0.6);
+	--primary: #60a5fa;
+	--primary-strong: #3b82f6;
+	--mdc-theme-primary: var(--primary);
+	--mdc-theme-secondary: var(--primary);
+	--auth-login-bg: radial-gradient(circle at top, #0f172a, #020617 70%);
+	--auth-login-text: #e2e8f0;
+	--field-label: #cbd5f5;
+	--field-text: #f8fafc;
+	--field-border: rgba(148, 163, 184, 0.24);
+	--field-bg: rgba(15, 23, 42, 0.6);
+	--field-focus-border: rgba(96, 165, 250, 0.7);
+	--field-focus-shadow: rgba(37, 99, 235, 0.28);
+	--field-error-border: #f87171;
+	--field-error-text: #fca5a5;
+	--btn-text: #0b1120;
+	--btn-gradient: linear-gradient(135deg, #60a5fa, #4f46e5);
+	--btn-hover-shadow: 0 20px 40px rgba(96, 165, 250, 0.35);
+	--btn-disabled-bg: rgba(71, 85, 105, 0.6);
+	--btn-disabled-text: rgba(226, 232, 240, 0.8);
+		--btn-secondary-bg: rgba(96, 165, 250, 0.16);
+		--btn-secondary-border: rgba(96, 165, 250, 0.4);
+		--btn-secondary-text: #e0f2fe;
+		--btn-ghost-hover: rgba(148, 163, 184, 0.2);
+		--input-disabled-bg: rgba(51, 65, 85, 0.4);
+		--input-disabled-text: rgba(203, 213, 225, 0.75);
+	--footer-text: rgba(148, 163, 184, 0.9);
+	--link-hover: rgba(96, 165, 250, 0.16);
+	--divider: rgba(148, 163, 184, 0.16);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	background: var(--app-bg);
+	color: var(--app-text);
+	transition: background 0.3s ease, color 0.3s ease;
+}
+
+a {
+	color: var(--primary);
+}
+
+a:hover {
+	background-color: var(--link-hover);
+}
+
+button {
+	font-family: inherit;
+}
+
+.mat-mdc-form-field .mdc-notched-outline__leading,
+.mat-mdc-form-field .mdc-notched-outline__trailing,
+.mat-mdc-form-field .mdc-notched-outline__notch {
+	border-color: var(--field-border);
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	--mdc-outlined-text-field-outline-color: var(--field-border);
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-focus-overlay {
+	background-color: transparent;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-floating-label,
+.mat-mdc-form-field.mat-focused .mdc-text-field__input,
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-icon-prefix,
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-icon-suffix {
+	color: var(--primary);
+}
+
+.mat-mdc-form-field {
+	--mdc-outlined-text-field-focus-outline-color: var(--field-focus-border);
+	--mdc-outlined-text-field-focus-label-text-color: var(--primary);
+	--mdc-outlined-text-field-focus-active-indicator-color: var(--field-focus-border);
+	--mdc-outlined-text-field-caret-color: var(--field-text);
+	--mdc-outlined-text-field-focus-outline-width: 1px;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-focus-overlay {
+	background-color: var(--field-focus-shadow);
+	opacity: 1;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch {
+	border-color: var(--field-focus-border) !important;
+	box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.08);
+}
+
+.mat-mdc-form-field.mat-mdc-form-field-disabled .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-mdc-form-field-disabled .mdc-notched-outline__trailing,
+.mat-mdc-form-field.mat-mdc-form-field-disabled .mdc-notched-outline__notch {
+	border-color: var(--input-disabled-bg);
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-required-marker {
+	color: var(--primary);
+	opacity: 0.75;
+}
+
+.mat-mdc-button-base.mat-mdc-raised-button.mat-primary {
+	--mat-mdc-button-ripple-color: rgba(37, 99, 235, 0.22);
+	--mat-mdc-button-persistent-ripple-color: rgba(37, 99, 235, 0.18);
+}
+
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-raised-button.mat-primary:active {
+	background: var(--btn-gradient);
+	color: var(--btn-text);
+	box-shadow: var(--btn-hover-shadow);
+	transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+.mat-mdc-raised-button.mat-primary:hover {
+	box-shadow: 0 18px 42px rgba(37, 99, 235, 0.28);
+	transform: translateY(-1px);
+}
+
+.mat-mdc-raised-button.mat-primary:disabled {
+	background: var(--btn-disabled-bg);
+	color: var(--btn-disabled-text);
+	box-shadow: none;
+}
+
+.mat-mdc-raised-button.mat-primary:focus-visible {
+	box-shadow: var(--btn-hover-shadow), 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+.mat-mdc-raised-button.mat-primary .mdc-button__label {
+	color: var(--btn-text);
+}
+
+.auth-layout {
+	display: grid;
+	place-items: center;
+	min-height: 100vh;
+	padding: 2.5rem;
+	background: var(--auth-login-bg);
+	color: var(--auth-login-text);
+}
+
+.auth-card {
+	width: min(520px, 100%);
+	background: var(--surface-card);
+	padding: 2.5rem;
+	border-radius: 1.5rem;
+	box-shadow: var(--surface-shadow);
+	backdrop-filter: blur(12px);
+	display: flex;
+	flex-direction: column;
+	gap: 1.75rem;
+}
+
+.auth-card__header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 1rem;
+}
+
+.auth-card__title {
+	margin: 0;
+	font-size: 1.9rem;
+	font-weight: 700;
+}
+
+.auth-card__subtitle {
+	margin: 0.45rem 0 0;
+	color: rgba(148, 163, 184, 0.95);
+	font-size: 0.95rem;
+}
+
+.auth-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.3rem;
+}
+
+.auth-form__meta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 0.9rem;
+}
+
+.fvy-checkbox {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.55rem;
+	font-weight: 500;
+	color: var(--auth-login-text);
+}
+
+.fvy-checkbox input {
+	width: 1.05rem;
+	height: 1.05rem;
+	border-radius: 0.35rem;
+	border: 1px solid var(--field-border);
+	accent-color: var(--primary);
+}
+
+.auth-link {
+	color: var(--primary);
+	font-weight: 600;
+	text-decoration: none;
+	transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+.auth-link:hover {
+	color: var(--primary-strong);
+	opacity: 0.9;
+}
+
+.auth-link--muted {
+	color: rgba(148, 163, 184, 0.95);
+	cursor: default;
+}
+
+.auth-card__footer {
+	display: flex;
+	justify-content: center;
+	gap: 0.35rem;
+	font-size: 0.95rem;
+	color: var(--footer-text);
+}
+
+.auth-alert {
+	border-radius: 1rem;
+	padding: 0.85rem 1rem;
+	font-size: 0.9rem;
+	font-weight: 500;
+	border: 1px solid transparent;
+}
+
+.auth-alert--error {
+	background: rgba(248, 113, 113, 0.1);
+	border-color: rgba(248, 113, 113, 0.4);
+	color: var(--field-error-text);
+}
+
+[data-theme='dark'] .auth-alert--error {
+	background: rgba(239, 68, 68, 0.18);
+	border-color: rgba(239, 68, 68, 0.4);
+}
+
+.auth-alert--success {
+	background: rgba(74, 222, 128, 0.12);
+	border-color: rgba(34, 197, 94, 0.35);
+	color: #166534;
+}
+
+[data-theme='dark'] .auth-alert--success {
+	background: rgba(34, 197, 94, 0.18);
+	border-color: rgba(74, 222, 128, 0.35);
+	color: #bbf7d0;
+}
+
+.fvy-button {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	font-weight: 600;
+	border-radius: 0.9rem;
+	border: none;
+	cursor: pointer;
+	transition: transform 0.2s ease, box-shadow 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+	text-decoration: none;
+}
+
+.fvy-button--sm {
+	padding: 0.55rem 1rem;
+	font-size: 0.85rem;
+}
+
+.fvy-button--md {
+	padding: 0.85rem 1.4rem;
+	font-size: 0.95rem;
+}
+
+.fvy-button--lg {
+	padding: 1rem 1.6rem;
+	font-size: 1.05rem;
+}
+
+.fvy-button--full {
+	width: 100%;
+}
+
+.fvy-button--primary {
+	background: var(--btn-gradient);
+	color: var(--btn-text);
+	box-shadow: var(--btn-hover-shadow);
+}
+
+.fvy-button--secondary {
+	background: var(--btn-secondary-bg);
+	color: var(--btn-secondary-text);
+	border: 1px solid var(--btn-secondary-border);
+}
+
+.fvy-button--ghost {
+	background: transparent;
+	color: var(--auth-login-text);
+	border: 1px solid transparent;
+}
+
+.fvy-button:not(:disabled):hover {
+	transform: translateY(-1px);
+}
+
+.fvy-button--primary:not(:disabled):hover {
+	box-shadow: 0 18px 42px rgba(37, 99, 235, 0.3);
+}
+
+[data-theme='dark'] .fvy-button--primary:not(:disabled):hover {
+	box-shadow: 0 20px 44px rgba(96, 165, 250, 0.32);
+}
+
+.fvy-button--secondary:not(:disabled):hover {
+	background: rgba(37, 99, 235, 0.16);
+}
+
+[data-theme='dark'] .fvy-button--secondary:not(:disabled):hover {
+	background: rgba(96, 165, 250, 0.24);
+}
+
+.fvy-button--ghost:not(:disabled):hover {
+	background: var(--btn-ghost-hover);
+}
+
+.fvy-button:disabled,
+.fvy-button[aria-disabled='true'] {
+	cursor: not-allowed;
+	opacity: 0.65;
+	box-shadow: none;
+	background: var(--btn-disabled-bg);
+	color: var(--btn-disabled-text);
+}
+
+.mat-mdc-form-field .mdc-text-field {
+	transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.mat-mdc-form-field .mat-mdc-input-element {
+	transition: color 0.2s ease, caret-color 0.2s ease;
+	caret-color: var(--field-text);
+}
+
+.fvy-input {
+	width: 100%;
+	border: 1px solid var(--field-border);
+	border-radius: 0.75rem;
+	padding: 0.85rem 1rem;
+	font-size: 1rem;
+	color: var(--field-text);
+	background: var(--field-bg);
+	transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.fvy-input:focus {
+	outline: none;
+	border-color: var(--field-focus-border);
+	box-shadow: 0 0 0 4px var(--field-focus-shadow);
+}
+
+.fvy-input--invalid {
+	border-color: var(--field-error-border);
+}
+
+.fvy-input--disabled,
+.fvy-input:disabled {
+	background: var(--input-disabled-bg);
+	color: var(--input-disabled-text);
+	cursor: not-allowed;
+}

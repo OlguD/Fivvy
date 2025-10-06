@@ -1,0 +1,71 @@
+<div class="auth-layout auth-login">
+  <mat-card class="auth-card mat-elevation-z0">
+    <div class="auth-card__header">
+      <div>
+        <h1 class="auth-card__title">Welcome to Fivvy 👋</h1>
+        <p class="auth-card__subtitle">
+          Kontrol paneline erişmek için hesabınla giriş yap.
+        </p>
+      </div>
+      <span class="auth-card__badge">Beta</span>
+    </div>
+
+  <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" (keydown.enter)="onSubmit()">
+      <mat-form-field appearance="outline" class="auth-form__field">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" placeholder="Username" />
+        <!-- <mat-hint>Kurumsal e-posta adresini kullan.</mat-hint> -->
+        <mat-error *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.hasError('required')">
+          Kullanıcı adı zorunludur.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="auth-form__field">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [type]="passwordVisible ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+        />
+        <button
+          type="button"
+          mat-icon-button
+          matSuffix
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="passwordVisible ? 'Hide password' : 'Show password'"
+          [attr.aria-pressed]="passwordVisible"
+        >
+          <mat-icon>{{ passwordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')">
+          Password required
+        </mat-error>
+      </mat-form-field>
+
+      <div class="auth-form__meta">
+        <label class="fvy-checkbox">
+          <input type="checkbox" formControlName="rememberMe" />
+          Remember me
+        </label>
+        <a class="auth-link" routerLink="/auth/reset">Forgot my password</a>
+      </div>
+
+      <button
+        type="submit"
+        mat-raised-button
+        color="primary"
+        class="fvy-button fvy-button--primary fvy-button--full auth-form__submit"
+        [disabled]="loginForm.invalid"
+      >
+        Login
+      </button>
+    </form>
+
+    <div class="auth-card__footer">
+      <span>Don't have an account?</span>
+      <a class="auth-link" routerLink="/auth/register">Register</a>
+    </div>
+  </mat-card>
+</div>
