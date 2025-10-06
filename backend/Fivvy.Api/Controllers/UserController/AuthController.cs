@@ -4,6 +4,7 @@ using Fivvy.Api.Models;
 using Fivvy.Api.Models.RequestModels;
 using Fivvy.Api.Utils;
 using Fivvy.Api.Helpers;
+using Fivvy.Api.Exceptions;
 
 namespace Fivvy.Api.Controllers;
 
@@ -36,23 +37,42 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> UserRegisterAsync([FromBody] RegisterRequestModel request)
     {
-        if (ValidatePassword.validatePassword(request.Password, request.ValidatePassword))
+        if (!ValidatePassword.validatePassword(request.Password, request.ValidatePassword))
         {
-            var user = new UserModel
-            {
-                Username = request.Username,
-                Name = request.Name,
-                Surname = request.Surname,
-                Email = request.Email,
-                Password = request.Password,
-                // Clients = [],
-                // Invoices = [],
-                // Projects = [],
-                TotalIncome = 0,
-            };
-            await _userRepository.AddUserAsync(user);
-            return Ok();
+            return BadRequest(new { message = "Password does not match" });
         }
-        return BadRequest("Password does not match");
+
+        var user = new UserModel
+        {
+            Username = request.Username,
+            Name = request.Name,
+            Surname = request.Surname,
+            Email = request.Email,
+            Password = request.Password,
+            TotalIncome = 0,
+        };
+
+        try
+        {
+            await _userRepository.AddUserAsync(user);
+            return Ok(new { success = true });
+        }
+        catch (UsernameAlreadyExistsException ex)
+        {
+            return Conflict(new { field = "username", message = ex.Message });
+        }
+        catch (EmailAlreadyExistsException ex)
+        {
+            return Conflict(new { field = "email", message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            var message = string.IsNullOrWhiteSpace(ex.Message) ? "Invalid registration data" : ex.Message;
+            return BadRequest(new { message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "An unexpected error occurred while creating the account." });
+        }
     }
 }

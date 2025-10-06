@@ -68,42 +68,35 @@ public class UserRepository : IUserRepository
 
     public async Task AddUserAsync(UserModel user)
     {
-        try
+        var existingUsername = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == user.Username);
+
+        var existingEmail = await _context.Users
+                .FirstOrDefaultAsync(e => e.Email == user.Email);
+
+        if (existingUsername != null)
         {
-            var existingUsername = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Username == user.Username);
-
-            var existingEmail = await _context.Users
-                    .FirstOrDefaultAsync(e => e.Email == user.Email);
-
-            if (existingUsername != null)
-            {
-                throw new UsernameAlreadyExistsException();
-            }
-
-            if (existingEmail != null)
-            {
-                throw new EmailAlreadyExistsException();
-            }
-
-            if (string.IsNullOrEmpty(user.Username) ||
-                string.IsNullOrEmpty(user.Name) ||
-                string.IsNullOrEmpty(user.Surname) ||
-                string.IsNullOrEmpty(user.Email) ||
-                string.IsNullOrEmpty(user.Password))
-            {
-                throw new InvalidOperationException();
-            }
-
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            throw new UsernameAlreadyExistsException();
         }
-        catch (Exception error)
+
+        if (existingEmail != null)
         {
-            throw new Exception("An error occured", error);
+            throw new EmailAlreadyExistsException();
         }
+
+        if (string.IsNullOrEmpty(user.Username) ||
+            string.IsNullOrEmpty(user.Name) ||
+            string.IsNullOrEmpty(user.Surname) ||
+            string.IsNullOrEmpty(user.Email) ||
+            string.IsNullOrEmpty(user.Password))
+        {
+            throw new InvalidOperationException("Missing required registration fields");
+        }
+
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
     }
 
 
