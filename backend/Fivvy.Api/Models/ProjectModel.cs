@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Fivvy.Api.Models;
@@ -15,4 +16,7 @@ public class ProjectModel
 
     [JsonIgnore]
     public ClientModel? Client { get; set; }
+
+    [NotMapped]
+    public bool IsActive => !EndDate.HasValue || EndDate.Value >= DateTime.UtcNow;
 }

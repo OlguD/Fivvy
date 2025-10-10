@@ -73,7 +73,7 @@ public class ClientController : ControllerBase
             return Unauthorized("Token not found");
         }
 
-        if (await _clientRepository.UpdateClientAsync(request.clientId, token, request.clientModel))
+    if (await _clientRepository.UpdateClientAsync(request.ClientId, token, request.ClientModel))
         {
             return Ok();
         }
@@ -90,7 +90,7 @@ public class ClientController : ControllerBase
             return Unauthorized("Token not found");
         }
 
-        if (await _clientRepository.RemoveClient(request.clientId, token))
+    if (await _clientRepository.RemoveClient(request.ClientId, token))
         {
             return Ok();
         }

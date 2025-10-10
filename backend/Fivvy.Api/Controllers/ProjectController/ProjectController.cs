@@ -128,9 +128,9 @@ public class ProjectController : ControllerBase
     }
 
 
-    [HttpDelete("remove-project")]
+    [HttpDelete("remove-project/{projectId:int}")]
     [Authorize]
-    public async Task<IActionResult> RemoveProject(RemoveProjectRequestModel request)
+    public async Task<IActionResult> RemoveProject(int projectId)
     {
         try
         {
@@ -139,13 +139,18 @@ public class ProjectController : ControllerBase
                 return Unauthorized("Token not found");
             }
 
-            if (await _projectRepository.DeleteProjectAsync(request.ProjectId, token))
+            if (projectId <= 0)
             {
-                return Ok();
+                return BadRequest("Geçerli bir proje kimliği gönderilmedi.");
+            }
+
+            if (await _projectRepository.DeleteProjectAsync(projectId, token))
+            {
+                return Ok(new { message = "Proje başarıyla silindi." });
             }
             else
             {
-                return BadRequest();
+                return BadRequest("Proje silinemedi.");
             }
         }
         catch (ForbiddenProjectAccessException ex)

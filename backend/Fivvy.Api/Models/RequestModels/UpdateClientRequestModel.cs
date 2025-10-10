@@ -4,6 +4,6 @@ namespace Fivvy.Api.Models;
 
 public class UpdateClientRequestModel
 {
-    public required int clientId;
-    public required ClientModel clientModel;
+    public required int ClientId { get; set; }
+    public required ClientModel ClientModel { get; set; }
 }

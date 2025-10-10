@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
         if (user != null && BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
         {
             var token = _jwtHelper.GenerateToken(user.Id.ToString(), user.Email);
-            return Ok(new { token, user = new { user.Id, user.Email, user.Username } });
+            return Ok(new { token, user = new { user.Id, user.Email, user.Username, user.Role } });
         }
         return Unauthorized("Invalid credentials");
     }
