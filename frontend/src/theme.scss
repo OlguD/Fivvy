@@ -1,0 +1,25 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$primary-palette: map.merge(mat.$blue-palette, (
+  error: mat.$red-palette,
+));
+
+$frontend-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: $primary-palette,
+    tertiary: mat.$azure-palette,
+  ),
+  density: (
+    scale: 0,
+  ),
+));
+
+:root {
+  @include mat.all-component-themes($frontend-theme);
+  @include mat.typography-hierarchy($frontend-theme);
+  @include mat.color-variants-backwards-compatibility($frontend-theme);
+}

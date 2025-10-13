@@ -184,13 +184,134 @@ button {
 	color: var(--btn-text);
 }
 
+.mat-mdc-stroked-button {
+	--mdc-outlined-button-outline-color: var(--btn-secondary-border);
+	--mat-mdc-button-ripple-color: rgba(37, 99, 235, 0.16);
+	border-radius: 0.9rem;
+	border-width: 1px;
+	color: var(--btn-secondary-text);
+	background: var(--btn-secondary-bg);
+	transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.mat-mdc-stroked-button:hover {
+	background: rgba(37, 99, 235, 0.16);
+	transform: translateY(-1px);
+}
+
+[data-theme='dark'] .mat-mdc-stroked-button {
+	color: var(--btn-secondary-text);
+	background: var(--btn-secondary-bg);
+	border-color: var(--btn-secondary-border);
+}
+
+[data-theme='dark'] .mat-mdc-stroked-button:hover {
+	background: rgba(96, 165, 250, 0.22);
+}
+
+.mat-mdc-stroked-button:disabled {
+	background: var(--btn-disabled-bg);
+	color: var(--btn-disabled-text);
+	border-color: transparent;
+	transform: none;
+}
+
+.mat-mdc-button-base .mat-icon,
+.mat-mdc-button-base mat-icon {
+	font-size: 1.2rem;
+	color: currentColor;
+	transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.mat-mdc-button-base.mat-primary .mat-icon {
+	color: var(--btn-text);
+}
+
+.mat-mdc-icon-button {
+	color: rgba(15, 23, 42, 0.6);
+	transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.mat-mdc-icon-button:hover {
+	color: var(--primary);
+	background-color: rgba(37, 99, 235, 0.12);
+	transform: translateY(-1px);
+}
+
+[data-theme='dark'] .mat-mdc-icon-button {
+	color: rgba(226, 232, 240, 0.72);
+}
+
+[data-theme='dark'] .mat-mdc-icon-button:hover {
+	color: var(--primary);
+	background-color: rgba(96, 165, 250, 0.22);
+}
+
+.mat-mdc-dialog-container .mdc-dialog__surface {
+	border-radius: 1.25rem;
+	background: var(--surface-card);
+	box-shadow: var(--surface-shadow);
+	border: 1px solid var(--divider);
+	padding: 1.5rem 1.8rem 1.4rem;
+	color: var(--app-text);
+}
+
+.mat-mdc-dialog-container .mdc-dialog__title {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	font-size: 1.3rem;
+	font-weight: 700;
+	color: var(--app-text);
+}
+
+.mat-mdc-dialog-container .mdc-dialog__title mat-icon {
+	font-size: 1.35rem;
+	color: var(--primary);
+}
+
+.mat-mdc-dialog-container .mdc-dialog__content {
+	color: rgba(15, 23, 42, 0.78);
+}
+
+[data-theme='dark'] .mat-mdc-dialog-container .mdc-dialog__content {
+	color: rgba(226, 232, 240, 0.85);
+}
+
+.mat-mdc-dialog-container mat-dialog-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.75rem;
+	padding-top: 1rem;
+}
+
+[data-theme='dark'] .cdk-overlay-dark-backdrop {
+	background: rgba(2, 6, 23, 0.9);
+}
+
+.cdk-overlay-dark-backdrop {
+	background: rgba(15, 23, 42, 0.9);
+}
+
 .auth-layout {
-	display: grid;
-	place-items: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
 	min-height: 100vh;
-	padding: 2.5rem;
+	padding-inline: clamp(1.75rem, 4vw, 3rem);
+	padding-top: clamp(3.5rem, 14vh, 8rem);
+	padding-bottom: clamp(2.5rem, 8vh, 5rem);
 	background: var(--auth-login-bg);
 	color: var(--auth-login-text);
+}
+
+@media (max-height: 760px) {
+	.auth-layout {
+		justify-content: center;
+		padding-top: clamp(2rem, 8vh, 3.5rem);
+		padding-bottom: clamp(2rem, 6vh, 3.5rem);
+	}
 }
 
 .auth-card {
@@ -203,6 +324,17 @@ button {
 	display: flex;
 	flex-direction: column;
 	gap: 1.75rem;
+}
+
+.auth-card__topbar {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	margin-bottom: 0.5rem;
+}
+
+.auth-card__topbar--content {
+	margin-bottom: 1rem;
 }
 
 .auth-card__header {
@@ -397,9 +529,41 @@ button {
 	transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
+
 .mat-mdc-form-field .mat-mdc-input-element {
 	transition: color 0.2s ease, caret-color 0.2s ease;
 	caret-color: var(--field-text);
+	color: var(--field-text) !important;
+}
+
+.mat-mdc-form-field .mat-mdc-input-element::placeholder {
+	color: color-mix(in srgb, var(--field-text) 55%, transparent);
+	opacity: 0.85;
+}
+
+[data-theme='dark'] .mat-mdc-form-field .mat-mdc-input-element::placeholder {
+	color: color-mix(in srgb, var(--field-text) 65%, transparent);
+}
+
+.mat-mdc-form-field .mat-mdc-input-element:-webkit-autofill,
+.mat-mdc-form-field .mat-mdc-input-element:-webkit-autofill:hover,
+.mat-mdc-form-field .mat-mdc-input-element:-webkit-autofill:focus {
+	-webkit-text-fill-color: var(--field-text) !important;
+	transition: background-color 0s 600000s, color 0s 600000s;
+}
+
+.mat-mdc-form-field .mdc-floating-label,
+.mat-mdc-form-field .mdc-floating-label--float-above,
+.mat-mdc-form-field .mdc-floating-label--shake {
+	color: var(--field-label) !important;
+	opacity: 0.92;
+}
+
+[data-theme='dark'] .mat-mdc-form-field .mdc-floating-label,
+[data-theme='dark'] .mat-mdc-form-field .mdc-floating-label--float-above,
+[data-theme='dark'] .mat-mdc-form-field .mdc-floating-label--shake {
+	color: color-mix(in srgb, var(--field-label) 95%, transparent) !important;
+	opacity: 0.96;
 }
 
 .fvy-input {

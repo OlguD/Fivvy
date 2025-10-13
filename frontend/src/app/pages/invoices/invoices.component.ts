@@ -1,10 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-invoices',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './invoices.component.html',
-  styleUrl: './invoices.component.css'
+  styleUrls: ['./invoices.component.css']
 })
 export class InvoicesComponent {
 

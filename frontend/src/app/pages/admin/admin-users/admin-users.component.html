@@ -1,0 +1,118 @@
+<div class="admin-users">
+  <header class="admin-users__header">
+    <div>
+      <h1 class="admin-users__title">Kullanıcı yönetimi</h1>
+      <p class="admin-users__subtitle">Takımdaki hesapları, rolleri ve müşteri trafiğini yönetin.</p>
+    </div>
+    <button mat-stroked-button color="primary" type="button">
+      <mat-icon aria-hidden="true">download</mat-icon>
+      Dışa aktar (CSV)
+    </button>
+  </header>
+
+  <section class="admin-users__stats" *ngIf="!isLoading(); else statsLoading">
+    <article
+      class="admin-users__stat-card"
+      *ngFor="let stat of summaryStats()"
+      [class.is-up]="stat.trend === 'up'"
+      [class.is-down]="stat.trend === 'down'"
+    >
+      <span class="admin-users__stat-label">{{ stat.label }}</span>
+      <span class="admin-users__stat-value">{{ stat.value }}</span>
+      <span class="admin-users__stat-delta">{{ stat.delta }}</span>
+    </article>
+  </section>
+
+  <ng-template #statsLoading>
+    <section class="admin-users__stats">
+      <article class="admin-users__stat-card" *ngFor="let placeholder of [1, 2, 3, 4]">
+        <span class="admin-users__stat-label skeleton"></span>
+        <span class="admin-users__stat-value skeleton"></span>
+        <span class="admin-users__stat-delta skeleton"></span>
+      </article>
+    </section>
+  </ng-template>
+
+  <section class="admin-users__toolbar">
+    <div class="admin-users__filters">
+      <button
+        type="button"
+        class="admin-users__filter-chip"
+        *ngFor="let filter of filters"
+        [class.is-active]="selectedFilter() === filter.key"
+        (click)="setFilter(filter.key)"
+      >
+        {{ filter.label }}
+      </button>
+    </div>
+
+    <div class="admin-users__search">
+      <mat-icon aria-hidden="true">search</mat-icon>
+      <input
+        #searchInput
+        type="search"
+        placeholder="İsim, e-posta veya kullanıcı adı ara"
+        (input)="onSearch(searchInput.value)"
+      />
+    </div>
+  </section>
+
+  <section class="admin-users__error" *ngIf="error() && !isLoading()">
+    <mat-icon aria-hidden="true">error_outline</mat-icon>
+    <p>{{ error() }}</p>
+  </section>
+
+  <section class="admin-users__list" *ngIf="!isLoading() && filteredUsers().length; else listState">
+    <div class="admin-users__table-wrapper">
+      <table class="admin-users__table">
+        <thead>
+          <tr>
+            <th scope="col">Kullanıcı</th>
+            <th scope="col">E-posta</th>
+            <th scope="col">Kullanıcı adı</th>
+            <th scope="col">Rol</th>
+            <th scope="col">Müşteri</th>
+            <th scope="col">Katılım</th>
+            <th scope="col">Durum</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of filteredUsers()">
+            <td data-title="Kullanıcı">
+              <div class="admin-users__identity">
+                <div class="admin-users__avatar">{{ getInitials(user.fullName) }}</div>
+                <div>
+                  <span class="admin-users__name">{{ user.fullName }}</span>
+                </div>
+              </div>
+            </td>
+            <td data-title="E-posta">{{ user.email }}</td>
+            <td data-title="Kullanıcı adı">{{ '@' + user.username }}</td>
+            <td data-title="Rol">
+              <mat-chip class="status-chip status-chip--role">{{ user.role || 'user' }}</mat-chip>
+            </td>
+            <td data-title="Müşteri">{{ user.clientCount }}</td>
+            <td data-title="Katılım">{{ user.createdAt | date: 'dd MMM yyyy' }}</td>
+            <td data-title="Durum">
+              <span class="admin-users__badge" *ngIf="user.isTopPerformer">Öne çıkan</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <ng-template #listState>
+    <div class="admin-users__loading" *ngIf="isLoading(); else emptyState">
+      <mat-icon aria-hidden="true">hourglass_empty</mat-icon>
+      <p>Yönetici verileri yükleniyor...</p>
+    </div>
+  </ng-template>
+
+  <ng-template #emptyState>
+    <div class="admin-users__empty">
+      <mat-icon aria-hidden="true">person_search</mat-icon>
+      <p>Eşleşen kullanıcı bulunamadı.</p>
+    </div>
+  </ng-template>
+</div>

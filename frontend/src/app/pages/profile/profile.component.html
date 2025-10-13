@@ -1,1 +1,130 @@
-<p>profile works!</p>
+<section class="profile">
+	<header class="profile__header">
+		<div class="profile__identity">
+			<div class="profile__avatar" matTooltip="Upload a new photo soon">
+				{{ initials() }}
+			</div>
+			<div class="profile__identity-meta">
+				<h1>{{ fullName() }}</h1>
+				<p>{{ planBadge() }} · {{ joinDate() }}</p>
+				<div class="profile__chips">
+					<mat-chip-set>
+						<mat-chip *ngFor="let tag of expertiseTags" selected>{{ tag }}</mat-chip>
+					</mat-chip-set>
+				</div>
+			</div>
+		</div>
+		<div class="profile__header-actions">
+			<button mat-stroked-button type="button">
+				<mat-icon aria-hidden="true">cloud_download</mat-icon>
+				Export data
+			</button>
+			<button mat-raised-button color="primary" type="button">
+				<mat-icon aria-hidden="true">rocket_launch</mat-icon>
+				Upgrade workspace
+			</button>
+		</div>
+	</header>
+
+	<div class="profile__layout">
+		<section class="profile__module">
+			<header class="profile__module-header">
+				<div>
+					<h2>Account details</h2>
+					<p>Workspace identity, contact details and bio visible to teammates.</p>
+				</div>
+				<button mat-stroked-button type="button" (click)="resetProfileForm()">
+					Reset
+				</button>
+			</header>
+
+			<form class="profile__form" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+				<div class="profile__form-grid">
+					<mat-form-field appearance="outline">
+						<mat-label>Username</mat-label>
+						<input matInput formControlName="username" />
+					</mat-form-field>
+
+					<mat-form-field appearance="outline">
+						<mat-label>Name</mat-label>
+						<input matInput formControlName="name" />
+					</mat-form-field>
+
+					<mat-form-field appearance="outline">
+						<mat-label>Surname</mat-label>
+						<input matInput formControlName="surname" />
+					</mat-form-field>
+
+					<mat-form-field appearance="outline">
+						<mat-label>Email</mat-label>
+						<input matInput type="email" formControlName="email" />
+						<mat-icon matSuffix aria-hidden="true">mail</mat-icon>
+					</mat-form-field>
+
+				</div>
+
+				<div class="profile__form-actions">
+					<button
+						mat-raised-button
+						color="primary"
+						type="submit"
+						[disabled]="profileForm.invalid || isSavingProfile()"
+					>
+						<mat-icon aria-hidden="true" *ngIf="!isSavingProfile()">save</mat-icon>
+						<span *ngIf="isSavingProfile(); else saveLabel">Saving</span>
+						<ng-template #saveLabel>Save changes</ng-template>
+					</button>
+					<button mat-button type="button" class="profile__ghost-btn">
+						Cancel
+					</button>
+				</div>
+			</form>
+		</section>
+	</div>
+
+	<section class="profile__module profile__module--password">
+		<header class="profile__module-header">
+			<div>
+				<h2>Password &amp; security</h2>
+				<p>Rotate credentials regularly and keep two-factor enabled.</p>
+			</div>
+			<button mat-button type="button" class="profile__ghost-btn">
+				<mat-icon aria-hidden="true">verified_user</mat-icon>
+				Manage 2FA
+			</button>
+		</header>
+
+		<form class="profile__form profile__form--password" [formGroup]="passwordForm" (ngSubmit)="savePassword()">
+			<div class="profile__form-grid profile__form-grid--password">
+				<mat-form-field appearance="outline">
+					<mat-label>New password</mat-label>
+					<input matInput type="password" formControlName="newPassword" />
+				</mat-form-field>
+
+				<mat-form-field appearance="outline">
+					<mat-label>Confirm password</mat-label>
+					<input matInput type="password" formControlName="confirmPassword" />
+					<mat-error *ngIf="passwordForm.hasError('mismatch') && passwordForm.get('confirmPassword')?.touched">
+						Passwords do not match
+					</mat-error>
+				</mat-form-field>
+			</div>
+
+			<div class="profile__form-actions">
+				<button
+					mat-raised-button
+					color="primary"
+					type="submit"
+					[disabled]="passwordForm.invalid || isSavingPassword()"
+				>
+					<mat-icon aria-hidden="true" *ngIf="!isSavingPassword()">lock_reset</mat-icon>
+					<span *ngIf="isSavingPassword(); else resetLabel">Updating</span>
+					<ng-template #resetLabel>Update password</ng-template>
+				</button>
+				<button mat-button type="button" class="profile__ghost-btn">
+					Forgot current password?
+				</button>
+			</div>
+		</form>
+	</section>
+</section>

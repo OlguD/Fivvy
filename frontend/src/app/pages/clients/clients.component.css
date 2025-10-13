@@ -1,0 +1,247 @@
+:host {
+	display: block;
+}
+
+.clients {
+	:host {
+		display: block;
+	}
+
+	.clients {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.clients__toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.clients__toolbar h1 {
+		margin: 0;
+		font-size: 1.5rem;
+		font-weight: 600;
+	}
+
+	.clients__toolbar-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.clients__add-btn {
+		border-radius: 0.85rem;
+		font-weight: 600;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.75rem 1.25rem;
+		transition: transform 0.2s ease, box-shadow 0.25s ease;
+	}
+
+	.clients__add-btn.mat-mdc-raised-button {
+		background: var(--btn-gradient);
+		color: var(--btn-text);
+		box-shadow: var(--btn-hover-shadow);
+	}
+
+	.clients__add-btn.mat-mdc-raised-button:hover {
+		box-shadow: 0 18px 42px rgba(37, 99, 235, 0.28);
+		transform: translateY(-1px);
+	}
+
+	.clients__add-btn.mat-mdc-raised-button:focus-visible {
+		box-shadow: var(--btn-hover-shadow), 0 0 0 3px rgba(37, 99, 235, 0.28);
+		outline: none;
+	}
+
+	.clients__add-btn.mat-mdc-raised-button:disabled {
+		background: var(--btn-disabled-bg);
+		color: var(--btn-disabled-text);
+		box-shadow: none;
+		transform: none;
+	}
+
+	.clients__toolbar-actions button mat-icon {
+		font-size: 1.1rem;
+		margin-right: 0.35rem;
+		color: currentColor;
+	}
+
+	.clients__search {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0.75rem;
+		border: 1px solid var(--field-border);
+		border-radius: 0.75rem;
+		background: var(--surface-card);
+	}
+
+	.clients__search mat-icon {
+		color: rgba(148, 163, 184, 0.9);
+	}
+
+	.clients__search input {
+		border: none;
+		outline: none;
+		background: transparent;
+		font: inherit;
+		min-width: 14rem;
+	}
+
+	.clients__error {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.85rem 1rem;
+		border-radius: 0.75rem;
+		background: color-mix(in srgb, var(--field-error-border) 14%, transparent);
+		color: var(--field-error-text);
+	}
+
+	.clients__error button {
+		margin-left: auto;
+	}
+
+	.clients__table {
+		width: 100%;
+		border-collapse: collapse;
+		background: var(--surface-card);
+		border-radius: 0.75rem;
+		overflow: hidden;
+		box-shadow: var(--surface-shadow);
+	}
+
+	.clients__table thead {
+		background: rgba(148, 163, 184, 0.12);
+	}
+
+	.clients__table th,
+	.clients__table td {
+		padding: 0.85rem 1rem;
+		text-align: left;
+		border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+	}
+
+	.clients__table th {
+		font-size: 0.85rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: rgba(100, 116, 139, 0.95);
+	}
+
+	.clients__table tbody tr:last-child td {
+		border-bottom: none;
+	}
+
+	.clients__row--busy {
+		opacity: 0.6;
+		pointer-events: none;
+	}
+
+	.clients__actions {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+
+	.clients__loading,
+	.clients__empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		padding: 3rem 1rem;
+		color: rgba(148, 163, 184, 0.95);
+	}
+
+	.clients__empty mat-icon {
+		font-size: 2.25rem;
+		width: 2.25rem;
+		height: 2.25rem;
+		color: rgba(37, 99, 235, 0.6);
+	}
+
+	@media (max-width: 768px) {
+		.clients__toolbar {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.clients__toolbar-actions {
+			width: 100%;
+			justify-content: space-between;
+		}
+
+		.clients__search {
+			flex: 1 1 auto;
+			width: 100%;
+		}
+
+		.clients__search input {
+			min-width: 0;
+			width: 100%;
+		}
+
+		.clients__table th,
+		.clients__table td {
+			padding: 0.75rem;
+			font-size: 0.95rem;
+		}
+
+		.clients__table {
+			overflow-x: auto;
+			display: block;
+		}
+	}
+}
+
+.clients__state-banner button {
+	margin-left: auto;
+}
+
+.clients__state-banner--error mat-icon {
+	color: var(--field-error-text);
+}
+
+.clients__module--table {
+	padding-bottom: 0;
+	flex: 1 1 0;
+	width: 100%;
+}
+
+.clients__module-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 1rem;
+}
+
+.clients__module-header h2 {
+	margin: 0;
+	font-size: 1.3rem;
+	font-weight: 700;
+}
+
+.clients__module-header p {
+	margin: 0.45rem 0 0;
+	font-size: 0.95rem;
+	color: rgba(148, 163, 184, 0.95);
+}
+
+.clients__secondary-btn {
+	align-self: center;
+}
+
+.clients__secondary-btn--full {
+	width: 100%;
+	justify-content: center;
+	font-weight: 600;
+}
+

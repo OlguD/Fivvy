@@ -1,8 +1,11 @@
 <div class="auth-layout auth-login">
   <mat-card class="auth-card mat-elevation-z0">
+    <!-- <div class="auth-card__topbar">
+      <app-theme-toggle></app-theme-toggle>
+    </div> -->
     <div class="auth-card__header">
       <div>
-        <h1 class="auth-card__title">Welcome to Fivvy 👋</h1>
+        <h3 class="auth-card__title">Welcome to Fivvy 👋</h3>
         <p class="auth-card__subtitle">
           Kontrol paneline erişmek için hesabınla giriş yap.
         </p>
@@ -13,7 +16,7 @@
   <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" (keydown.enter)="onSubmit()">
       <mat-form-field appearance="outline" class="auth-form__field">
         <mat-label>Username</mat-label>
-        <input matInput formControlName="username" placeholder="Username" />
+        <input matInput formControlName="username" />
         <!-- <mat-hint>Kurumsal e-posta adresini kullan.</mat-hint> -->
         <mat-error *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.hasError('required')">
           Kullanıcı adı zorunludur.
@@ -26,7 +29,7 @@
           matInput
           [type]="passwordVisible ? 'text' : 'password'"
           formControlName="password"
-          placeholder="••••••••"
+          
           autocomplete="current-password"
         />
         <button

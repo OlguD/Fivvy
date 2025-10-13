@@ -22,7 +22,9 @@
 
 @media (max-width: 600px) {
   .auth-layout {
-    padding: 1.5rem;
+    padding-inline: 1.5rem;
+    padding-top: clamp(3rem, 16vh, 6rem);
+    padding-bottom: clamp(2rem, 10vh, 4rem);
   }
 
   .auth-card {

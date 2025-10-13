@@ -1,1 +1,78 @@
-<p>projects works!</p>
+<section class="projects">
+  <header class="projects__header">
+    <div>
+      <h1>Projeler</h1>
+      <p>Proje kayıtlarını görüntüleyin ve yönetin.</p>
+    </div>
+    <button mat-raised-button color="primary" type="button" (click)="openCreateDialog()" [disabled]="loading">
+      <mat-icon aria-hidden="true">add</mat-icon>
+      Yeni proje
+    </button>
+  </header>
+
+  <div *ngIf="loading" class="projects__state">
+    <mat-icon aria-hidden="true">sync</mat-icon>
+    <span>Projeler yükleniyor...</span>
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="projects__state projects__state--error">
+    <mat-icon aria-hidden="true">error</mat-icon>
+    <span>{{ errorMessage }}</span>
+    <button mat-stroked-button type="button" (click)="reload()">
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+      Tekrar dene
+    </button>
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && projects.length === 0" class="projects__empty">
+    <mat-icon aria-hidden="true">lightbulb</mat-icon>
+    <div>
+      <strong>Henüz proje eklenmemiş.</strong>
+      <p>Başlamak için “Yeni proje” butonunu kullanabilirsiniz.</p>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && projects.length > 0" class="projects__table-wrapper">
+    <table class="projects__table">
+      <thead>
+        <tr>
+          <th>Proje adı</th>
+          <th>Müşteri</th>
+          <th>Başlangıç</th>
+          <th>Bitiş</th>
+          <th>Durum</th>
+          <th>Tutar</th>
+          <th>Açıklama</th>
+          <th class="projects__actions-header">İşlemler</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let project of projects" (click)="openUpdateDialog(project)" class="projects__row">
+          <td>{{ project.name }}</td>
+          <td>{{ project.clientLabel }}</td>
+          <td>{{ project.startDateLabel }}</td>
+          <td>{{ project.endDateLabel }}</td>
+          <td><span class="projects__status">{{ project.statusLabel }}</span></td>
+          <td class="projects__price">{{ project.priceLabel }}</td>
+          <td
+            class="projects__description"
+            [attr.title]="project.description || undefined"
+          >
+            {{ project.description || '—' }}
+          </td>
+          <td class="projects__actions-cell">
+            <button
+              mat-icon-button
+              type="button"
+              color="warn"
+              (click)="confirmDelete(project); $event.stopPropagation();"
+              [disabled]="isDeleting(project.id) || loading"
+            >
+              <mat-icon aria-hidden="true">delete</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

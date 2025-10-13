@@ -1,0 +1,85 @@
+:host {
+	display: block;
+	width: min(520px, calc(100vw - 3.6rem));
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+h2 {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin: 0 0 1rem;
+	font-size: 1.35rem;
+	font-weight: 700;
+	color: var(--app-text);
+}
+
+h2 mat-icon {
+	font-size: 1.45rem;
+	color: var(--primary);
+}
+
+.dialog__form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.4rem;
+	margin-top: 0.4rem;
+	color: var(--app-text);
+}
+
+.dialog__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 1.2rem;
+}
+
+.dialog__grid mat-form-field {
+	width: 100%;
+}
+
+.dialog__address {
+	grid-column: 1 / -1;
+}
+
+.dialog__actions {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	padding-top: 0.6rem;
+}
+
+.dialog__cancel,
+.dialog__submit {
+	border-radius: 0.85rem;
+	font-weight: 600;
+}
+
+.dialog__submit {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.75rem;
+	min-width: 180px;
+	justify-content: center;
+}
+
+.dialog__submit mat-progress-spinner {
+	margin-right: 0.6rem;
+}
+
+@media (max-width: 640px) {
+	.dialog__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.dialog__actions {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.dialog__submit {
+		width: 100%;
+	}
+}

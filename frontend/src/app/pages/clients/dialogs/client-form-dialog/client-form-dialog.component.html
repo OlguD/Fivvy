@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>
+	<mat-icon aria-hidden="true">{{ mode === 'create' ? 'person_add' : 'manage_accounts' }}</mat-icon>
+	{{ title }}
+</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="dialog__form" mat-dialog-content>
+	<div class="dialog__grid">
+		<mat-form-field appearance="outline">
+			<mat-label>Company name</mat-label>
+			<input matInput formControlName="companyName" required />
+			<mat-error *ngIf="companyNameInvalid">Company name is required</mat-error>
+		</mat-form-field>
+
+		<mat-form-field appearance="outline">
+			<mat-label>Primary contact</mat-label>
+			<input matInput formControlName="contactName" required />
+			<mat-error *ngIf="contactNameInvalid">Contact name is required</mat-error>
+		</mat-form-field>
+
+
+		<mat-form-field appearance="outline">
+			<mat-label>Email</mat-label>
+			<input matInput type="email" formControlName="email" />
+			<mat-error *ngIf="emailInvalid">Enter a valid email address</mat-error>
+		</mat-form-field>
+
+		<mat-form-field appearance="outline">
+			<mat-label>Phone</mat-label>
+			<input matInput type="tel" formControlName="phone" />
+		</mat-form-field>
+
+		<mat-form-field appearance="outline" class="dialog__address">
+			<mat-label>Address</mat-label>
+			<textarea matInput rows="3" formControlName="address"></textarea>
+		</mat-form-field>
+	</div>
+</form>
+
+<div mat-dialog-actions class="dialog__actions">
+	<button mat-stroked-button type="button" (click)="cancel()" [disabled]="isSubmitting" class="dialog__cancel">
+		Cancel
+	</button>
+	<button
+		mat-raised-button
+		color="primary"
+		type="submit"
+		[disabled]="form.invalid || isSubmitting"
+		class="dialog__submit"
+	>
+		<mat-progress-spinner
+			*ngIf="isSubmitting"
+			mode="indeterminate"
+			diameter="18"
+			strokeWidth="3"
+		></mat-progress-spinner>
+		<span *ngIf="!isSubmitting">{{ actionLabel }}</span>
+	</button>
+</div>

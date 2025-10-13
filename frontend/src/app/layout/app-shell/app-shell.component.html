@@ -1,0 +1,70 @@
+<div class="shell">
+  <aside class="shell__sidebar" [ngClass]="{ 'shell__sidebar--open': sidebarOpen }">
+    <div class="shell__brand">
+      <div class="shell__logo">Fv</div>
+      <div class="shell__brand-text">
+        <span class="shell__brand-name">Fivvy</span>
+        <span class="shell__brand-tag">Project OS</span>
+      </div>
+    </div>
+
+    <nav class="shell__nav">
+      <ng-container *ngFor="let item of navLinks">
+        <a
+          *ngIf="!item.adminOnly || isAdmin"
+          [routerLink]="item.path"
+          routerLinkActive="shell__nav-link--active"
+          class="shell__nav-link"
+          [routerLinkActiveOptions]="{ exact: item.path === '/dashboard' }"
+          (click)="closeSidebar()"
+        >
+          <mat-icon fontIcon="{{ item.icon }}" aria-hidden="true"></mat-icon>
+          <span>{{ item.label }}</span>
+        </a>
+      </ng-container>
+    </nav>
+
+    <div class="shell__sidebar-footer">
+      <button mat-button class="shell__logout" type="button" (click)="logout()">
+        <mat-icon aria-hidden="true">logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="shell__main">
+    <header class="shell__topbar">
+      <div class="shell__topbar-left">
+        <button
+          mat-icon-button
+          type="button"
+          class="shell__menu-btn"
+          aria-label="Toggle navigation"
+          (click)="toggleSidebar()"
+        >
+          <mat-icon aria-hidden="true">menu</mat-icon>
+        </button>
+        <div>
+          <h1 class="shell__title">{{ headerTitle }}</h1>
+          <p class="shell__subtitle">{{ headerSubtitle }}</p>
+        </div>
+      </div>
+      <div class="shell__topbar-actions">
+        <app-theme-toggle></app-theme-toggle>
+        <button mat-icon-button class="shell__avatar" type="button" aria-label="Account menu">
+          <span>OD</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="shell__content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+  <div
+    class="shell__overlay"
+    *ngIf="sidebarOpen"
+    (click)="closeSidebar()"
+    aria-hidden="true"
+  ></div>
+</div>

@@ -2,15 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
-import { MatCard, MatCardModule } from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { ThemeToggleComponent } from '../../../shared/ui/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   imports: [
     MatCardModule,
     MatFormFieldModule,
@@ -19,9 +21,10 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule,
     ReactiveFormsModule,
     CommonModule,
-    RouterLink],
+    RouterLink,
+  ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
@@ -42,7 +45,15 @@ export class LoginComponent implements OnInit {
 
     this.auth.login(this.loginForm.value).subscribe({
       next: (res: any) => {
-        localStorage.setItem('token', res.token);
+        const token = res?.token;
+        if (!token) {
+          return;
+        }
+
+        const role = res?.role ?? res?.user?.role ?? res?.userRole;
+        const user = res?.user ?? res?.profile;
+
+        this.auth.storeUserContext({ token, role, user });
         this.router.navigate(['/dashboard']);
       },
       error: (err: any) => {

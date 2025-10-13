@@ -77,26 +77,28 @@ Using these primitives keeps login, register, and future pages visually aligned 
 
 ## Dashboard experience
 
-The dashboard (`src/app/pages/dashboard`) ships as a standalone component that consumes the shared button directive and `AuthService`. It presents:
+The dashboard (`src/app/pages/dashboard`) is a standalone component that now pulls real data from the ASP.NET backend via `DashboardService`. It presents:
 
-- A hero card greeting the authenticated user with quick actions.
-- Metric cards for revenue, invoices, projects, and new clients.
-- A custom SVG line chart visualising the last 7 months of revenue (no external charting dependency).
-- A conic-gradient donut illustrating invoice payment health, with legend details.
-- Recent activity feed, team presence list, and actionable quick links.
+- Metric cards for revenue, active projects, outstanding invoices, and delivery time deltas.
+- A custom SVG bar chart that normalises the last six months of revenue.
+- Pipeline insights generated from project counts per client.
+- The latest client, project, and invoice activities with timestamps and avatars.
+- A radial workload snapshot that visualises utilisation and per-status ratios.
 
-All layouts are responsive and respect the global theme tokens. Add real data by swapping out the mock arrays in `dashboard.component.ts` with API calls once endpoints are ready.
+All layouts remain responsive and respect the global theme tokens. The component exposes a **Yenile** action that re-fetches data, handles loading and error states, and gracefully degrades when the API returns empty collections.
 
 ## Backend integration
 
-Authentication pages are wired to the ASP.NET API running at `http://localhost:5183` (configured in `app.config.ts`). To point at a different server, change the value provided for the `API_BASE_URL` injection token.
+Authentication pages are wired to the ASP.NET API running at `http://localhost:5183` (see `src/app/core/api.config.ts`). To point at a different server, change the value exported from that module.
 
 Endpoints the frontend calls:
 
 - `POST /api/auth/login` with `{ username, password }` – expects credentials like `admin/admin` in development and returns `{ token, user }`.
 - `POST /api/auth/register` with `{ username, name, surname, email, password, validatePassword }` – creates a new user and returns 200 OK on success.
+- `GET /api/dashboard/overview` – returns the full dashboard payload (summary cards, trend data, pipeline insights, workload snapshot, and activity feed).
+- `GET /api/dashboard/activities` and `GET /api/dashboard/workload` – available for pagination or alternate visualisations if you need finer control than the overview bundle.
 
-The `AuthService` persists returned JWTs and user info in `localStorage`, exposes a `logout()` helper, and unifies error messages surfaced to the UI.
+The `AuthService` persists returned JWTs and user info in `localStorage`, exposes a `logout()` helper, and now provides `getToken()` so other services can attach bearer headers. `DashboardService` (provided in root) centralises dashboard HTTP calls and automatically injects the `Authorization` header based on the stored token.
 
 ## Additional Resources
 

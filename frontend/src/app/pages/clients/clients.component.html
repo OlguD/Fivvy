@@ -1,1 +1,86 @@
-<p>clients works!</p>
+<section class="clients">
+	<header class="clients__toolbar">
+		<h1>Clients</h1>
+		<div class="clients__toolbar-actions">
+			<div class="clients__search">
+				<mat-icon aria-hidden="true">search</mat-icon>
+				<input type="search" placeholder="Search by company or contact" [formControl]="searchControl" />
+			</div>
+			<button mat-stroked-button type="button" (click)="reload()" [disabled]="isLoading">
+				<mat-icon aria-hidden="true">refresh</mat-icon>
+				Reload
+			</button>
+			<button mat-raised-button color="primary" class="clients__add-btn" type="button" (click)="openCreateDialog()" [disabled]="isLoading">
+				<mat-icon aria-hidden="true">person_add</mat-icon>
+				New client
+			</button>
+		</div>
+	</header>
+
+	<div *ngIf="error" class="clients__error">
+		<mat-icon aria-hidden="true">error</mat-icon>
+		<span>{{ error }}</span>
+		<button mat-stroked-button type="button" (click)="reload()">Retry</button>
+	</div>
+
+	<ng-container *ngIf="!isLoading; else loadingState">
+		<ng-container *ngIf="filteredClients.length; else emptyState">
+			<table class="clients__table">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Company</th>
+						<th>Contact</th>
+						<th>Email</th>
+						<th>Phone</th>
+						<th>Created</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let client of filteredClients; trackBy: trackByClient" [class.clients__row--busy]="isClientBusy(client.id)">
+						<td>{{ client.id }}</td>
+						<td>{{ client.companyName }}</td>
+						<td>{{ client.contactName }}</td>
+						<td>{{ client.email || '—' }}</td>
+						<td>{{ client.phone || '—' }}</td>
+						<td>{{ client.createdAt ? (client.createdAt | date: 'mediumDate') : '—' }}</td>
+						<td class="clients__actions">
+							<button mat-icon-button type="button" aria-label="Edit client" (click)="openEditDialog(client)" [disabled]="isClientBusy(client.id) || isLoading">
+								<mat-icon aria-hidden="true">edit</mat-icon>
+							</button>
+							<button mat-icon-button type="button" aria-label="Remove client" (click)="confirmRemove(client)" [disabled]="isClientBusy(client.id) || isLoading">
+								<mat-icon aria-hidden="true">delete</mat-icon>
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</ng-container>
+	</ng-container>
+
+	<ng-template #loadingState>
+		<div class="clients__loading">
+			<mat-spinner diameter="48"></mat-spinner>
+			<span>Loading clients…</span>
+		</div>
+	</ng-template>
+
+	<ng-template #emptyState>
+		<div class="clients__empty">
+			<mat-icon aria-hidden="true">groups</mat-icon>
+			<h3>{{ searchControl.value ? 'No clients found' : 'No clients yet' }}</h3>
+			<p>
+				{{
+					searchControl.value
+						? 'Try a different search term.'
+						: 'Add a client to get started.'
+				}}
+			</p>
+			<button mat-raised-button color="primary" class="clients__add-btn" type="button" (click)="openCreateDialog()" *ngIf="!searchControl.value">
+				<mat-icon aria-hidden="true">person_add</mat-icon>
+				Add client
+			</button>
+		</div>
+	</ng-template>
+</section>

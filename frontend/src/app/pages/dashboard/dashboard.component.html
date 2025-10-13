@@ -1,1 +1,142 @@
-<p>dashboard works!</p>
+<div class="dashboard" *ngIf="!loading && !errorMessage; else dashboardState">
+	<section class="dashboard__metrics" *ngIf="summaryStats.length; else emptySummary">
+		<article class="metric-card" *ngFor="let metric of summaryStats">
+			<header class="metric-card__header">
+				<span class="metric-card__label">{{ metric.label }}</span>
+				<span
+					class="metric-card__trend"
+					[ngClass]="{'metric-card__trend--down': metric.trend === 'down'}"
+				>
+					{{ metric.change }}
+				</span>
+			</header>
+			<div class="metric-card__value">{{ metric.value }}</div>
+			<div class="metric-card__spark" [ngClass]="{'metric-card__spark--down': metric.trend === 'down'}"></div>
+		</article>
+	</section>
+
+	<section class="dashboard__grid">
+		<article class="panel panel--revenue">
+			<header class="panel__header">
+				<div>
+					<h2 class="panel__title">Revenue performance</h2>
+					<p class="panel__subtitle">MRR ve pipeline görünümü</p>
+				</div>
+				<button mat-stroked-button type="button" class="panel__action" (click)="reload()">
+					<mat-icon aria-hidden="true">refresh</mat-icon>
+					Yenile
+				</button>
+			</header>
+			<div class="panel__body revenue-chart" *ngIf="revenueChart; else noRevenue">
+				<div class="revenue-chart__canvas">
+					<svg class="revenue-chart__svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+						<defs>
+							<linearGradient [attr.id]="revenueGradientId" x1="0" y1="0" x2="0" y2="1">
+								<stop offset="0%" stop-color="rgba(37, 99, 235, 0.45)"></stop>
+								<stop offset="100%" stop-color="rgba(37, 99, 235, 0)"></stop>
+							</linearGradient>
+						</defs>
+						<path
+							class="revenue-chart__area"
+							[attr.d]="revenueChart.area"
+							[attr.fill]="'url(#' + revenueGradientId + ')'"
+						></path>
+						<path
+							class="revenue-chart__line"
+							[attr.d]="revenueChart.path"
+						></path>
+						<ng-container *ngFor="let point of revenueChart.points">
+							<circle
+								class="revenue-chart__dot"
+								[attr.cx]="point.x"
+								[attr.cy]="point.y"
+								r="1.6"
+							></circle>
+						</ng-container>
+					</svg>
+				</div>
+				<ul class="revenue-chart__axis">
+					<li *ngFor="let point of revenueChart.points">
+						<span class="revenue-chart__axis-label">{{ point.label }}</span>
+						<span class="revenue-chart__axis-value">{{ point.displayValue }}</span>
+					</li>
+				</ul>
+			</div>
+		</article>
+
+		<article class="panel panel--insights">
+			<header class="panel__header">
+				<div>
+					<h2 class="panel__title">Pipeline health</h2>
+					<p class="panel__subtitle">Öncelikli aksiyonlara odaklanın</p>
+				</div>
+			</header>
+			<ul class="insights-list" *ngIf="revenueInsights.length; else noInsights">
+				<li *ngFor="let insight of revenueInsights" class="insight-item">
+					<div>
+						<h3>{{ insight.title }}</h3>
+						<p>{{ insight.meta }}</p>
+					</div>
+					<span>{{ insight.value }}</span>
+				</li>
+			</ul>
+		</article>
+	</section>
+
+	<section class="dashboard__grid dashboard__grid--single">
+		<article class="panel panel--activity">
+			<header class="panel__header">
+				<div>
+					<h2 class="panel__title">Latest activity</h2>
+					<p class="panel__subtitle">Gerçek zamanlı ekip güncellemeleri</p>
+				</div>
+				<button mat-button type="button" class="panel__link" (click)="reload()">
+					Yenile
+					<mat-icon aria-hidden="true">refresh</mat-icon>
+				</button>
+			</header>
+			<ul class="activity-list" *ngIf="activities.length; else noActivities">
+				<li *ngFor="let activity of activities" class="activity-item">
+					<div class="activity-item__avatar">
+						<span>{{ activity.avatar }}</span>
+					</div>
+					<div class="activity-item__content">
+						<h3>{{ activity.title }}</h3>
+						<p>{{ activity.description }}</p>
+					</div>
+					<div class="activity-item__meta">
+						<span class="activity-item__timestamp">{{ activity.timestamp }}</span>
+						<span class="activity-item__chip activity-item__chip--{{ activity.type }}">{{ activity.type }}</span>
+					</div>
+				</li>
+			</ul>
+		</article>
+	</section>
+</div>
+
+<ng-template #dashboardState>
+	<div class="dashboard__state" *ngIf="loading">Veriler yükleniyor...</div>
+	<div class="dashboard__state dashboard__state--error" *ngIf="!loading && errorMessage">
+		<p>{{ errorMessage }}</p>
+		<button mat-stroked-button type="button" (click)="reload()">
+			<mat-icon aria-hidden="true">refresh</mat-icon>
+			Tekrar dene
+		</button>
+	</div>
+</ng-template>
+
+<ng-template #emptySummary>
+	<div class="panel panel--empty">Özet kartı bulunamadı.</div>
+</ng-template>
+
+<ng-template #noRevenue>
+	<p class="panel__empty">Gelir trendi verisi henüz hazır değil.</p>
+</ng-template>
+
+<ng-template #noInsights>
+	<p class="panel__empty">Pipeline içgörüsü bulunamadı.</p>
+</ng-template>
+
+<ng-template #noActivities>
+	<p class="panel__empty">Aktivite kaydı bulunamadı.</p>
+</ng-template>

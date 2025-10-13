@@ -1,5 +1,13 @@
 .auth-layout--register {
-	padding-block: clamp(2rem, 4vw, 4rem);
+	padding-top: clamp(2.6rem, 11vh, 6.5rem);
+	padding-bottom: clamp(2.5rem, 9vh, 5.5rem);
+}
+
+@media (max-height: 760px) {
+	.auth-layout--register {
+		padding-top: clamp(1.6rem, 6.5vh, 3.1rem);
+		padding-bottom: clamp(1.8rem, 6.5vh, 3.8rem);
+	}
 }
 
 .auth-card--split {
@@ -158,7 +166,7 @@
 
 @media (max-width: 600px) {
 	.auth-layout--register {
-		padding: 1.5rem;
+		padding-inline: 1.5rem;
 	}
 
 	.auth-card__content,
