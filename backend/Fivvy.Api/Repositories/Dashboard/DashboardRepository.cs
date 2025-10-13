@@ -39,15 +39,15 @@ public class DashboardRepository : IDashboardRepository
 
         var currentRevenue = invoices
             .Where(i => i.InvoiceDate >= startOfMonth && i.InvoiceDate <= now)
-            .Sum(i => i.Amount);
+            .Sum(i => i.Total);
 
         var previousRevenue = invoices
             .Where(i => i.InvoiceDate >= previousStart && i.InvoiceDate <= previousEnd)
-            .Sum(i => i.Amount);
+            .Sum(i => i.Total);
 
         var outstandingRevenue = invoices
             .Where(i => i.InvoiceDate > now)
-            .Sum(i => i.Amount);
+            .Sum(i => i.Total);
 
         var activeProjects = projects.Count(p => !p.EndDate.HasValue || p.EndDate.Value >= now);
 
@@ -65,7 +65,7 @@ public class DashboardRepository : IDashboardRepository
                 Label = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(g.Key.Month),
                 Value = new DashboardValueModel
                 {
-                    Amount = g.Sum(x => x.Amount),
+                    Amount = g.Sum(x => x.Total),
                     Currency = "TRY"
                 }
             })
@@ -217,7 +217,7 @@ public class DashboardRepository : IDashboardRepository
             .ToList();
 
         var invoiceRecords = await InvoicesForUser(userId)
-            .Select(i => new { i.Id, i.InvoiceNumber, i.InvoiceDate, i.Amount, i.ClientId })
+            .Select(i => new { i.Id, i.InvoiceNumber, i.InvoiceDate, Amount = i.Total, i.ClientId })
             .ToListAsync();
 
         var invoiceEvents = invoiceRecords

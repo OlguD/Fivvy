@@ -10,19 +10,6 @@ public class AppDbContext : DbContext
 
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<InvoiceModel>()
-                .Property(i => i.Amount)
-                .HasPrecision(18, 2); // 18 digit toplam 2 decimal places
-
-        modelBuilder.Entity<UserModel>()
-                .Property(u => u.TotalIncome)
-                .HasPrecision(18, 2);
-    }
-
     public DbSet<UserModel> Users { get; set; }
     public DbSet<ClientModel> Clients { get; set; }
     public DbSet<InvoiceModel> Invoices { get; set; }

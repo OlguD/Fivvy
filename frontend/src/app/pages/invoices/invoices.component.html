@@ -1,1 +1,283 @@
-<p>invoices works!</p>
+<section class="invoices">
+	<header class="invoices__toolbar">
+		<h1>Invoices</h1>
+		<div class="invoices__toolbar-actions">
+			<div class="invoices__search">
+				<mat-icon aria-hidden="true">search</mat-icon>
+				<input
+					type="search"
+					placeholder="Search by number, client or status"
+					[formControl]="searchControl"
+				/>
+			</div>
+			<button mat-stroked-button type="button" (click)="loadData()" [disabled]="isLoading">
+				<mat-icon aria-hidden="true">refresh</mat-icon>
+				Reload
+			</button>
+			<button mat-raised-button color="primary" type="button" (click)="openCreateForm()" [disabled]="isLoading || isSubmitting">
+				<mat-icon aria-hidden="true">note_add</mat-icon>
+				New invoice
+			</button>
+		</div>
+	</header>
+
+	<div *ngIf="error" class="invoices__error">
+		<mat-icon aria-hidden="true">error</mat-icon>
+		<span>{{ error }}</span>
+		<button mat-stroked-button type="button" (click)="loadData()">Retry</button>
+	</div>
+
+	<div class="invoices__body" [class.invoices__body--with-form]="isFormVisible">
+		<div class="invoices__table-panel">
+			<ng-container *ngIf="!isLoading; else loadingState">
+				<ng-container *ngIf="filteredInvoices.length; else emptyState">
+					<table class="invoices__table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Client</th>
+								<th>Status</th>
+								<th>Invoice date</th>
+								<th>Due date</th>
+								<th>Total</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr
+								*ngFor="let invoice of filteredInvoices; trackBy: trackByInvoice"
+								(click)="selectInvoice(invoice)"
+								[class.invoices__row--active]="selectedInvoice?.id === invoice.id"
+							>
+								<td>{{ invoice.invoiceNumber || ('#' + invoice.id) }}</td>
+								<td>{{ getClientName(invoice.clientId) }}</td>
+								<td>
+									<span [class]="statusClass(invoice.status)">{{ statusLabel(invoice.status) }}</span>
+								</td>
+								<td>{{ invoice.invoiceDate | date: 'mediumDate' }}</td>
+								<td>{{ invoice.dueDate | date: 'mediumDate' }}</td>
+								<td>{{ invoice.total | currency: 'TRY':'symbol':'1.0-2' }}</td>
+								<td class="invoices__actions">
+									<button mat-icon-button type="button" aria-label="Edit invoice" (click)="openEditForm(invoice); $event.stopPropagation();" [disabled]="isSubmitting">
+										<mat-icon aria-hidden="true">edit</mat-icon>
+									</button>
+									<button mat-icon-button type="button" aria-label="Delete invoice" (click)="deleteInvoice(invoice); $event.stopPropagation();" [disabled]="isSubmitting">
+										<mat-icon aria-hidden="true">delete</mat-icon>
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</ng-container>
+			</ng-container>
+		</div>
+
+		<aside class="invoices__sidebar">
+			<section *ngIf="isFormVisible" class="invoice-form" [formGroup]="invoiceForm">
+				<header class="invoice-form__header">
+					<h2>{{ formMode === 'create' ? 'Create invoice' : 'Edit invoice' }}</h2>
+					<button mat-icon-button type="button" aria-label="Close form" (click)="closeForm()">
+						<mat-icon aria-hidden="true">close</mat-icon>
+					</button>
+				</header>
+
+				<div class="invoice-form__grid">
+					<label>
+						<span>Invoice number</span>
+						<input type="text" formControlName="invoiceNumber" placeholder="Optional" />
+					</label>
+					<label>
+						<span>Client</span>
+						<select formControlName="clientId">
+							<option [ngValue]="null" disabled>Select client</option>
+							<option *ngFor="let client of clients" [ngValue]="client.id">{{ client.companyName }}</option>
+						</select>
+					</label>
+					<label>
+						<span>Invoice date</span>
+						<input type="date" formControlName="invoiceDate" />
+					</label>
+					<label>
+						<span>Due date</span>
+						<input type="date" formControlName="dueDate" />
+					</label>
+					<label>
+						<span>Status</span>
+						<select formControlName="status">
+							<option *ngFor="let status of statuses" [ngValue]="status.value">{{ status.label }}</option>
+						</select>
+					</label>
+					<label>
+						<span>Tax</span>
+						<input type="number" formControlName="tax" step="0.01" min="0" />
+					</label>
+				</div>
+
+				<div class="invoice-form__line-items">
+					<header>
+						<h3>Line items</h3>
+						<button mat-button type="button" (click)="addLineItem()">
+							<mat-icon aria-hidden="true">add</mat-icon>
+							Add item
+						</button>
+					</header>
+					<div *ngFor="let item of lineItems.controls; let i = index; trackBy: trackByLineItem" class="line-item" [formGroup]="item">
+						<div class="line-item__fields">
+							<label>
+								<span>Description</span>
+								<input type="text" formControlName="description" placeholder="Describe the service" />
+							</label>
+							<label>
+								<span>Quantity</span>
+								<input type="number" formControlName="quantity" step="0.01" min="0" />
+							</label>
+							<label>
+								<span>Unit price</span>
+								<input type="number" formControlName="unitPrice" step="0.01" min="0" />
+							</label>
+						</div>
+						<div class="line-item__meta">
+							<span>Total: {{ getLineItemTotal(item) | currency: 'TRY':'symbol':'1.0-2' }}</span>
+							<button mat-icon-button type="button" aria-label="Remove line item" (click)="removeLineItem(i)">
+								<mat-icon aria-hidden="true">delete</mat-icon>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<label class="invoice-form__notes">
+					<span>Notes</span>
+					<textarea formControlName="notes" rows="3" placeholder="Additional details or payment instructions"></textarea>
+				</label>
+
+				<div class="invoice-form__summary">
+					<div>
+						<span>Subtotal</span>
+						<strong>{{ currentSubTotal() | currency: 'TRY':'symbol':'1.0-2' }}</strong>
+					</div>
+					<div>
+						<span>Tax</span>
+						<strong>{{ (invoiceForm.value.tax ?? 0) | currency: 'TRY':'symbol':'1.0-2' }}</strong>
+					</div>
+					<div>
+						<span>Total</span>
+						<strong>{{ (currentSubTotal() + (invoiceForm.value.tax ?? 0)) | currency: 'TRY':'symbol':'1.0-2' }}</strong>
+					</div>
+				</div>
+
+				<footer class="invoice-form__actions">
+					<button mat-stroked-button type="button" (click)="closeForm()" [disabled]="isSubmitting">Cancel</button>
+					<button mat-raised-button color="primary" type="button" (click)="saveInvoice()" [disabled]="isSubmitting">
+						<mat-icon aria-hidden="true" *ngIf="isSubmitting">hourglass_top</mat-icon>
+						{{ formMode === 'create' ? 'Create' : 'Save changes' }}
+					</button>
+				</footer>
+			</section>
+
+			<section *ngIf="!isFormVisible" class="invoice-details">
+				<ng-container *ngIf="selectedInvoice; else invoicePlaceholder">
+					<header class="invoice-details__header">
+						<div>
+							<h2>{{ selectedInvoice.invoiceNumber || ('Invoice #' + selectedInvoice.id) }}</h2>
+							<span class="invoice-details__client">{{ getClientName(selectedInvoice.clientId) }}</span>
+						</div>
+						<span [class]="statusClass(selectedInvoice.status)">{{ statusLabel(selectedInvoice.status) }}</span>
+					</header>
+
+					<ul class="invoice-details__meta">
+						<li>
+							<span>Invoice date</span>
+							<strong>{{ selectedInvoice.invoiceDate | date: 'mediumDate' }}</strong>
+						</li>
+						<li>
+							<span>Due date</span>
+							<strong>{{ selectedInvoice.dueDate | date: 'mediumDate' }}</strong>
+						</li>
+						<li>
+							<span>Subtotal</span>
+							<strong>{{ selectedInvoice.subTotal | currency: 'TRY':'symbol':'1.0-2' }}</strong>
+						</li>
+						<li>
+							<span>Tax</span>
+							<strong>{{ selectedInvoice.tax | currency: 'TRY':'symbol':'1.0-2' }}</strong>
+						</li>
+						<li>
+							<span>Total</span>
+							<strong>{{ selectedInvoice.total | currency: 'TRY':'symbol':'1.0-2' }}</strong>
+						</li>
+					</ul>
+
+					<div class="invoice-details__line-items" *ngIf="selectedInvoice.lineItems?.length; else noLineItems">
+						<h3>Line items</h3>
+						<table>
+							<thead>
+								<tr>
+									<th>Description</th>
+									<th>Quantity</th>
+									<th>Unit price</th>
+									<th>Total</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr *ngFor="let item of selectedInvoice.lineItems">
+									<td>{{ item.description }}</td>
+									<td>{{ item.quantity }}</td>
+									<td>{{ item.unitPrice | currency: 'TRY':'symbol':'1.0-2' }}</td>
+									<td>{{ item.total | currency: 'TRY':'symbol':'1.0-2' }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<ng-template #noLineItems>
+						<p class="invoice-details__empty">No line items recorded.</p>
+					</ng-template>
+
+					<div class="invoice-details__notes" *ngIf="selectedInvoice.notes">
+						<h3>Notes</h3>
+						<p>{{ selectedInvoice.notes }}</p>
+					</div>
+				</ng-container>
+
+				<ng-template #invoicePlaceholder>
+					<div class="invoice-details__placeholder">
+						<mat-icon aria-hidden="true">description</mat-icon>
+						<h3>Select an invoice</h3>
+						<p>Choose a row from the table to view its details.</p>
+					</div>
+				</ng-template>
+			</section>
+		</aside>
+	</div>
+
+	<ng-template #loadingState>
+		<div class="invoices__loading">
+			<mat-spinner diameter="48"></mat-spinner>
+			<span>Loading invoices…</span>
+		</div>
+	</ng-template>
+
+	<ng-template #emptyState>
+		<div class="invoices__empty">
+			<mat-icon aria-hidden="true">request_page</mat-icon>
+			<h3>{{ searchControl.value ? 'No invoices found' : 'No invoices yet' }}</h3>
+			<p>
+				{{
+					searchControl.value
+						? 'Try a different search term.'
+						: 'Create an invoice to track your work.'
+				}}
+			</p>
+			<button
+				mat-raised-button
+				color="primary"
+				type="button"
+				(click)="openCreateForm()"
+				*ngIf="!searchControl.value"
+			>
+				<mat-icon aria-hidden="true">note_add</mat-icon>
+				Create invoice
+			</button>
+		</div>
+	</ng-template>
+</section>

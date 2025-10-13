@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Fivvy.Api.Helpers;
 using System.Security.Claims;
 using Fivvy.Api.Models.RequestModels;
+using System.Linq;
 
 namespace Fivvy.Api.Repositories;
 
@@ -216,10 +217,22 @@ public class UserRepository : IUserRepository
 
     public async Task UpsertRefreshTokenAsync(int userId, string rawToken, string? createdByIp)
     {
-        var token = await _context.RefreshTokens.SingleOrDefaultAsync(
-            t => t.UserId == userId && !t.RevokeAt.HasValue
-        );
+        var activeTokens = await _context.RefreshTokens
+            .Where(t => t.UserId == userId && !t.RevokeAt.HasValue)
+            .OrderByDescending(t => t.CreatedAt)
+            .ToListAsync();
+
+        var token = activeTokens.FirstOrDefault();
         var hashed = RefreshTokenHelper.HashToken(rawToken);
+
+        if (activeTokens.Count > 1)
+        {
+            foreach (var stale in activeTokens.Skip(1))
+            {
+                stale.RevokeAt = DateTime.UtcNow;
+                stale.ReplacedByToken = hashed;
+            }
+        }
 
         if (token is null)
         {
