@@ -9,6 +9,7 @@ public class ProjectUpdateRequestModel
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public int ClientId { get; set; }
+    public double ProjectPrice { get; set; }
 
     public int ProjectId { get; set; }
 }

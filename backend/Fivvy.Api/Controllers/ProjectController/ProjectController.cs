@@ -48,8 +48,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPost("add-project")]
-    [Authorize]
-    // TODO AddProjectRequestModel'i entegre et. Burada sorun var. 
+    [Authorize] 
     public async Task<IActionResult> AddProject([FromBody] AddProjectRequestModel request)
     {
         try
@@ -65,7 +64,8 @@ public class ProjectController : ControllerBase
                 Description = request.Description,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate,
-                ClientId = request.ClientId
+                ClientId = request.ClientId,
+                ProjectPrice = request.ProjectPrice
             };
 
             if (await _projectRepository.AddProjectAsync(newProjectModel, token))
@@ -105,7 +105,8 @@ public class ProjectController : ControllerBase
                 Description = request.Description,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate,
-                ClientId = request.ClientId
+                ClientId = request.ClientId,
+                ProjectPrice = request.ProjectPrice
             };
 
             if (await _projectRepository.UpdateProjectAsync(request.ProjectId, token, updateProject))

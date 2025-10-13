@@ -27,5 +27,5 @@ public class AppDbContext : DbContext
     public DbSet<ClientModel> Clients { get; set; }
     public DbSet<InvoiceModel> Invoices { get; set; }
     public DbSet<ProjectModel> Projects { get; set; }
-
+    public DbSet<UserRefreshToken> RefreshTokens { get; set; } = default!;
 }

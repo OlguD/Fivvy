@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Fivvy.Api.Helpers;
 using System.Security.Claims;
 using Fivvy.Api.Models.RequestModels;
-using Fivvy.Api.Utils;
 
 namespace Fivvy.Api.Repositories;
 
@@ -150,7 +149,7 @@ public class UserRepository : IUserRepository
         try
         {
             var userId = ExtractUserIdFromToken(token);
-            
+
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
@@ -159,16 +158,10 @@ public class UserRepository : IUserRepository
                 throw new UserNotFoundException();
             }
 
-            if (!ValidatePassword.validatePassword(updateUser.Password, updateUser.PasswordVerify))
-            {
-                throw new InvalidOperationException("Password must be the same");
-            }
-
             user.Username = updateUser.Username;
             user.Name = updateUser.Name;
             user.Surname = updateUser.Surname;
             user.Email = updateUser.Email;
-            user.Password = BCrypt.Net.BCrypt.HashPassword(updateUser.Password);
 
             await _context.SaveChangesAsync();
 
@@ -179,5 +172,119 @@ public class UserRepository : IUserRepository
         {
             throw new Exception("Profile update failed", error);
         }
+    }
+
+    public async Task<bool> UpdatePasswordAsync(string token, UpdatePasswordRequestModel request)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            throw new UnauthorizedAccessException("Token can not be empty");
+        }
+
+        if (request == null)
+        {
+            throw new ArgumentNullException(nameof(request));
+        }
+
+        if (string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.ConfirmPassword))
+        {
+            throw new InvalidOperationException("Password fields can not be empty");
+        }
+
+        if (!string.Equals(request.NewPassword, request.ConfirmPassword, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("Passwords must match");
+        }
+
+        var userId = ExtractUserIdFromToken(token);
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+            throw new UserNotFoundException();
+        }
+
+        user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+
+    // Refresh token//
+
+    public async Task UpsertRefreshTokenAsync(int userId, string rawToken, string? createdByIp)
+    {
+        var token = await _context.RefreshTokens.SingleOrDefaultAsync(
+            t => t.UserId == userId && !t.RevokeAt.HasValue
+        );
+        var hashed = RefreshTokenHelper.HashToken(rawToken);
+
+        if (token is null)
+        {
+            token = new UserRefreshToken
+            {
+                UserId = userId,
+                TokenHash = hashed,
+                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                CreatedByIp = createdByIp
+            };
+            _context.RefreshTokens.Add(token);
+        }
+        else
+        {
+            token.TokenHash = hashed;
+            token.ExpiresAt = DateTime.UtcNow.AddDays(7);
+            token.CreatedAt = DateTime.UtcNow;
+            token.CreatedByIp = createdByIp;
+            token.RevokeAt = null;
+            token.ReplacedByToken = null;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+
+    public async Task<UserRefreshToken?> ValidateRefreshTokenAsync(string rawToken)
+    {
+        var hash = RefreshTokenHelper.HashToken(rawToken);
+        return await _context.RefreshTokens
+            .Include(t => t.User)
+            .SingleOrDefaultAsync(t => t.TokenHash == hash && !t.RevokeAt.HasValue);
+    }
+
+    public async Task RotateRefreshTokenAsync(int userId, string oldToken, string newToken)
+    {
+        var oldHash = RefreshTokenHelper.HashToken(oldToken);
+        var entity = await _context.RefreshTokens.SingleOrDefaultAsync(
+            t => t.UserId == userId && t.TokenHash == oldHash
+        );
+
+        if (entity is null)
+        {
+            return;
+        }
+
+        var replacement = new UserRefreshToken
+        {
+            UserId = userId,
+            TokenHash = RefreshTokenHelper.HashToken(newToken),
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            CreatedByIp = entity.CreatedByIp
+        };
+        _context.RefreshTokens.Add(replacement);
+
+        await _context.SaveChangesAsync();
+    }
+    
+    public async Task RevokeRefreshTokenAsync(string rawToken)
+    {
+        var hash = RefreshTokenHelper.HashToken(rawToken);
+        var entity = await _context.RefreshTokens.SingleOrDefaultAsync(t => t.TokenHash == hash);
+        if (entity is null) return;
+
+        entity.RevokeAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
     }
 }

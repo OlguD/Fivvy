@@ -61,7 +61,8 @@ public class ProjectRepository : IProjectRepository
                 Description = projectModel.Description,
                 StartDate = projectModel.StartDate,
                 EndDate = projectModel.EndDate,
-                ClientId = projectModel.ClientId
+                ClientId = projectModel.ClientId,
+                ProjectPrice = projectModel.ProjectPrice
             };
 
             _context.Projects.Add(newProject);
@@ -109,13 +110,13 @@ public class ProjectRepository : IProjectRepository
 
             var ownsProject = await _context.Clients.AnyAsync(c => c.Id == project.ClientId && c.UserId == userId);
 
-            // TODO buralara exception olarak user not have this project exception'i eklenebilir.
             if (!ownsProject) throw new ForbiddenProjectAccessException();
 
             project.ProjectName = projectModel.ProjectName;
             project.Description = projectModel.Description;
             project.StartDate = projectModel.StartDate;
             project.EndDate = projectModel.EndDate;
+            project.ProjectPrice = projectModel.ProjectPrice;
 
             await _context.SaveChangesAsync();
             return true;

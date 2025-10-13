@@ -58,4 +58,25 @@ public class ProfileController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+
+    [HttpPut("me/update-password")]
+    [Authorize]
+    public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequestModel request)
+    {
+        try
+        {
+            if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
+            {
+                return Unauthorized("Token not found");
+            }
+
+            await _userRepository.UpdatePasswordAsync(token, request);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

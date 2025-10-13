@@ -11,4 +11,5 @@ public class AddProjectRequestModel
     // public int ClientId { get; set; }
     // public ClientModel? Client { get; set; }
     public required int ClientId { get; set; }
+    public double ProjectPrice { get; set; }
 }

@@ -19,4 +19,6 @@ public class ProjectModel
 
     [NotMapped]
     public bool IsActive => !EndDate.HasValue || EndDate.Value >= DateTime.UtcNow;
+
+    public double ProjectPrice { get; set; }
 }
