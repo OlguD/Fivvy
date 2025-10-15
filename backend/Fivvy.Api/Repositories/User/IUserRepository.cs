@@ -10,6 +10,7 @@ public interface IUserRepository
     Task<UserModel> GetUserById(int userId);
     int ExtractUserIdFromToken(string token);
     Task<bool> UpdatePasswordAsync(string token, UpdatePasswordRequestModel request);
+    Task<bool> UpdateProfileImagePathAsync(string token, string profileImagePath);
 
     Task UpsertRefreshTokenAsync(int userId, string rawToken, string? createdByIp);
     Task<UserRefreshToken?> ValidateRefreshTokenAsync(string rawToken);

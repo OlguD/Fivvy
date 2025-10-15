@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Fivvy.Api.Helpers;
 using Fivvy.Api.Repositories.Invoice;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,6 +90,8 @@ builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<JwtHelper>();
 
 builder.Services.AddControllers();
+
+// CORS - Frontend portuna izin ver
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -99,6 +102,7 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
+
 
 var app = builder.Build();
 
@@ -114,10 +118,31 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// DOĞRU SIRALAMA - Bu çok önemli!
+// CORS EN BAŞTA
 app.UseCors("AllowFrontend");
-app.UseAuthentication();  // Önce authentication
-app.UseAuthorization();   // Sonra authorization
-app.MapControllers();     // En son controllers
+
+// Statik dosya sunumu - Authentication/Authorization olmadan
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+            Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profile-images")),
+    RequestPath = "/profile-images",
+    ServeUnknownFileTypes = true,
+    DefaultContentType = "image/jpeg",
+    OnPrepareResponse = ctx =>
+    {
+        // CORS header'larını her response'a ekle
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:4200");
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, OPTIONS");
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Headers", "*");
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+    }
+});
+
+app.UseStaticFiles(); // Default wwwroot için
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();

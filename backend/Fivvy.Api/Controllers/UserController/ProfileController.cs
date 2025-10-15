@@ -79,4 +79,44 @@ public class ProfileController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+
+    [HttpPost("me/upload-profile-picture")]
+    [Authorize]
+    public async Task<IActionResult> UploadProfilePicture([FromForm] IFormFile file)
+    {
+        try
+        {
+            if (!AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token))
+            {
+                return Unauthorized("Token not found");
+            }
+
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded");
+            }
+
+            // Dosya kaydetme yolu
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profile-images");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = $"user_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // URL veya yol olarak kaydet (ör: /profile-images/filename.jpg)
+            var relativePath = $"/profile-images/{fileName}";
+            await _userRepository.UpdateProfileImagePathAsync(token, relativePath);
+            return Ok(new { path = relativePath });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

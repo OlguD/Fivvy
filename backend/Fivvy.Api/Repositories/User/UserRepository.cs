@@ -212,6 +212,30 @@ public class UserRepository : IUserRepository
         return true;
     }
 
+    public async Task<bool> UpdateProfileImagePathAsync(string token, string profileImagePath)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                throw new UnauthorizedAccessException("Token can not be empty");
+            }
+            var userId = ExtractUserIdFromToken(token);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                throw new UserNotFoundException();
+            }
+            user.ProfileImagePath = profileImagePath;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
 
     // Refresh token//
 
