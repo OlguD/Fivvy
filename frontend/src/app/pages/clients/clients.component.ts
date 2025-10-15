@@ -15,6 +15,7 @@ import {
   ClientFormDialogResult
 } from './dialogs/client-form-dialog/client-form-dialog.component';
 import { ClientRemoveDialogComponent } from './dialogs/client-remove-dialog/client-remove-dialog.component';
+import { DataTableComponent, DataTableColumn, DataTableAction } from '../../shared/components/data-table/data-table.component';
 
 @Component({
   selector: 'app-clients',
@@ -26,7 +27,8 @@ import { ClientRemoveDialogComponent } from './dialogs/client-remove-dialog/clie
     MatButtonModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    DataTableComponent
   ],
   templateUrl: './clients.component.html',
   styleUrls: ['./clients.component.css']
@@ -39,6 +41,25 @@ export class ClientsComponent implements OnInit, OnDestroy {
 
   isLoading = false;
   error: string | null = null;
+
+  readonly tableColumns: DataTableColumn<ClientDto>[] = [
+    { key: 'id', label: 'ID' },
+    { key: 'companyName', label: 'Company' },
+    { key: 'contactName', label: 'Contact' },
+    { key: 'email', label: 'Email' },
+    { key: 'phone', label: 'Phone' },
+    { key: 'createdAt', label: 'Created', type: 'date' }
+  ];
+
+  readonly tableActions: DataTableAction<ClientDto>[] = [
+    {
+      label: 'Remove client',
+      icon: 'delete',
+      action: (client) => this.confirmRemove(client),
+      disabled: (client) => this.isClientBusy(client.id),
+      ariaLabel: (client) => `Remove client ${client.companyName}`
+    }
+  ];
 
   private readonly destroy$ = new Subject<void>();
   private readonly busyClients = new Set<number>();
@@ -66,6 +87,19 @@ export class ClientsComponent implements OnInit, OnDestroy {
 
   isClientBusy(clientId: number): boolean {
     return this.busyClients.has(clientId);
+  }
+
+  isItemBusy = (client: ClientDto): boolean => {
+    return this.isClientBusy(client.id);
+  };
+
+  getRowClass = (client: ClientDto): string => {
+    return 'clients__row';
+  };
+
+  onRowClick(client: ClientDto): void {
+    // Row click handling can be added here if needed
+    // For now, clients don't have row click functionality
   }
 
   reload(): void {

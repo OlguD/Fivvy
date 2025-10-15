@@ -10,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { finalize, take } from 'rxjs';
 import { ProfileService, UpdatePasswordPayload, UpdateProfilePayload, UserProfile } from '../../core/profile.service';
+import { environment } from '../../../environments/environment';
 
 interface ProfilePreference {
   key: string;
@@ -47,6 +48,49 @@ const passwordMatchValidator: ValidatorFn = (control: AbstractControl): Validati
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
+  profileImagePreview: string | null = null;
+  profileImageFromApi: string | null = null;
+  selectedProfileImageFile: File | null = null;
+  isUploadingProfileImage = signal(false);
+  onProfileImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+    const file = input.files[0];
+    this.selectedProfileImageFile = file;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.profileImagePreview = reader.result as string;
+      // Dosya seçildiğinde otomatik yükle
+      this.uploadProfileImage();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  uploadProfileImage(): void {
+    if (!this.selectedProfileImageFile) {
+      return;
+    }
+    this.isUploadingProfileImage.set(true);
+    this.profileService.uploadProfilePicture(this.selectedProfileImageFile)
+      .pipe(
+        take(1),
+        finalize(() => this.isUploadingProfileImage.set(false))
+      )
+      .subscribe({
+        next: (res) => {
+          // Profil güncellendi, tekrar çek
+          this.loadProfile();
+          // AppShellComponent'taki profil de güncellensin diye event fırlat
+          window.dispatchEvent(new CustomEvent('profileImageUpdated'));
+        },
+        error: error => {
+          alert('Profil fotoğrafı güncellenemedi.');
+          console.error('Profile image update failed', error);
+        }
+      });
+  }
   readonly initials = signal<string>('--');
   readonly fullName = signal<string>('Loading user...');
   readonly planBadge = signal<string>('Member');
@@ -155,6 +199,20 @@ export class ProfileComponent implements OnInit {
         next: user => {
           this.applyProfile(user);
           this.initialProfileData = this.profileForm.getRawValue() as ProfileFormValue;
+          // API'den gelen profil fotoğrafını ayrı tut
+          if (user.profileImagePath) {
+            // Eğer backend yol döndürüyorsa tam URL oluştur
+            const backendBaseUrl = environment.backendBaseUrl;
+            this.profileImageFromApi = user.profileImagePath.startsWith('http')
+              ? user.profileImagePath
+              : `${backendBaseUrl}${user.profileImagePath}`;
+          } else {
+            this.profileImageFromApi = null;
+          }
+          // Eğer kullanıcı yeni bir resim seçmediyse, preview'u da API'den gelenle güncelle
+          if (!this.profileImagePreview) {
+            this.profileImagePreview = this.profileImageFromApi;
+          }
         },
         error: error => {
           console.error('Profile retrieval failed', error);

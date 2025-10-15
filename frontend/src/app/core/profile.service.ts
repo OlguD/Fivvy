@@ -1,3 +1,4 @@
+// Artık kullanılmıyor, dosya upload edilecek
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -12,6 +13,7 @@ export interface UserProfile {
   email: string;
   role: string;
   createdAt: string;
+  profileImagePath?: string | null;
 }
 
 export interface UpdateProfilePayload {
@@ -49,6 +51,15 @@ export class ProfileService {
 
   updatePassword(payload: UpdatePasswordPayload): Observable<void> {
     return this.http.put<void>(`${this.profileUrl}/me/update-password`, payload, {
+      headers: this.createAuthHeaders()
+    });
+  }
+
+
+  uploadProfilePicture(file: File): Observable<{ path: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ path: string }>(`${this.profileUrl}/me/upload-profile-picture`, formData, {
       headers: this.createAuthHeaders()
     });
   }

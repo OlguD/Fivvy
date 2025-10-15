@@ -1,9 +1,14 @@
 <section class="profile">
 	<header class="profile__header">
 		<div class="profile__identity">
-			<div class="profile__avatar" matTooltip="Upload a new photo soon">
-				{{ initials() }}
-			</div>
+							<div class="profile__avatar" matTooltip="Profil fotoğrafı yükle"
+									 (click)="fileInput.click()" style="cursor:pointer;">
+								<input #fileInput type="file" accept="image/*" (change)="onProfileImageSelected($event)" style="display:none" />
+								<ng-container *ngIf="profileImagePreview || profileImageFromApi; else initialsBlock">
+									<img [src]="profileImagePreview || profileImageFromApi" alt="Profile" />
+								</ng-container>
+								<ng-template #initialsBlock>{{ initials() }}</ng-template>
+							</div>
 			<div class="profile__identity-meta">
 				<h1>{{ fullName() }}</h1>
 				<p>{{ planBadge() }} · {{ joinDate() }}</p>
@@ -12,6 +17,7 @@
 						<mat-chip *ngFor="let tag of expertiseTags" selected>{{ tag }}</mat-chip>
 					</mat-chip-set>
 				</div>
+				<!-- Profil fotoğrafı yükleme alanı kaldırıldı, avatar tıklanınca açılıyor -->
 			</div>
 		</div>
 		<div class="profile__header-actions">

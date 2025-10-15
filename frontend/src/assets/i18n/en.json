@@ -1,0 +1,224 @@
+{
+  "app": {
+    "brand": {
+      "name": "Fivvy",
+      "tagline": "Project OS"
+    },
+    "actions": {
+      "logout": "Logout",
+      "language": "Language",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "close": "Close",
+      "save": "Save",
+      "create": "Create",
+      "update": "Update",
+      "retry": "Retry",
+      "reload": "Reload",
+      "add": "Add",
+      "dismiss": "Dismiss",
+      "ok": "OK"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "clients": "Clients",
+    "projects": "Projects",
+    "admin": "Admin",
+    "invoices": "Invoices",
+    "profile": "Profile"
+  },
+  "language": {
+    "toggle": "TR / EN",
+    "current": {
+      "en": "English",
+      "tr": "Türkçe"
+    }
+  },
+  "pageMeta": {
+    "dashboard": {
+      "title": "Overview",
+      "subtitle": "Stay on top of your pipeline, revenue and workload."
+    },
+    "clients": {
+      "title": "Clients",
+      "subtitle": "Client health, billing status and engagement signals."
+    },
+    "projects": {
+      "title": "Projects",
+      "subtitle": "Track delivery, timelines and project ownership."
+    },
+    "admin": {
+      "title": "Admin console",
+      "subtitle": "Manage workspaces, trials and platform access."
+    },
+    "invoices": {
+      "title": "Invoices",
+      "subtitle": "Revenue performance, unpaid balances and cash flow."
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Manage your workspace preferences and security."
+    }
+  },
+  "pages": {
+    "projects": {
+      "title": "Projects",
+      "subtitle": "View and manage project records.",
+      "search": {
+        "placeholder": "Search by project name, client or status"
+      },
+      "actions": {
+        "create": "New project",
+        "delete": "Delete project",
+        "update": "Update project",
+        "confirmDelete": "Delete project",
+        "cancel": "Cancel",
+        "retry": "Try again",
+        "reload": "Reload"
+      },
+      "states": {
+        "loading": "Loading projects…",
+        "error": "An unexpected error occurred while loading projects.",
+        "emptyTitle": "No projects yet.",
+        "emptyDescription": "Use \"New project\" to create your first project.",
+        "noResults": "No projects found",
+        "noResultsDescription": "Try a different search term."
+      },
+      "table": {
+        "name": "Project name",
+        "client": "Client",
+        "start": "Start",
+        "end": "End",
+        "status": "Status",
+        "price": "Amount",
+        "description": "Description",
+        "actions": "Actions"
+      },
+        "fallback": {
+          "client": "Client #{{id}}"
+        },
+      "status": {
+        "planned": "Planned",
+        "inProgress": "In progress",
+        "completed": "Completed"
+      },
+      "notifications": {
+        "createSuccess": "Project created successfully.",
+        "updateSuccess": "Project updated.",
+        "deleteSuccess": "Project deleted.",
+        "deleteError": "An unexpected error occurred while deleting the project."
+      },
+      "errors": {
+        "unexpected": "An unexpected error occurred while loading projects.",
+        "unauthorized": "Please sign in to view projects.",
+        "forbidden": "You don’t have permission to view projects.",
+        "save": "Something went wrong while saving the project.",
+        "clients": "Client list could not be loaded. Please try again later."
+      },
+      "dialog": {
+        "deleteTitle": "Delete project",
+        "deleteQuestion": "Are you sure you want to delete the project \"{{projectName}}\"?",
+        "deleteWarning": "This action can’t be undone and the project data will be permanently removed.",
+        "createTitle": "Create project",
+        "editTitle": "Edit project",
+        "submitCreate": "Create project",
+        "submitUpdate": "Update project"
+      },
+      "form": {
+        "projectName": "Project name",
+        "projectNamePlaceholder": "e.g. Platform integration",
+        "projectNameRequired": "Project name is required.",
+        "description": "Description",
+        "descriptionPlaceholder": "Summarize the scope to be delivered",
+        "price": "Project amount",
+        "priceRequired": "Project amount is required.",
+        "priceMin": "Project amount cannot be negative.",
+        "client": "Client",
+        "clientRequired": "Please select a client.",
+        "startDate": "Start date",
+        "startDateRequired": "Start date is required.",
+        "endDate": "Delivery date",
+        "dateRangeError": "Delivery date can’t be before the start date.",
+        "saveError": "Something went wrong while saving the project."
+      }
+    },
+    "clients": {
+      "title": "Clients",
+      "searchPlaceholder": "Search by company or contact",
+      "actions": {
+        "reload": "Reload",
+        "new": "New client",
+        "add": "Add client"
+      },
+      "table": {
+        "id": "ID",
+        "company": "Company",
+        "contact": "Contact",
+        "email": "Email",
+        "phone": "Phone",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "states": {
+        "loading": "Loading clients…",
+        "emptyTitle": "No clients yet",
+        "emptySearchTitle": "No clients found",
+        "emptyDescription": "Add a client to get started.",
+        "emptySearchDescription": "Try a different search term."
+      },
+      "messages": {
+        "retry": "Retry"
+      },
+      "errors": {
+        "generic": "Something went wrong. Please try again."
+      },
+      "notifications": {
+        "createSuccess": "Client created successfully",
+        "updateSuccess": "Client updated",
+        "removeSuccess": "Client removed",
+        "removeError": "Unable to remove client. Please try again."
+      },
+      "dialogs": {
+        "form": {
+          "createTitle": "Add new client",
+          "editTitle": "Update client details",
+          "companyLabel": "Company name",
+          "companyRequired": "Company name is required",
+          "contactLabel": "Primary contact",
+          "contactRequired": "Contact name is required",
+          "emailLabel": "Email",
+          "emailInvalid": "Enter a valid email address",
+          "phoneLabel": "Phone",
+          "addressLabel": "Address",
+          "cancel": "Cancel",
+          "createAction": "Create client",
+          "updateAction": "Save changes",
+          "error": "Unable to save client. Please try again.",
+          "dismiss": "Dismiss"
+        },
+        "remove": {
+          "title": "Remove client",
+          "message": "Are you sure you want to remove {{client}}? This will unlink their projects and invoices.",
+          "confirm": "Remove",
+          "cancel": "Cancel"
+        }
+      }
+    },
+    "auth": {
+      "login": {
+        "welcome": "Welcome to Fivvy 👋",
+        "subtitle": "Sign in with your account to access the control panel.",
+        "username": "Username",
+        "usernameRequired": "Username is required.",
+        "password": "Password",
+        "passwordRequired": "Password is required.",
+        "rememberMe": "Remember me",
+        "forgot": "Forgot my password",
+        "submit": "Login",
+        "noAccount": "Don't have an account?",
+        "register": "Register"
+      }
+    }
+  }
+}

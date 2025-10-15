@@ -42,6 +42,24 @@ section.invoices {
 	min-width: 220px;
 }
 
+.invoices__search {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 12px;
+	height: 40px;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 8px;
+	background: var(--mat-sys-surface-container-low, #fff);
+}
+
+.invoices__search input {
+	border: none;
+	outline: none;
+	background: transparent;
+	min-width: 220px;
+}
+
 .invoices__body {
 	display: grid;
 	grid-template-columns: 2fr minmax(320px, 1fr);
@@ -60,42 +78,20 @@ section.invoices {
 	overflow: auto;
 }
 
-.invoices__table {
-	width: 100%;
-	border-collapse: collapse;
-	font-size: 0.875rem;
-	line-height: 1.4;
+.invoices__table-panel--wide {
+	overflow-x: auto;
 }
 
-.invoices__table thead {
-	text-align: left;
-	font-size: 0.8125rem;
-	color: rgba(15, 23, 42, 0.6);
-}
-
-.invoices__table th,
-.invoices__table td {
-	padding: 16px 20px;
-	border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-}
-
-.invoices__table tbody tr {
-	transition: background-color 0.2s ease;
-	cursor: pointer;
-}
-
-.invoices__table tbody tr:hover {
-	background-color: rgba(15, 23, 42, 0.04);
-}
-
-.invoices__row--active {
-	background-color: rgba(59, 130, 246, 0.08);
-}
-
-.invoices__actions {
-	display: flex;
-	justify-content: flex-end;
-	gap: 4px;
+.invoices__status {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 3px 10px;
+	border-radius: 999px;
+	background: #eef2ff;
+	color: #4338ca;
+	font-size: 0.75rem;
+	font-weight: 500;
 }
 
 .invoices__sidebar {

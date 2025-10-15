@@ -1,0 +1,31 @@
+<table class="data-table">
+  <thead>
+    <tr>
+      <th *ngFor="let column of columns">{{ column.label }}</th>
+      <th *ngIf="actions.length" class="data-table__actions-header"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      *ngFor="let item of data; trackBy: trackByFn"
+      class="data-table__row"
+      [class]="rowClassFn ? rowClassFn(item) : ''"
+      [class.data-table__row--busy]="isItemBusyFn && isItemBusyFn(item)"
+      (click)="onRowClick(item)"
+    >
+      <td *ngFor="let column of columns">{{ getCellValue(item, column) }}</td>
+      <td *ngIf="actions.length" class="data-table__actions">
+        <button
+          *ngFor="let action of actions"
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="getActionAriaLabel(action, item)"
+          [disabled]="isActionDisabled(action, item) || isLoading"
+          (click)="action.action(item); $event.stopPropagation()"
+        >
+          <mat-icon aria-hidden="true">{{ action.icon }}</mat-icon>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

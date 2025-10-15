@@ -15,73 +15,35 @@
 		</article>
 	</section>
 
-	<section class="dashboard__grid">
-		<article class="panel panel--revenue">
-			<header class="panel__header">
-				<div>
-					<h2 class="panel__title">Revenue performance</h2>
-					<p class="panel__subtitle">MRR ve pipeline görünümü</p>
-				</div>
-				<button mat-stroked-button type="button" class="panel__action" (click)="reload()">
-					<mat-icon aria-hidden="true">refresh</mat-icon>
-					Yenile
-				</button>
-			</header>
-			<div class="panel__body revenue-chart" *ngIf="revenueChart; else noRevenue">
-				<div class="revenue-chart__canvas">
-					<svg class="revenue-chart__svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-						<defs>
-							<linearGradient [attr.id]="revenueGradientId" x1="0" y1="0" x2="0" y2="1">
-								<stop offset="0%" stop-color="rgba(37, 99, 235, 0.45)"></stop>
-								<stop offset="100%" stop-color="rgba(37, 99, 235, 0)"></stop>
-							</linearGradient>
-						</defs>
-						<path
-							class="revenue-chart__area"
-							[attr.d]="revenueChart.area"
-							[attr.fill]="'url(#' + revenueGradientId + ')'"
-						></path>
-						<path
-							class="revenue-chart__line"
-							[attr.d]="revenueChart.path"
-						></path>
-						<ng-container *ngFor="let point of revenueChart.points">
-							<circle
-								class="revenue-chart__dot"
-								[attr.cx]="point.x"
-								[attr.cy]="point.y"
-								r="1.6"
-							></circle>
-						</ng-container>
-					</svg>
-				</div>
-				<ul class="revenue-chart__axis">
-					<li *ngFor="let point of revenueChart.points">
-						<span class="revenue-chart__axis-label">{{ point.label }}</span>
-						<span class="revenue-chart__axis-value">{{ point.displayValue }}</span>
-					</li>
-				</ul>
-			</div>
-		</article>
-
-		<article class="panel panel--insights">
-			<header class="panel__header">
-				<div>
-					<h2 class="panel__title">Pipeline health</h2>
-					<p class="panel__subtitle">Öncelikli aksiyonlara odaklanın</p>
-				</div>
-			</header>
-			<ul class="insights-list" *ngIf="revenueInsights.length; else noInsights">
-				<li *ngFor="let insight of revenueInsights" class="insight-item">
+		<section class="dashboard__grid dashboard__grid--single">
+			<article class="panel panel--revenue panel--revenue-large">
+				<header class="panel__header">
 					<div>
-						<h3>{{ insight.title }}</h3>
-						<p>{{ insight.meta }}</p>
+						<h2 class="panel__title">Revenue performance</h2>
+						<p class="panel__subtitle">MRR ve pipeline görünümü</p>
 					</div>
-					<span>{{ insight.value }}</span>
-				</li>
-			</ul>
-		</article>
-	</section>
+					<button mat-stroked-button type="button" class="panel__action" (click)="reload()">
+						<mat-icon aria-hidden="true">refresh</mat-icon>
+						Yenile
+					</button>
+				</header>
+						<div class="panel__body revenue-bar-chart" *ngIf="revenueTrend.length; else noRevenue">
+							<div class="bar-chart">
+								<div class="bar-chart__bars">
+									<div *ngFor="let point of revenueTrend; let i = index"
+											 class="bar-chart__bar-group">
+										<div class="bar-chart__bar"
+												 [style.height.%]="getBarHeight(point)"
+												 [attr.title]="point.displayValue">
+											<span class="bar-chart__value">{{ point.displayValue }}</span>
+										</div>
+										<div class="bar-chart__label">{{ point.label }}</div>
+									</div>
+								</div>
+							</div>
+						</div>
+			</article>
+		</section>
 
 	<section class="dashboard__grid dashboard__grid--single">
 		<article class="panel panel--activity">

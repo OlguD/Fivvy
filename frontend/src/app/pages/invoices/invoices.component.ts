@@ -1,15 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Inject } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { forkJoin, Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { ClientsService } from '../clients/clients.service';
 import { ClientDto } from '../clients/clients.types';
 import { InvoicesService } from './invoices.service';
 import { InvoiceDto, InvoiceStatus, SaveInvoicePayload } from './invoices.types';
+import { InvoiceDeleteDialogComponent, InvoiceDeleteDialogData, InvoiceDeleteDialogResult } from './invoice-delete-dialog.component';
+import { InvoiceDetailModalComponent } from './invoice-detail-modal.component';
+import { DataTableComponent, DataTableColumn, DataTableAction } from '../../shared/components/data-table/data-table.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-invoices',
@@ -20,12 +25,48 @@ import { InvoiceDto, InvoiceStatus, SaveInvoicePayload } from './invoices.types'
     MatIconModule,
     MatButtonModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+  MatDialogModule,
+  DataTableComponent,
+  TranslateModule
   ],
   templateUrl: './invoices.component.html',
   styleUrls: ['./invoices.component.css']
 })
 export class InvoicesComponent implements OnInit, OnDestroy {
+  errorMessage?: string;
+
+  openInvoiceModal(invoice: InvoiceDto): void {
+    const dialogRef = this.dialog.open(InvoiceDetailModalComponent, {
+      width: '90vw',
+      maxWidth: '1200px',
+      maxHeight: '90vh',
+      data: {
+        invoice,
+        getClientName: (clientId: number) => this.getClientName(clientId),
+        statusLabel: (status: InvoiceStatus) => this.statusLabel(status)
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.edit && result.invoice) {
+        // Güncellenen invoice'ı invoices dizisinde bul ve değiştir
+        const updated = result.invoice;
+        // Eğer total alanı yoksa veya 0 ise, frontendde hesapla
+        let total = updated.total;
+        if (typeof total !== 'number' || isNaN(total) || total === 0) {
+          const subTotal = (updated.lineItems || []).reduce((sum: number, item: any) => sum + ((item.quantity || 0) * (item.unitPrice || 0)), 0);
+          total = subTotal + (Number(updated.tax) || 0);
+        }
+        const idx = this.invoices.findIndex(inv => inv.id === updated.id);
+        if (idx !== -1) {
+          this.invoices[idx] = { ...this.invoices[idx], ...updated, total };
+        }
+        // Filtreyi tekrar uygula
+        this.applyFilter(this.searchControl.value);
+      }
+    });
+  }
   readonly searchControl = new FormControl('', { nonNullable: true });
 
   invoices: InvoiceDto[] = [];
@@ -43,11 +84,14 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   formMode: 'create' | 'edit' = 'create';
 
   readonly statuses = [
-    { value: InvoiceStatus.Draft, label: 'Draft' },
-    { value: InvoiceStatus.Sent, label: 'Sent' },
-    { value: InvoiceStatus.Paid, label: 'Paid' },
-    { value: InvoiceStatus.Overdue, label: 'Overdue' }
+    { value: InvoiceStatus.Draft, label: 'Draft' },      // 'Draft'
+    { value: InvoiceStatus.Sent, label: 'Sent' },        // 'Sent'
+    { value: InvoiceStatus.Paid, label: 'Paid' },        // 'Paid'
+    { value: InvoiceStatus.Overdue, label: 'Overdue' }   // 'Overdue'
   ];
+
+  tableColumns: DataTableColumn<InvoiceDto>[] = [];
+  tableActions: DataTableAction<InvoiceDto>[] = [];
 
   readonly invoiceForm: FormGroup;
 
@@ -57,7 +101,9 @@ export class InvoicesComponent implements OnInit, OnDestroy {
     private readonly invoicesService: InvoicesService,
     private readonly clientsService: ClientsService,
     private readonly fb: FormBuilder,
-    private readonly snackBar: MatSnackBar
+    private readonly snackBar: MatSnackBar,
+    private readonly dialog: MatDialog,
+    private readonly translate: TranslateService
   ) {
     this.invoiceForm = this.fb.group({
       id: this.fb.control<number | null>(null),
@@ -72,7 +118,16 @@ export class InvoicesComponent implements OnInit, OnDestroy {
     });
   }
 
+  private setErrorMessage(key: string): void {
+    this.errorMessage = this.translate.instant(key);
+  }
+
+  private clearErrorMessage(): void {
+    this.errorMessage = undefined;
+  }
+
   ngOnInit(): void {
+    this.initializeTableConfig();
     this.searchControl.valueChanges
       .pipe(debounceTime(250), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(value => this.applyFilter(value));
@@ -89,6 +144,45 @@ export class InvoicesComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  getStatusLabel(status: InvoiceStatus): string {
+    // === yerine == kullan, sayısal değerler için
+    const match = this.statuses.find(s => s.value == status);
+    return match ? match.label : 'Unknown';
+  }
+
+  initializeTableConfig(): void {
+    this.tableColumns = [
+      { key: 'invoiceNumber', label: '#', format: (value, invoice) => value || ('#' + (invoice as InvoiceDto).id) },
+      { key: 'clientId', label: 'Client', format: (value) => this.getClientName(value as number) },
+      { key: 'status', label: 'Status', format: (value) => this.getStatusLabel(value as InvoiceStatus) },
+      { key: 'invoiceDate', label: 'Invoice date', type: 'date' },
+      { key: 'dueDate', label: 'Due date', type: 'date' },
+      {
+        key: 'total',
+        label: 'Total',
+        format: (value, invoice) => {
+          if (!invoice) return '₺0,00';
+          let total = value;
+          if (typeof total !== 'number' || isNaN(total) || total === 0) {
+            const subTotal = (invoice.lineItems || []).reduce((sum: number, item: any) => sum + ((item.quantity || 0) * (item.unitPrice || 0)), 0);
+            total = subTotal + (Number(invoice.tax) || 0);
+          }
+          return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(total);
+        }
+      }
+    ];
+
+    this.tableActions = [
+      {
+        label: 'Delete invoice',
+        icon: 'delete',
+        action: (invoice) => this.deleteInvoice(invoice),
+        disabled: (invoice) => this.isSubmitting,
+        ariaLabel: (invoice) => `Delete invoice ${invoice.invoiceNumber || '#' + invoice.id}`
+      }
+    ];
+  }
+
   get lineItems(): FormArray<FormGroup> {
     return this.invoiceForm.get('lineItems') as FormArray<FormGroup>;
   }
@@ -96,6 +190,16 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   trackByInvoice = (_: number, invoice: InvoiceDto) => invoice.id;
 
   trackByLineItem = (index: number) => index;
+
+  isInvoiceBusy = (invoice: InvoiceDto): boolean => this.isSubmitting;
+
+  getRowClass = (invoice: InvoiceDto): string => {
+    return '';
+  };
+
+  reload(): void {
+    this.loadData();
+  }
 
   loadData(): void {
     this.isLoading = true;
@@ -156,8 +260,8 @@ export class InvoicesComponent implements OnInit, OnDestroy {
       id: invoice.id,
       invoiceNumber: invoice.invoiceNumber ?? '',
       clientId: invoice.clientId,
-      invoiceDate: this.toDateInputValue(invoice.invoiceDate),
-      dueDate: this.toDateInputValue(invoice.dueDate),
+      invoiceDate: this.toDateInputValue(invoice.invoiceDate), // Ensure correct format
+      dueDate: this.toDateInputValue(invoice.dueDate), // Ensure correct format
       status: invoice.status,
       tax: invoice.tax,
       notes: invoice.notes ?? ''
@@ -217,26 +321,10 @@ export class InvoicesComponent implements OnInit, OnDestroy {
     return this.clientLookup.get(clientId) ?? `Client #${clientId}`;
   }
 
-  selectInvoice(invoice: InvoiceDto): void {
-    this.selectedInvoice = invoice;
-  }
-
   statusLabel(status: InvoiceStatus): string {
-    const match = this.statuses.find(s => s.value === status);
-    return match ? match.label : 'Unknown';
-  }
-
-  statusClass(status: InvoiceStatus): string {
-    switch (status) {
-      case InvoiceStatus.Paid:
-        return 'status-chip status-chip--success';
-      case InvoiceStatus.Sent:
-        return 'status-chip status-chip--info';
-      case InvoiceStatus.Overdue:
-        return 'status-chip status-chip--danger';
-      default:
-        return 'status-chip status-chip--muted';
-    }
+    // === yerine == kullan
+    const match = this.statuses.find(s => s.value == status);
+    return match ? match.label : 'Not Available';
   }
 
   saveInvoice(): void {
@@ -316,32 +404,39 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   }
 
   deleteInvoice(invoice: InvoiceDto): void {
-    const label = invoice.invoiceNumber ? invoice.invoiceNumber : `#${invoice.id}`;
-    const confirmed = confirm(`Delete invoice ${label}?`);
-    if (!confirmed) {
-      return;
-    }
+    const dialogRef = this.dialog.open(InvoiceDeleteDialogComponent, {
+      width: '420px',
+      data: {
+        invoiceId: invoice.id,
+        invoiceNumber: invoice.invoiceNumber || `#${invoice.id}`
+      } as InvoiceDeleteDialogData
+    });
 
-    this.isSubmitting = true;
+    dialogRef.afterClosed().subscribe((result: InvoiceDeleteDialogResult | undefined) => {
+      if (!result?.confirmed) {
+        return;
+      }
 
-    this.invoicesService
-      .deleteInvoice(invoice.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.snackBar.open('Invoice deleted', 'Dismiss', { duration: 3000 });
-          if (this.selectedInvoice?.id === invoice.id) {
-            this.selectedInvoice = null;
+      this.isSubmitting = true;
+      this.invoicesService
+        .deleteInvoice(result.invoiceId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.snackBar.open('Invoice deleted', 'Dismiss', { duration: 3000 });
+            if (this.selectedInvoice?.id === result.invoiceId) {
+              this.selectedInvoice = null;
+            }
+            this.loadData();
+            this.isSubmitting = false;
+          },
+          error: error => {
+            this.isSubmitting = false;
+            const message = this.extractErrorMessage(error);
+            this.snackBar.open(message, 'Dismiss', { duration: 4000 });
           }
-          this.loadData();
-          this.isSubmitting = false;
-        },
-        error: error => {
-          this.isSubmitting = false;
-          const message = this.extractErrorMessage(error);
-          this.snackBar.open(message, 'Dismiss', { duration: 4000 });
-        }
-      });
+        });
+    });
   }
 
   getLineItemTotal(group: FormGroup): number {
@@ -412,7 +507,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return `${year}-${month}-${day}`; // Ensure the format is yyyy-MM-dd
   }
 
   private extractErrorMessage(error: unknown): string {

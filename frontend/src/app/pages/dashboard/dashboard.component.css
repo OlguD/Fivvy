@@ -1,3 +1,109 @@
+/* Modern bar chart styles for revenue performance */
+.revenue-bar-chart {
+  width: 100%;
+  min-height: 260px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1.5rem 0 0.5rem 0;
+}
+.bar-chart {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.bar-chart__bars {
+  display: flex;
+  align-items: flex-end;
+  height: 180px;
+  gap: 18px;
+  width: 100%;
+  margin-bottom: 1.2rem;
+}
+.bar-chart__bar-group {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 36px;
+}
+.bar-chart__bar {
+  width: 32px;
+  background: linear-gradient(180deg, var(--primary), #60a5fa 90%);
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transition: height 0.3s;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+}
+.bar-chart__bar:hover {
+  background: linear-gradient(180deg, #2563eb, #60a5fa 90%);
+  box-shadow: 0 4px 16px rgba(37,99,235,0.18);
+}
+.bar-chart__value {
+  position: absolute;
+  top: -2.1em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.98em;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--surface-card, #fff);
+  padding: 2px 8px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.bar-chart__label {
+  margin-top: 0.5em;
+  font-size: 0.97em;
+  color: var(--app-text, #222);
+  text-align: center;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.panel--revenue-large {
+  padding: 2.2rem 2.5rem;
+  min-height: 340px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.revenue-chart--large {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+}
+.revenue-chart__canvas--large {
+  width: 100%;
+  height: 220px;
+  max-width: 900px;
+  margin: 0 auto 1.2rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.revenue-chart__svg--large {
+  width: 100%;
+  height: 220px;
+  max-width: 900px;
+}
+.revenue-chart__axis--large {
+  display: flex;
+  justify-content: space-between;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+  font-size: 1.08em;
+}
 .dashboard {
   display: flex;
   flex-direction: column;

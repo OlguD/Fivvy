@@ -1,78 +1,65 @@
 <section class="projects">
-  <header class="projects__header">
-    <div>
-      <h1>Projeler</h1>
-      <p>Proje kayıtlarını görüntüleyin ve yönetin.</p>
-    </div>
-    <button mat-raised-button color="primary" type="button" (click)="openCreateDialog()" [disabled]="loading">
-      <mat-icon aria-hidden="true">add</mat-icon>
-      Yeni proje
-    </button>
-  </header>
+	<header class="projects__toolbar">
+		<h1>{{ 'pages.projects.title' | translate }}</h1>
+		<div class="projects__toolbar-actions">
+			<div class="projects__search">
+				<mat-icon aria-hidden="true">search</mat-icon>
+				<input type="search" [placeholder]="'pages.projects.search.placeholder' | translate" [formControl]="searchControl" />
+			</div>
+			<button mat-stroked-button type="button" (click)="reload()" [disabled]="loading">
+				<mat-icon aria-hidden="true">refresh</mat-icon>
+				{{ 'pages.projects.actions.reload' | translate }}
+			</button>
+			<button mat-raised-button color="primary" class="projects__add-btn" type="button" (click)="openCreateDialog()" [disabled]="loading">
+				<mat-icon aria-hidden="true">add</mat-icon>
+				{{ 'pages.projects.actions.create' | translate }}
+			</button>
+		</div>
+	</header>
 
-  <div *ngIf="loading" class="projects__state">
-    <mat-icon aria-hidden="true">sync</mat-icon>
-    <span>Projeler yükleniyor...</span>
-  </div>
+	<div *ngIf="errorMessage" class="projects__error">
+		<mat-icon aria-hidden="true">error</mat-icon>
+		<span>{{ errorMessage }}</span>
+		<button mat-stroked-button type="button" (click)="reload()">{{ 'pages.projects.actions.retry' | translate }}</button>
+	</div>
 
-  <div *ngIf="!loading && errorMessage" class="projects__state projects__state--error">
-    <mat-icon aria-hidden="true">error</mat-icon>
-    <span>{{ errorMessage }}</span>
-    <button mat-stroked-button type="button" (click)="reload()">
-      <mat-icon aria-hidden="true">refresh</mat-icon>
-      Tekrar dene
-    </button>
-  </div>
+	<ng-container *ngIf="!loading; else loadingState">
+		<ng-container *ngIf="filteredProjects.length; else emptyState">
+			<app-data-table
+				[data]="filteredProjects"
+				[columns]="tableColumns"
+				[actions]="tableActions"
+				[trackByFn]="trackByProject"
+				[rowClassFn]="getRowClass"
+				[isItemBusyFn]="isItemBusy"
+				[isLoading]="loading"
+				(rowClick)="openUpdateDialog($event)">
+			</app-data-table>
+		</ng-container>
+	</ng-container>
 
-  <div *ngIf="!loading && !errorMessage && projects.length === 0" class="projects__empty">
-    <mat-icon aria-hidden="true">lightbulb</mat-icon>
-    <div>
-      <strong>Henüz proje eklenmemiş.</strong>
-      <p>Başlamak için “Yeni proje” butonunu kullanabilirsiniz.</p>
-    </div>
-  </div>
+	<ng-template #loadingState>
+		<div class="projects__loading">
+			<mat-spinner diameter="48"></mat-spinner>
+			<span>{{ 'pages.projects.states.loading' | translate }}</span>
+		</div>
+	</ng-template>
 
-  <div *ngIf="!loading && !errorMessage && projects.length > 0" class="projects__table-wrapper">
-    <table class="projects__table">
-      <thead>
-        <tr>
-          <th>Proje adı</th>
-          <th>Müşteri</th>
-          <th>Başlangıç</th>
-          <th>Bitiş</th>
-          <th>Durum</th>
-          <th>Tutar</th>
-          <th>Açıklama</th>
-          <th class="projects__actions-header">İşlemler</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let project of projects" (click)="openUpdateDialog(project)" class="projects__row">
-          <td>{{ project.name }}</td>
-          <td>{{ project.clientLabel }}</td>
-          <td>{{ project.startDateLabel }}</td>
-          <td>{{ project.endDateLabel }}</td>
-          <td><span class="projects__status">{{ project.statusLabel }}</span></td>
-          <td class="projects__price">{{ project.priceLabel }}</td>
-          <td
-            class="projects__description"
-            [attr.title]="project.description || undefined"
-          >
-            {{ project.description || '—' }}
-          </td>
-          <td class="projects__actions-cell">
-            <button
-              mat-icon-button
-              type="button"
-              color="warn"
-              (click)="confirmDelete(project); $event.stopPropagation();"
-              [disabled]="isDeleting(project.id) || loading"
-            >
-              <mat-icon aria-hidden="true">delete</mat-icon>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+	<ng-template #emptyState>
+		<div class="projects__empty">
+			<mat-icon aria-hidden="true">lightbulb</mat-icon>
+			<h3>{{ searchControl.value ? ('pages.projects.states.noResults' | translate) : ('pages.projects.states.emptyTitle' | translate) }}</h3>
+			<p>
+				{{
+					searchControl.value
+						? ('pages.projects.states.noResultsDescription' | translate)
+						: ('pages.projects.states.emptyDescription' | translate)
+				}}
+			</p>
+			<button mat-raised-button color="primary" class="projects__add-btn" type="button" (click)="openCreateDialog()" *ngIf="!searchControl.value">
+				<mat-icon aria-hidden="true">add</mat-icon>
+				{{ 'pages.projects.actions.create' | translate }}
+			</button>
+		</div>
+	</ng-template>
 </section>

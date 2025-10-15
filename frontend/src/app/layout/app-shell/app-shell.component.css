@@ -1,6 +1,81 @@
+.shell__sidebar nav {
+  margin-top: 2.2rem;
+}
+/* Custom dropdown styles for language selector */
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.dropdown-toggle {
+  background: var(--theme-bg, #fff);
+  color: var(--theme-text, #222);
+  border: 1px solid var(--theme-border, #ccc);
+  border-radius: 6px;
+  padding: 6px 18px 6px 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  min-width: 90px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: border 0.2s;
+}
+.dropdown-toggle:focus {
+  outline: 2px solid var(--theme-primary, #1976d2);
+}
+.dropdown-chevron {
+  margin-left: 4px;
+  transition: transform 0.2s;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  fill: none;
+  stroke: currentColor;
+}
+.dropdown-chevron.open {
+  transform: rotate(180deg);
+}
+/* Ensure font and table sizes are consistent regardless of language */
+body, html, .mat-typography, .projects__table, .clients__table, .invoices__table {
+  font-size: 16px !important;
+  font-family: inherit;
+}
+.projects__table th, .projects__table td,
+.clients__table th, .clients__table td,
+.invoices__table th, .invoices__table td {
+  font-size: 1em !important;
+  white-space: nowrap;
+}
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: var(--theme-bg, #fff);
+  border: 1px solid var(--theme-border, #ccc);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  min-width: 120px;
+  z-index: 1000;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.dropdown-menu li {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--theme-text, #222);
+  transition: background 0.15s;
+}
+.dropdown-menu li.selected,
+.dropdown-menu li:hover {
+  background: var(--theme-primary-light, #e3f2fd);
+  color: var(--theme-primary, #1976d2);
+}
+
 .shell {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 210px 1fr;
   min-height: 100vh;
   height: 100vh;
   background: var(--app-bg);
@@ -11,8 +86,8 @@
 .shell__sidebar {
   display: flex;
   flex-direction: column;
-  padding: 2rem 1.5rem;
-  gap: 2rem;
+  padding: 1.1rem 0.7rem;
+  gap: 1.1rem;
   background: var(--surface-card);
   backdrop-filter: blur(18px);
   border-right: 1px solid var(--divider);
@@ -26,7 +101,33 @@
 .shell__brand {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.65rem;
+}
+
+.shell__sidebar nav {
+  font-size: 0.89rem;
+}
+.shell__sidebar .mat-icon {
+  font-size: 1.15em !important;
+  width: 1.3em !important;
+  height: 1.3em !important;
+}
+.shell__sidebar a,
+.shell__sidebar .nav-link {
+  font-size: 0.89rem !important;
+  padding: 0.38em 1.2em !important;
+  min-height: 28px;
+  border-radius: 7px;
+  margin-bottom: 0.32em;
+  display: flex;
+  align-items: center;
+  gap: 0.65em;
+}
+.shell__sidebar .mat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
 }
 
 .shell__logo {
@@ -154,6 +255,13 @@
   display: inline-flex;
   align-items: center;
   gap: 1rem;
+}
+
+.shell__language {
+  border-radius: 999px;
+  padding: 0.35rem 1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
 .shell__avatar {

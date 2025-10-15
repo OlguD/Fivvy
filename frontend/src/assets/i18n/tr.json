@@ -1,0 +1,231 @@
+{
+  "app": {
+    "brand": {
+      "name": "Fivvy",
+      "tagline": "Project OS"
+    },
+    "actions": {
+      "logout": "Çıkış yap",
+      "language": "Dil",
+      "cancel": "Vazgeç",
+      "confirm": "Onayla",
+      "close": "Kapat",
+      "save": "Kaydet",
+      "create": "Oluştur",
+      "update": "Güncelle",
+      "retry": "Tekrar dene",
+      "reload": "Yenile",
+      "add": "Ekle",
+      "dismiss": "Kapat",
+      "ok": "Tamam"
+    }
+  },
+  "navigation": {
+    "dashboard": "Gösterge Paneli",
+    "clients": "Müşteriler",
+    "projects": "Projeler",
+    "admin": "Yönetim",
+    "invoices": "Faturalar",
+    "profile": "Profil"
+  },
+  "language": {
+    "toggle": "TR / EN",
+    "current": {
+      "en": "English",
+      "tr": "Türkçe"
+    }
+  },
+  "pageMeta": {
+    "dashboard": {
+      "title": "Gösterge Paneli",
+      "subtitle": "Pipeline, gelir ve iş yükünü yakından takip edin."
+    },
+    "clients": {
+      "title": "Müşteriler",
+      "subtitle": "Müşteri sağlığı, faturalama durumu ve etkileşim sinyallerini izleyin."
+    },
+    "projects": {
+      "title": "Projeler",
+      "subtitle": "Teslimatları, zaman çizelgelerini ve proje sahipliğini yönetin."
+    },
+    "admin": {
+      "title": "Yönetim konsolu",
+      "subtitle": "Çalışma alanlarını, denemeleri ve platform erişimini yönetin."
+    },
+    "invoices": {
+      "title": "Faturalar",
+      "subtitle": "Gelir performansı, ödenmemiş bakiyeler ve nakit akışını izleyin."
+    },
+    "profile": {
+      "title": "Profil",
+      "subtitle": "Çalışma alanı tercihlerinizi ve güvenliği yönetin."
+    }
+  },
+  "pages": {
+    "projects": {
+      "title": "Projeler",
+      "subtitle": "Proje kayıtlarını görüntüleyin ve yönetin.",
+      "search": {
+        "placeholder": "Proje adı, müşteri veya duruma göre ara"
+      },
+      "actions": {
+        "create": "Yeni proje",
+        "delete": "Projeyi sil",
+        "update": "Projeyi güncelle",
+        "confirmDelete": "Projeyi sil",
+        "cancel": "Vazgeç",
+        "retry": "Tekrar dene",
+        "reload": "Yenile"
+      },
+      "states": {
+        "loading": "Projeler yükleniyor…",
+        "error": "Projeler yüklenirken beklenmeyen bir hata oluştu.",
+        "emptyTitle": "Henüz proje eklenmemiş.",
+        "emptyDescription": "Başlamak için \"Yeni proje\" butonunu kullanabilirsiniz.",
+        "noResults": "Proje bulunamadı",
+        "noResultsDescription": "Farklı bir arama deneyin."
+      },
+      "table": {
+        "name": "Proje adı",
+        "client": "Müşteri",
+        "start": "Başlangıç",
+        "end": "Bitiş",
+        "status": "Durum",
+        "price": "Tutar",
+        "description": "Açıklama",
+        "actions": "İşlemler"
+      },
+        "fallback": {
+          "client": "Müşteri #{{id}}"
+        },
+      "status": {
+        "planned": "Planlanan",
+        "inProgress": "Devam ediyor",
+        "completed": "Tamamlandı"
+      },
+      "notifications": {
+        "createSuccess": "Proje başarıyla oluşturuldu.",
+        "updateSuccess": "Proje güncellendi.",
+        "deleteSuccess": "Proje silindi.",
+        "deleteError": "Proje silinirken beklenmeyen bir hata oluştu."
+      },
+      "errors": {
+        "unexpected": "Projeler yüklenirken beklenmeyen bir hata oluştu.",
+        "unauthorized": "Projeleri görmek için lütfen oturum açın.",
+        "forbidden": "Projeleri görüntüleme yetkiniz bulunmuyor.",
+        "save": "Proje kaydedilirken bir hata oluştu.",
+        "clients": "Müşteri listesi alınamadı. Daha sonra tekrar deneyin."
+      },
+      "dialog": {
+        "deleteTitle": "Projeyi sil",
+        "deleteQuestion": "\"{{projectName}}\" projesini silmek istediğinizden emin misiniz?",
+        "deleteWarning": "Bu işlem geri alınamaz ve proje verileri kalıcı olarak kaldırılır.",
+        "createTitle": "Yeni proje oluştur",
+        "editTitle": "Projeyi düzenle",
+        "submitCreate": "Projeyi oluştur",
+        "submitUpdate": "Projeyi güncelle"
+      },
+      "form": {
+        "projectName": "Proje adı",
+        "projectNamePlaceholder": "Örn: Platform entegrasyonu",
+        "projectNameRequired": "Proje adı zorunludur.",
+        "description": "Açıklama",
+        "descriptionPlaceholder": "Teslim edilecek kapsamı özetleyin",
+        "price": "Proje tutarı",
+        "priceRequired": "Proje tutarı zorunludur.",
+        "priceMin": "Proje tutarı negatif olamaz.",
+        "client": "Müşteri",
+        "clientRequired": "Bir müşteri seçmelisiniz.",
+        "startDate": "Başlangıç tarihi",
+        "startDateRequired": "Başlangıç tarihi zorunludur.",
+        "endDate": "Teslim tarihi",
+        "dateRangeError": "Teslim tarihi başlangıçtan önce olamaz.",
+        "saveError": "Proje kaydedilirken bir hata oluştu."
+      }
+    },
+    "clients": {
+      "title": "Müşteriler",
+      "searchPlaceholder": "Şirket veya kişi adına göre ara",
+      "actions": {
+        "reload": "Yenile",
+        "new": "Yeni müşteri",
+        "add": "Müşteri ekle"
+      },
+      "table": {
+        "id": "ID",
+        "company": "Şirket",
+        "contact": "İrtibat",
+        "email": "E-posta",
+        "phone": "Telefon",
+        "createdAt": "Oluşturulma",
+        "actions": "İşlemler"
+      },
+      "states": {
+        "loading": "Müşteriler yükleniyor…",
+        "emptyTitle": "Henüz müşteri yok",
+        "emptySearchTitle": "Müşteri bulunamadı",
+        "emptyDescription": "Başlamak için bir müşteri ekleyin.",
+        "emptySearchDescription": "Farklı bir arama deneyin."
+      },
+      "messages": {
+        "retry": "Tekrar dene"
+      },
+      "errors": {
+        "generic": "Bir şeyler ters gitti. Lütfen tekrar deneyin."
+      },
+      "dialogs": {
+        "form": {
+          "createTitle": "Yeni müşteri ekle",
+          "editTitle": "Müşteri detaylarını güncelle",
+          "companyLabel": "Şirket adı",
+          "companyRequired": "Şirket adı zorunludur",
+          "contactLabel": "Ana kişi",
+          "contactRequired": "Kişi adı zorunludur",
+          "emailLabel": "E-posta",
+          "emailInvalid": "Geçerli bir e-posta adresi girin",
+          "phoneLabel": "Telefon",
+          "addressLabel": "Adres",
+          "cancel": "Vazgeç",
+          "createAction": "Müşteriyi oluştur",
+          "updateAction": "Değişiklikleri kaydet",
+          "error": "Müşteri kaydedilemedi. Lütfen tekrar deneyin.",
+          "dismiss": "Kapat"
+        },
+        "remove": {
+          "title": "Müşteriyi sil",
+          "message": "{{client}} müşterisini silmek istediğinizden emin misiniz? Bu işlem projeleri ve faturaları ilişkisiz bırakır.",
+          "confirm": "Sil",
+          "cancel": "Vazgeç"
+        }
+      }
+    },
+    "notifications": {
+      "projectCreated": "Proje başarıyla oluşturuldu.",
+      "projectUpdated": "Proje başarıyla güncellendi.",
+      "projectCreateFailed": "Proje oluşturulamadı. Lütfen tekrar deneyin.",
+      "projectUpdateFailed": "Proje güncellenemedi. Lütfen tekrar deneyin.",
+      "clientCreated": "Müşteri başarıyla eklendi.",
+      "clientCreateFailed": "Müşteri eklenemedi. Lütfen tekrar deneyin.",
+      "clientUpdated": "Müşteri başarıyla güncellendi.",
+      "clientUpdateFailed": "Müşteri güncellenemedi. Lütfen tekrar deneyin.",
+      "invoiceCreated": "Fatura başarıyla oluşturuldu.",
+      "invoiceCreateFailed": "Fatura oluşturulamadı. Lütfen tekrar deneyin.",
+      "refreshFailed": "Oturum yenileme başarısız. Lütfen tekrar giriş yapın."
+    },
+    "auth": {
+      "login": {
+        "welcome": "Fivvy'ye hoş geldin 👋",
+        "subtitle": "Kontrol paneline erişmek için hesabınla giriş yap.",
+        "username": "Kullanıcı adı",
+        "usernameRequired": "Kullanıcı adı zorunludur.",
+        "password": "Şifre",
+        "passwordRequired": "Şifre zorunludur.",
+        "rememberMe": "Beni hatırla",
+        "forgot": "Şifremi unuttum",
+        "submit": "Giriş yap",
+        "noAccount": "Hesabın yok mu?",
+        "register": "Kayıt ol"
+      }
+    }
+  }
+}

@@ -70,11 +70,25 @@ export class DashboardComponent implements OnInit {
   private readonly chartPaddingTop = 10;
   private readonly chartPaddingBottom = 10;
 
+
   constructor(
     private readonly dashboardService: DashboardService,
     private readonly authService: AuthService,
     private readonly router: Router
   ) {}
+
+  // Returns bar height as percent of max value
+  public getBarHeight(point: RevenueTrendPoint): number {
+    if (!this.revenueTrend || !this.revenueTrend.length) return 0;
+    const max = Math.max(...this.revenueTrend.map((p: any) => {
+      // Try to parse number from displayValue, fallback to 1
+      const num = Number((p.displayValue || '').replace(/[^\d.\-]/g, ''));
+      return isNaN(num) ? 1 : num;
+    }));
+    const val = Number((point.displayValue || '').replace(/[^\d.\-]/g, ''));
+    if (!max || isNaN(val)) return 0;
+    return Math.max(6, (val / max) * 100); // min 6% for visibility
+  }
 
   async ngOnInit(): Promise<void> {
     await this.loadOverview();

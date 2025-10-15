@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { firstValueFrom } from 'rxjs';
 import { ProjectsService } from './projects.service';
 import { ClientOption, CreateProjectRequest, ProjectSummary, UpdateProjectRequest } from './projects.types';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 interface DialogData {
   mode: 'create' | 'edit';
@@ -34,75 +35,80 @@ interface DialogData {
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslateModule
   ],
   template: `
     <h2 mat-dialog-title>
       <mat-icon aria-hidden="true">{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
-      {{ isEditMode ? 'Projeyi düzenle' : 'Yeni proje oluştur' }}
+      {{ (isEditMode ? 'pages.projects.dialog.editTitle' : 'pages.projects.dialog.createTitle') | translate }}
     </h2>
 
-  <form [formGroup]="form" (ngSubmit)="submit()" class="dialog__form" mat-dialog-content>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="dialog__form" mat-dialog-content>
       <mat-form-field appearance="outline">
-        <!-- <mat-label>Proje adı</mat-label> -->
-        <input matInput formControlName="projectName" placeholder="Örn: Platform entegrasyonu" />
-  <mat-error *ngIf="form.get('projectName')?.hasError('required')">
-          Proje adı zorunludur.
+        <mat-label>{{ 'pages.projects.form.projectName' | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="projectName"
+          [placeholder]="'pages.projects.form.projectNamePlaceholder' | translate"
+        />
+        <mat-error *ngIf="form.get('projectName')?.hasError('required')">
+          {{ 'pages.projects.form.projectNameRequired' | translate }}
         </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <!-- <mat-label>Açıklama</mat-label> -->
+        <mat-label>{{ 'pages.projects.form.description' | translate }}</mat-label>
         <textarea
           matInput
           formControlName="description"
           rows="3"
-          placeholder="Teslim edilecek kapsamı özetleyin"
+          [placeholder]="'pages.projects.form.descriptionPlaceholder' | translate"
         ></textarea>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Proje tutarı</mat-label>
+        <mat-label>{{ 'pages.projects.form.price' | translate }}</mat-label>
         <input matInput type="number" formControlName="projectPrice" min="0" step="0.01" />
         <span matTextSuffix>₺</span>
         <mat-error *ngIf="form.get('projectPrice')?.hasError('required')">
-          Proje tutarı zorunludur.
+          {{ 'pages.projects.form.priceRequired' | translate }}
         </mat-error>
         <mat-error *ngIf="form.get('projectPrice')?.hasError('min')">
-          Proje tutarı negatif olamaz.
+          {{ 'pages.projects.form.priceMin' | translate }}
         </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Müşteri</mat-label>
+        <mat-label>{{ 'pages.projects.form.client' | translate }}</mat-label>
         <mat-select formControlName="clientId">
           <mat-option *ngFor="let client of clients" [value]="client.id">
             {{ client.name }}
           </mat-option>
         </mat-select>
-  <mat-error *ngIf="form.get('clientId')?.hasError('required')">
-          Bir müşteri seçmelisiniz.
+        <mat-error *ngIf="form.get('clientId')?.hasError('required')">
+          {{ 'pages.projects.form.clientRequired' | translate }}
         </mat-error>
       </mat-form-field>
 
       <div class="dialog__row">
         <mat-form-field appearance="outline">
-          <mat-label>Başlangıç tarihi</mat-label>
+          <mat-label>{{ 'pages.projects.form.startDate' | translate }}</mat-label>
           <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
           <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
           <mat-datepicker #startPicker></mat-datepicker>
           <mat-error *ngIf="form.get('startDate')?.hasError('required')">
-            Başlangıç tarihi zorunludur.
+            {{ 'pages.projects.form.startDateRequired' | translate }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Teslim tarihi</mat-label>
+          <mat-label>{{ 'pages.projects.form.endDate' | translate }}</mat-label>
           <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
           <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
           <mat-datepicker #endPicker></mat-datepicker>
           <mat-error *ngIf="form.hasError('dateRange')">
-            Teslim tarihi başlangıçtan önce olamaz.
+            {{ 'pages.projects.form.dateRangeError' | translate }}
           </mat-error>
         </mat-form-field>
       </div>
@@ -114,7 +120,7 @@ interface DialogData {
 
       <div mat-dialog-actions class="dialog__actions">
         <button mat-stroked-button type="button" (click)="close()" [disabled]="saving">
-          Vazgeç
+          {{ 'pages.projects.actions.cancel' | translate }}
         </button>
         <button mat-raised-button color="primary" type="submit" [disabled]="saving || form.invalid">
           <mat-progress-spinner
@@ -123,7 +129,9 @@ interface DialogData {
             diameter="18"
             strokeWidth="3"
           ></mat-progress-spinner>
-          <span *ngIf="!saving">{{ isEditMode ? 'Projeyi güncelle' : 'Projeyi oluştur' }}</span>
+          <span *ngIf="!saving">
+            {{ (isEditMode ? 'pages.projects.dialog.submitUpdate' : 'pages.projects.dialog.submitCreate') | translate }}
+          </span>
         </button>
       </div>
     </form>
@@ -204,7 +212,8 @@ export class ProjectCreateDialogComponent {
     private readonly dialogRef: MatDialogRef<ProjectCreateDialogComponent>,
     private readonly projectsService: ProjectsService,
     private readonly fb: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) private readonly data: DialogData
+    @Inject(MAT_DIALOG_DATA) private readonly data: DialogData,
+    private readonly translate: TranslateService
   ) {
     this.mode = data?.mode ?? 'create';
     const project = data?.project;
@@ -248,7 +257,7 @@ export class ProjectCreateDialogComponent {
       }
     } catch (error) {
       console.error('Failed to save project', error);
-      this.errorMessage = (error as Error)?.message ?? 'Proje kaydedilirken bir hata oluştu.';
+      this.errorMessage = (error as Error)?.message ?? this.translate.instant('pages.projects.errors.save');
     } finally {
       this.saving = false;
     }
@@ -266,7 +275,7 @@ export class ProjectCreateDialogComponent {
       }
     } catch (error) {
       console.error('Failed to load clients', error);
-      this.errorMessage = 'Müşteri listesi alınamadı. Daha sonra tekrar deneyin.';
+      this.errorMessage = this.translate.instant('pages.projects.errors.clients');
     }
   }
 

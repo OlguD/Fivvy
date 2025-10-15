@@ -25,37 +25,16 @@
 
 	<ng-container *ngIf="!isLoading; else loadingState">
 		<ng-container *ngIf="filteredClients.length; else emptyState">
-			<table class="clients__table">
-				<thead>
-					<tr>
-						<th>ID</th>
-						<th>Company</th>
-						<th>Contact</th>
-						<th>Email</th>
-						<th>Phone</th>
-						<th>Created</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr *ngFor="let client of filteredClients; trackBy: trackByClient" [class.clients__row--busy]="isClientBusy(client.id)">
-						<td>{{ client.id }}</td>
-						<td>{{ client.companyName }}</td>
-						<td>{{ client.contactName }}</td>
-						<td>{{ client.email || '—' }}</td>
-						<td>{{ client.phone || '—' }}</td>
-						<td>{{ client.createdAt ? (client.createdAt | date: 'mediumDate') : '—' }}</td>
-						<td class="clients__actions">
-							<button mat-icon-button type="button" aria-label="Edit client" (click)="openEditDialog(client)" [disabled]="isClientBusy(client.id) || isLoading">
-								<mat-icon aria-hidden="true">edit</mat-icon>
-							</button>
-							<button mat-icon-button type="button" aria-label="Remove client" (click)="confirmRemove(client)" [disabled]="isClientBusy(client.id) || isLoading">
-								<mat-icon aria-hidden="true">delete</mat-icon>
-							</button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			<app-data-table
+				[data]="filteredClients"
+				[columns]="tableColumns"
+				[actions]="tableActions"
+				[trackByFn]="trackByClient"
+				[rowClassFn]="getRowClass"
+				[isItemBusyFn]="isItemBusy"
+				[isLoading]="isLoading"
+				(rowClick)="onRowClick($event)">
+			</app-data-table>
 		</ng-container>
 	</ng-container>
 

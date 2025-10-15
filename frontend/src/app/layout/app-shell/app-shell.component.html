@@ -3,8 +3,8 @@
     <div class="shell__brand">
       <div class="shell__logo">Fv</div>
       <div class="shell__brand-text">
-        <span class="shell__brand-name">Fivvy</span>
-        <span class="shell__brand-tag">Project OS</span>
+        <span class="shell__brand-name">{{ 'app.brand.name' | translate }}</span>
+        <span class="shell__brand-tag">{{ 'app.brand.tagline' | translate }}</span>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
           (click)="closeSidebar()"
         >
           <mat-icon fontIcon="{{ item.icon }}" aria-hidden="true"></mat-icon>
-          <span>{{ item.label }}</span>
+          <span>{{ item.labelKey | translate }}</span>
         </a>
       </ng-container>
     </nav>
@@ -27,7 +27,7 @@
     <div class="shell__sidebar-footer">
       <button mat-button class="shell__logout" type="button" (click)="logout()">
         <mat-icon aria-hidden="true">logout</mat-icon>
-        <span>Logout</span>
+        <span>{{ 'app.actions.logout' | translate }}</span>
       </button>
     </div>
   </aside>
@@ -44,16 +44,29 @@
         >
           <mat-icon aria-hidden="true">menu</mat-icon>
         </button>
-        <div>
-          <h1 class="shell__title">{{ headerTitle }}</h1>
-          <p class="shell__subtitle">{{ headerSubtitle }}</p>
-        </div>
+          <div>
+            <!-- Removed large page title and subtitle for cleaner header -->
+          </div>
       </div>
       <div class="shell__topbar-actions">
+          <div class="shell__lang-dropdown custom-dropdown" #langDropdown>
+            <button class="dropdown-toggle" [attr.aria-label]="'app.actions.language' | translate" (click)="$event.stopPropagation(); showLangDropdown = !showLangDropdown">
+              {{ 'language.current.' + currentLanguage | translate }}
+              <svg class="dropdown-chevron" [class.open]="showLangDropdown" width="18" height="18" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <ul class="dropdown-menu" *ngIf="showLangDropdown">
+              <li *ngFor="let lang of supportedLanguages" (click)="setLanguage(lang); showLangDropdown = false" [class.selected]="lang === currentLanguage">
+                {{ 'language.current.' + lang | translate }}
+              </li>
+            </ul>
+          </div>
         <app-theme-toggle></app-theme-toggle>
-        <button mat-icon-button class="shell__avatar" type="button" aria-label="Account menu">
-          <span>OD</span>
-        </button>
+        <div class="shell__avatar" style="width: 2.5rem; height: 2.5rem; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--btn-gradient); color: var(--btn-text); font-weight: 700; font-size: 1rem;">
+          <ng-container *ngIf="profileImageFromApi; else initialsBlockTopbar">
+            <img [src]="profileImageFromApi" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+          </ng-container>
+          <ng-template #initialsBlockTopbar>{{ initials() }}</ng-template>
+        </div>
       </div>
     </header>
 

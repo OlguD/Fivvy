@@ -1,8 +1,8 @@
 export enum InvoiceStatus {
-  Draft = 0,
-  Sent = 1,
-  Paid = 2,
-  Overdue = 3
+  Draft = 'Draft',
+  Sent = 'Sent',
+  Paid = 'Paid',
+  Overdue = 'Overdue'
 }
 
 export interface InvoiceLineItemDto {
