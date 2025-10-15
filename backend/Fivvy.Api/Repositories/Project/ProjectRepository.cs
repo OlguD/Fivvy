@@ -1,6 +1,7 @@
 using Fivvy.Api.Data;
 using Fivvy.Api.Exceptions;
 using Fivvy.Api.Models;
+using Fivvy.Api.Repositories.Invoice;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fivvy.Api.Repositories;
@@ -9,11 +10,13 @@ public class ProjectRepository : IProjectRepository
 {
     private readonly AppDbContext _context;
     private readonly IUserRepository _userRepository;
+    private readonly IInvoiceRepository _invoiceRepository;
 
-    public ProjectRepository(AppDbContext context, IUserRepository userRepository)
+    public ProjectRepository(AppDbContext context, IUserRepository userRepository, IInvoiceRepository invoiceRepository)
     {
         _context = context;
         _userRepository = userRepository;
+        _invoiceRepository = invoiceRepository;
     }
 
 
@@ -67,6 +70,31 @@ public class ProjectRepository : IProjectRepository
 
             _context.Projects.Add(newProject);
             await _context.SaveChangesAsync();
+
+
+            var invoice = new InvoiceModel
+            {
+                InvoiceNumber = $"INV-{DateTime.UtcNow:yyyyMMddHHmmss}",
+                ClientId = projectModel.ClientId,
+                InvoiceDate = projectModel.StartDate,
+                DueDate = projectModel.EndDate ?? newProject.StartDate.AddDays(30),
+                Status = InvoiceStatus.Draft,
+                SubTotal = (decimal)newProject.ProjectPrice,
+                Tax = 0,
+                Total = (decimal)newProject.ProjectPrice,
+                Notes = $"Project: {newProject.Description}",
+                LineItems = new List<InvoiceLineItemModel>
+                {
+                    new InvoiceLineItemModel
+                    {
+                        Description = newProject.Description,
+                        Quantity = 1,
+                        UnitPrice = (decimal)newProject.ProjectPrice
+                    }
+                }
+            };
+
+            await _invoiceRepository.CreateInvoiceAsync(token, invoice);
             return true;
         }
         catch (Exception ex)

@@ -11,6 +11,7 @@ public class InvoiceModel
     public int ClientId { get; set; }
     public DateTime InvoiceDate { get; set; }
     public DateTime DueDate { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public InvoiceStatus Status { get; set; } = InvoiceStatus.Draft;
     public ICollection<InvoiceLineItemModel> LineItems { get; set; } = new List<InvoiceLineItemModel>();
 
