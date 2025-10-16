@@ -163,6 +163,10 @@ public class UserRepository : IUserRepository
             user.Name = updateUser.Name;
             user.Surname = updateUser.Surname;
             user.Email = updateUser.Email;
+            user.CompanyName = updateUser.CompanyName;
+            user.Address = updateUser.Address;
+            user.City = updateUser.City;
+            user.TaxValue = updateUser.TaxValue;
 
             await _context.SaveChangesAsync();
 

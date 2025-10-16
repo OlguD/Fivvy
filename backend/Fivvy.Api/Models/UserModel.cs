@@ -13,7 +13,11 @@ public class UserModel
     public required string Email { get; set; }
     public required string Password { get; set; }
 
+    public string? CompanyName { get; set; }
+    public string? Address { get; set; }
+    public string? City { get; set; }
     public string? ProfileImagePath { get; set; }
+    public int TaxValue { get; set; } = 20;
 
     public ICollection<ClientModel> Clients { get; set; } = new List<ClientModel>();
 
