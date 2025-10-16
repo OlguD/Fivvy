@@ -1,0 +1,25 @@
+<div class="gallery-root">
+  <div class="gallery-header">
+    <button mat-stroked-button [routerLink]="['/invoices']" class="back-btn">
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+    <h2>Invoice Templates</h2>
+  </div>
+
+  <div class="grid">
+    <div class="tile" *ngFor="let t of templates">
+      <div class="thumb" (click)="preview(t)">
+        <img [src]="t.thumbnail" [alt]="t.name" />
+      </div>
+      <div class="meta">
+        <div class="title">{{t.name}}</div>
+        <div class="desc">{{t.description}}</div>
+        <div class="actions">
+          <button mat-stroked-button color="primary" (click)="preview(t)">Preview</button>
+          <button mat-flat-button color="accent" (click)="downloadPdf(t)" [disabled]="isDownloading">Download PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

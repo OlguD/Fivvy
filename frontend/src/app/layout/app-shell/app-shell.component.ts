@@ -40,6 +40,13 @@ interface NavLink {
   styleUrls: ['./app-shell.component.css'],
 })
 export class AppShellComponent implements OnInit, OnDestroy {
+  // Logo configuration - uses an asset from `src/assets/invoice-templates`
+  readonly logoUrl = '/assets/logo1.png';
+  logoError = false;
+
+  onLogoError(): void {
+    this.logoError = true;
+  }
   profileImageFromApi: string | null = null;
   userProfile: UserProfile | null = null;
   private destroy$ = new Subject<void>();

@@ -1,6 +1,5 @@
 :host {
   display: block;
-}
 
 .admin-users {
   display: grid;
@@ -16,18 +15,6 @@
   background: var(--surface-card);
   border-radius: 1.3rem;
   box-shadow: var(--surface-shadow);
-}
-
-.admin-users__title {
-  margin: 0;
-  font-size: 1.8rem;
-  font-weight: 700;
-}
-
-.admin-users__subtitle {
-  margin: 0.45rem 0 0;
-  color: rgba(148, 163, 184, 0.95);
-  font-size: 0.95rem;
 }
 
 .admin-users__stats {
@@ -127,6 +114,20 @@
   font-weight: 600;
   transition: all 0.2s ease;
 }
+
+[data-theme='dark'] .admin-users__filter-chip {
+  color: #f8fafc;
+  background: rgba(30,41,59,0.66);
+  border: 1px solid rgba(96,165,250,0.13);
+}
+}
+[data-theme='dark'] .admin-users__filter-chip:hover,
+[data-theme='dark'] .admin-users__filter-chip.is-active {
+  color: var(--primary);
+  background: rgba(96, 165, 250, 0.16);
+  border-color: rgba(96, 165, 250, 0.35);
+}
+
 
 .admin-users__filter-chip:hover,
 .admin-users__filter-chip.is-active {
@@ -297,14 +298,6 @@
 }
 
 @media (max-width: 640px) {
-  .admin-users__header {
-    flex-direction: column;
-  }
-
-  .admin-users__header button {
-    width: 100%;
-  }
-
   .admin-users__table-wrapper {
     border-radius: 0.9rem;
   }

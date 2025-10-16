@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="60" y="80" font-size="30" fill="#111" font-family="Georgia">Minimal Invoice</text>
+  <rect x="60" y="110" width="680" height="1" fill="#e0e0e0"/>
+  <g font-family="Georgia" fill="#333">
+    <text x="60" y="180" font-size="16">Service</text>
+    <text x="620" y="180" font-size="16">Price</text>
+  </g>
+</svg>

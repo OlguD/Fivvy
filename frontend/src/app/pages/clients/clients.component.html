@@ -1,65 +1,61 @@
 <section class="clients">
 	<header class="clients__toolbar">
-		<h1>Clients</h1>
+		<h1>{{ 'pages.clients.title' | translate }}</h1>
 		<div class="clients__toolbar-actions">
 			<div class="clients__search">
 				<mat-icon aria-hidden="true">search</mat-icon>
-				<input type="search" placeholder="Search by company or contact" [formControl]="searchControl" />
+				<input type="search" [placeholder]="translate.instant('pages.clients.searchPlaceholder')" [formControl]="searchControl" />
 			</div>
 			<button mat-stroked-button type="button" (click)="reload()" [disabled]="isLoading">
 				<mat-icon aria-hidden="true">refresh</mat-icon>
-				Reload
+				{{ 'pages.clients.actions.reload' | translate }}
 			</button>
 			<button mat-raised-button color="primary" class="clients__add-btn" type="button" (click)="openCreateDialog()" [disabled]="isLoading">
 				<mat-icon aria-hidden="true">person_add</mat-icon>
-				New client
+				{{ 'pages.clients.actions.new' | translate }}
 			</button>
 		</div>
 	</header>
 
-	<div *ngIf="error" class="clients__error">
-		<mat-icon aria-hidden="true">error</mat-icon>
-		<span>{{ error }}</span>
-		<button mat-stroked-button type="button" (click)="reload()">Retry</button>
-	</div>
+		<div *ngIf="error" class="clients__error">
+			<mat-icon aria-hidden="true">error</mat-icon>
+			<span>{{ error }}</span>
+			<button mat-stroked-button type="button" (click)="reload()">{{ 'pages.clients.messages.retry' | translate }}</button>
+		</div>
 
 	<ng-container *ngIf="!isLoading; else loadingState">
 		<ng-container *ngIf="filteredClients.length; else emptyState">
-			<app-data-table
-				[data]="filteredClients"
-				[columns]="tableColumns"
-				[actions]="tableActions"
-				[trackByFn]="trackByClient"
-				[rowClassFn]="getRowClass"
-				[isItemBusyFn]="isItemBusy"
-				[isLoading]="isLoading"
-				(rowClick)="onRowClick($event)">
-			</app-data-table>
+							<app-data-table
+								[data]="filteredClients"
+								[columns]="tableColumns"
+								[actions]="tableActions"
+								[trackByFn]="trackByClient"
+								[rowClassFn]="getRowClass"
+								[isItemBusyFn]="isItemBusy"
+								[isLoading]="isLoading"
+								(rowClick)="onRowClick($event)">
+							</app-data-table>
 		</ng-container>
 	</ng-container>
 
-	<ng-template #loadingState>
-		<div class="clients__loading">
-			<mat-spinner diameter="48"></mat-spinner>
-			<span>Loading clients…</span>
-		</div>
-	</ng-template>
+		<ng-template #loadingState>
+			<div class="clients__loading">
+				<mat-spinner diameter="48"></mat-spinner>
+				<span>{{ 'pages.clients.states.loading' | translate }}</span>
+			</div>
+		</ng-template>
 
-	<ng-template #emptyState>
-		<div class="clients__empty">
-			<mat-icon aria-hidden="true">groups</mat-icon>
-			<h3>{{ searchControl.value ? 'No clients found' : 'No clients yet' }}</h3>
-			<p>
-				{{
-					searchControl.value
-						? 'Try a different search term.'
-						: 'Add a client to get started.'
-				}}
-			</p>
-			<button mat-raised-button color="primary" class="clients__add-btn" type="button" (click)="openCreateDialog()" *ngIf="!searchControl.value">
-				<mat-icon aria-hidden="true">person_add</mat-icon>
-				Add client
-			</button>
-		</div>
-	</ng-template>
+		<ng-template #emptyState>
+			<div class="clients__empty">
+				<mat-icon aria-hidden="true">groups</mat-icon>
+				<h3>{{ searchControl.value ? ( 'pages.clients.states.emptySearchTitle' | translate ) : ( 'pages.clients.states.emptyTitle' | translate ) }}</h3>
+				<p>
+					{{ searchControl.value ? ( 'pages.clients.states.emptySearchDescription' | translate ) : ( 'pages.clients.states.emptyDescription' | translate ) }}
+				</p>
+				<button mat-raised-button color="primary" class="clients__add-btn" type="button" (click)="openCreateDialog()" *ngIf="!searchControl.value">
+					<mat-icon aria-hidden="true">person_add</mat-icon>
+					{{ 'pages.clients.actions.add' | translate }}
+				</button>
+			</div>
+		</ng-template>
 </section>

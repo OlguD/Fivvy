@@ -46,7 +46,6 @@ interface DialogData {
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="dialog__form" mat-dialog-content>
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'pages.projects.form.projectName' | translate }}</mat-label>
         <input
           matInput
           formControlName="projectName"
@@ -58,7 +57,6 @@ interface DialogData {
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'pages.projects.form.description' | translate }}</mat-label>
         <textarea
           matInput
           formControlName="description"

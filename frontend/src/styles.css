@@ -7,33 +7,43 @@
 	--app-text: #0f172a;
 	--surface-card: rgba(255, 255, 255, 0.86);
 	--surface-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
-	--primary: #2563eb;
-	--primary-strong: #1d4ed8;
+	--primary: #fb923c; /* warm orange */
+	/* original --primary: #2563eb; */
+	--primary-strong: #f97316; /* deeper orange */
+	/* original --primary-strong: #1d4ed8; */
 	--mdc-theme-primary: var(--primary);
 	--mdc-theme-secondary: var(--primary);
-	--auth-login-bg: radial-gradient(circle at top, #f8fafc, #e2e8f0);
+	--auth-login-bg: radial-gradient(circle at top, #fdf7f1, #fff3ea);
 	--auth-login-text: #0f172a;
 	--field-label: #1e293b;
 	--field-text: #0f172a;
 	--field-border: rgba(15, 23, 42, 0.12);
 	--field-bg: rgba(255, 255, 255, 0.95);
-	--field-focus-border: rgba(37, 99, 235, 0.65);
-	--field-focus-shadow: rgba(37, 99, 235, 0.18);
+	--field-focus-border: rgba(249, 115, 22, 0.65);
+	/* original --field-focus-border: rgba(37, 99, 235, 0.65); */
+	--field-focus-shadow: rgba(249, 115, 22, 0.18);
+	/* original --field-focus-shadow: rgba(37, 99, 235, 0.18); */
 	--field-error-border: #ef4444;
 	--field-error-text: #b91c1c;
 	--btn-text: #ffffff;
-	--btn-gradient: linear-gradient(135deg, #2563eb, #4f46e5);
-	--btn-hover-shadow: 0 16px 32px rgba(37, 99, 235, 0.25);
+	--btn-gradient: linear-gradient(135deg, #fb923c, #f97316);
+	/* original --btn-gradient: linear-gradient(135deg, #2563eb, #4f46e5); */
+	--btn-hover-shadow: 0 16px 32px rgba(249, 115, 22, 0.25);
+	/* original --btn-hover-shadow: 0 16px 32px rgba(37, 99, 235, 0.25); */
 	--btn-disabled-bg: rgba(148, 163, 184, 0.6);
 	--btn-disabled-text: rgba(255, 255, 255, 0.8);
-		--btn-secondary-bg: rgba(37, 99, 235, 0.1);
-		--btn-secondary-border: rgba(37, 99, 235, 0.35);
-		--btn-secondary-text: #1d4ed8;
+		--btn-secondary-bg: rgba(249, 115, 22, 0.1);
+		/* original --btn-secondary-bg: rgba(37, 99, 235, 0.1); */
+		--btn-secondary-border: rgba(249, 115, 22, 0.35);
+		/* original --btn-secondary-border: rgba(37, 99, 235, 0.35); */
+		--btn-secondary-text: #f97316;
+		/* original --btn-secondary-text: #1d4ed8; */
 		--btn-ghost-hover: rgba(15, 23, 42, 0.06);
 		--input-disabled-bg: rgba(148, 163, 184, 0.18);
 		--input-disabled-text: rgba(100, 116, 139, 0.9);
 	--footer-text: rgba(15, 23, 42, 0.9);
-	--link-hover: rgba(37, 99, 235, 0.12);
+	--link-hover: rgba(249, 115, 22, 0.12);
+	/* original --link-hover: rgba(37, 99, 235, 0.12); */
 	--divider: rgba(15, 23, 42, 0.08);
 }
 
@@ -43,33 +53,43 @@
 	--app-text: #e2e8f0;
 	--surface-card: rgba(15, 23, 42, 0.8);
 	--surface-shadow: 0 28px 52px rgba(2, 6, 23, 0.6);
-	--primary: #60a5fa;
-	--primary-strong: #3b82f6;
+	--primary: #fdba74; /* softer orange for dark */
+	/* original --primary: #60a5fa; */
+	--primary-strong: #fb923c;
+	/* original --primary-strong: #3b82f6; */
 	--mdc-theme-primary: var(--primary);
 	--mdc-theme-secondary: var(--primary);
-	--auth-login-bg: radial-gradient(circle at top, #0f172a, #020617 70%);
+	--auth-login-bg: radial-gradient(circle at top, #0b0a08, #020617 70%);
 	--auth-login-text: #e2e8f0;
 	--field-label: #cbd5f5;
 	--field-text: #f8fafc;
 	--field-border: rgba(148, 163, 184, 0.24);
 	--field-bg: rgba(15, 23, 42, 0.6);
-	--field-focus-border: rgba(96, 165, 250, 0.7);
-	--field-focus-shadow: rgba(37, 99, 235, 0.28);
+	--field-focus-border: rgba(251, 146, 60, 0.7);
+	/* original --field-focus-border: rgba(96, 165, 250, 0.7); */
+	--field-focus-shadow: rgba(249, 115, 22, 0.28);
+	/* original --field-focus-shadow: rgba(37, 99, 235, 0.28); */
 	--field-error-border: #f87171;
 	--field-error-text: #fca5a5;
 	--btn-text: #0b1120;
-	--btn-gradient: linear-gradient(135deg, #60a5fa, #4f46e5);
-	--btn-hover-shadow: 0 20px 40px rgba(96, 165, 250, 0.35);
+	--btn-gradient: linear-gradient(135deg, #fdba74, #f97316);
+	/* original --btn-gradient: linear-gradient(135deg, #60a5fa, #4f46e5); */
+	--btn-hover-shadow: 0 6px 16px rgba(251, 146, 60, 0.16);
+	/* original --btn-hover-shadow: 0 6px 16px rgba(96, 165, 250, 0.16); */
 	--btn-disabled-bg: rgba(71, 85, 105, 0.6);
 	--btn-disabled-text: rgba(226, 232, 240, 0.8);
-		--btn-secondary-bg: rgba(96, 165, 250, 0.16);
-		--btn-secondary-border: rgba(96, 165, 250, 0.4);
-		--btn-secondary-text: #e0f2fe;
+	--btn-secondary-bg: rgba(251, 146, 60, 0.16);
+	/* original --btn-secondary-bg: rgba(96, 165, 250, 0.16); */
+	--btn-secondary-border: rgba(251, 146, 60, 0.4);
+	/* original --btn-secondary-border: rgba(96, 165, 250, 0.4); */
+	--btn-secondary-text: #fff4eb;
+	/* original --btn-secondary-text: #e0f2fe; */
 		--btn-ghost-hover: rgba(148, 163, 184, 0.2);
 		--input-disabled-bg: rgba(51, 65, 85, 0.4);
 		--input-disabled-text: rgba(203, 213, 225, 0.75);
 	--footer-text: rgba(148, 163, 184, 0.9);
-	--link-hover: rgba(96, 165, 250, 0.16);
+	--link-hover: rgba(251, 146, 60, 0.16);
+	/* original --link-hover: rgba(96, 165, 250, 0.16); */
 	--divider: rgba(148, 163, 184, 0.16);
 }
 
@@ -139,6 +159,7 @@ button {
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch {
 	border-color: var(--field-focus-border) !important;
 	box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.08);
+	/* original box-shadow used blue rgba(37,99,235,0.08) - left as-is because subtle */
 }
 
 .mat-mdc-form-field.mat-mdc-form-field-disabled .mdc-notched-outline__leading,
@@ -153,20 +174,24 @@ button {
 }
 
 .mat-mdc-button-base.mat-mdc-raised-button.mat-primary {
-	--mat-mdc-button-ripple-color: rgba(37, 99, 235, 0.22);
-	--mat-mdc-button-persistent-ripple-color: rgba(37, 99, 235, 0.18);
+	--mat-mdc-button-ripple-color: rgba(249, 115, 22, 0.22);
+	/* original --mat-mdc-button-ripple-color: rgba(37, 99, 235, 0.22); */
+	--mat-mdc-button-persistent-ripple-color: rgba(249, 115, 22, 0.18);
+	/* original --mat-mdc-button-persistent-ripple-color: rgba(37, 99, 235, 0.18); */
 }
 
 .mat-mdc-raised-button.mat-primary,
 .mat-mdc-raised-button.mat-primary:active {
 	background: var(--btn-gradient);
 	color: var(--btn-text);
-	box-shadow: var(--btn-hover-shadow);
+		box-shadow: 0 2px 5px rgba(251, 146, 60, 0.09);
+		/* original box-shadow: 0 2px 5px rgba(96, 165, 250, 0.09); */
 	transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease, color 0.2s ease;
 }
 
 .mat-mdc-raised-button.mat-primary:hover {
-	box-shadow: 0 18px 42px rgba(37, 99, 235, 0.28);
+		box-shadow: 0 18px 42px rgba(249, 115, 22, 0.28);
+    /* original hover shadow: rgba(37, 99, 235, 0.28) */
 	transform: translateY(-1px);
 }
 
@@ -177,7 +202,8 @@ button {
 }
 
 .mat-mdc-raised-button.mat-primary:focus-visible {
-	box-shadow: var(--btn-hover-shadow), 0 0 0 3px rgba(37, 99, 235, 0.3);
+	box-shadow: var(--btn-hover-shadow), 0 0 0 3px rgba(249, 115, 22, 0.3);
+    /* original focus outline color: rgba(37, 99, 235, 0.3) */
 }
 
 .mat-mdc-raised-button.mat-primary .mdc-button__label {
@@ -186,16 +212,19 @@ button {
 
 .mat-mdc-stroked-button {
 	--mdc-outlined-button-outline-color: var(--btn-secondary-border);
-	--mat-mdc-button-ripple-color: rgba(37, 99, 235, 0.16);
+	--mat-mdc-button-ripple-color: rgba(249, 115, 22, 0.16);
+	/* original ripple color: rgba(37, 99, 235, 0.16) */
 	border-radius: 0.9rem;
-	border-width: 1px;
-	color: var(--btn-secondary-text);
-	background: var(--btn-secondary-bg);
-	transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+	background: var(--btn-gradient);
+	color: var(--btn-text);
+	box-shadow: 0 4px 8px rgba(251, 146, 60, 0.10);
+	/* original stroked button shadow: rgba(96, 165, 250, 0.10) */
+	transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease, color 0.2s ease;
 }
 
 .mat-mdc-stroked-button:hover {
-	background: rgba(37, 99, 235, 0.16);
+	background: rgba(249, 115, 22, 0.16);
+	/* original hover background: rgba(37, 99, 235, 0.16) */
 	transform: translateY(-1px);
 }
 
@@ -206,7 +235,8 @@ button {
 }
 
 [data-theme='dark'] .mat-mdc-stroked-button:hover {
-	background: rgba(96, 165, 250, 0.22);
+	background: rgba(251, 146, 60, 0.22);
+	/* original dark hover background: rgba(96, 165, 250, 0.22) */
 }
 
 .mat-mdc-stroked-button:disabled {
@@ -234,7 +264,8 @@ button {
 
 .mat-mdc-icon-button:hover {
 	color: var(--primary);
-	background-color: rgba(37, 99, 235, 0.12);
+	background-color: rgba(249, 115, 22, 0.12);
+	/* original icon hover bg: rgba(37, 99, 235, 0.12) */
 	transform: translateY(-1px);
 }
 
@@ -244,7 +275,8 @@ button {
 
 [data-theme='dark'] .mat-mdc-icon-button:hover {
 	color: var(--primary);
-	background-color: rgba(96, 165, 250, 0.22);
+	background-color: rgba(251, 146, 60, 0.22);
+	/* original dark icon hover bg: rgba(96, 165, 250, 0.22) */
 }
 
 .mat-mdc-dialog-container .mdc-dialog__surface {
@@ -497,19 +529,23 @@ button {
 }
 
 .fvy-button--primary:not(:disabled):hover {
-	box-shadow: 0 18px 42px rgba(37, 99, 235, 0.3);
+	box-shadow: 0 18px 42px rgba(249, 115, 22, 0.3);
+	/* original fvy-button hover shadow: rgba(37, 99, 235, 0.3) */
 }
 
 [data-theme='dark'] .fvy-button--primary:not(:disabled):hover {
-	box-shadow: 0 20px 44px rgba(96, 165, 250, 0.32);
+		box-shadow: 0 2px 5px rgba(251, 146, 60, 0.09);
+		/* original dark fvy-button shadow: rgba(96, 165, 250, 0.09) */
 }
 
 .fvy-button--secondary:not(:disabled):hover {
-	background: rgba(37, 99, 235, 0.16);
+	background: rgba(249, 115, 22, 0.16);
+	/* original fvy-button secondary hover: rgba(37, 99, 235, 0.16) */
 }
 
 [data-theme='dark'] .fvy-button--secondary:not(:disabled):hover {
-	background: rgba(96, 165, 250, 0.24);
+	background: rgba(251, 146, 60, 0.24);
+	/* original dark fvy-button secondary hover: rgba(96, 165, 250, 0.24) */
 }
 
 .fvy-button--ghost:not(:disabled):hover {
@@ -616,7 +652,8 @@ button {
   top: 0;
   width: 4px;
   height: 100%;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+	background: linear-gradient(135deg, #fb923c, #f97316);
+		/* original gradient: linear-gradient(135deg, #3b82f6, #8b5cf6); */
   transform: scaleY(0);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: center;
@@ -626,12 +663,14 @@ button {
 
 .premium-row-hover:hover {
   transform: translateX(8px) scale(1.01);
-  box-shadow: -4px 0 0 0 rgba(59, 130, 246, 0.1),
-              0 8px 32px rgba(59, 130, 246, 0.12),
-              0 0 0 1px rgba(59, 130, 246, 0.08);
-  background: linear-gradient(90deg, 
-    rgba(219, 234, 254, 0.4) 0%, 
-    rgba(255, 255, 255, 0.8) 100%);
+		box-shadow: -4px 0 0 0 rgba(251, 146, 60, 0.1),
+								0 8px 32px rgba(251, 146, 60, 0.12),
+								0 0 0 1px rgba(251, 146, 60, 0.08);
+		/* original box-shadow: -4px 0 0 0 rgba(59, 130, 246, 0.1), 0 8px 32px rgba(59, 130, 246, 0.12), 0 0 0 1px rgba(59, 130, 246, 0.08) */
+		background: linear-gradient(90deg, 
+			rgba(255, 244, 230, 0.45) 0%, 
+			rgba(255, 255, 255, 0.8) 100%);
+		/* original background gradient: rgba(219, 234, 254, 0.4) -> use if you want the blue wash */
   z-index: 10;
 }
 

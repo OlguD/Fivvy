@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { finalize, take } from 'rxjs';
 import { ProfileService, UpdatePasswordPayload, UpdateProfilePayload, UserProfile } from '../../core/profile.service';
 import { environment } from '../../../environments/environment';
@@ -42,7 +44,9 @@ const passwordMatchValidator: ValidatorFn = (control: AbstractControl): Validati
     MatInputModule,
     MatSlideToggleModule,
     MatChipsModule,
-    MatTooltipModule
+    MatTooltipModule,
+  MatSnackBarModule,
+    TranslateModule
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
@@ -107,14 +111,18 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly profileService: ProfileService
+    private readonly profileService: ProfileService,
+    private readonly snackBar: MatSnackBar
   ) {
     this.profileForm = this.fb.group({
       username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
       name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
       surname: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
       email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
-      bio: new FormControl('', { nonNullable: true })
+      tax: new FormControl<number | null>(null, { nonNullable: false }),
+      companyName: new FormControl<string | null>(null, { nonNullable: false }),
+      address: new FormControl<string | null>(null, { nonNullable: false }),
+      city: new FormControl<string | null>(null, { nonNullable: false })
     });
 
     this.passwordForm = this.fb.group({
@@ -135,8 +143,17 @@ export class ProfileComponent implements OnInit {
     }
 
     this.isSavingProfile.set(true);
-    const { username, name, surname, email } = this.profileForm.getRawValue();
-    const payload: UpdateProfilePayload = { username, name, surname, email };
+  const { username, name, surname, email, tax, companyName, address, city } = this.profileForm.getRawValue();
+  const payload: UpdateProfilePayload = {
+    username,
+    name,
+    surname,
+    email,
+    taxValue: typeof tax === 'number' ? tax : undefined,
+    companyName: companyName ?? null,
+    address: address ?? null,
+    city: city ?? null
+  };
 
     this.profileService.updateProfile(payload)
       .pipe(
@@ -147,6 +164,8 @@ export class ProfileComponent implements OnInit {
         next: user => {
           this.applyProfile(user);
           this.initialProfileData = this.profileForm.getRawValue() as ProfileFormValue;
+          // Show a friendly success notification
+          this.snackBar.open('Profile saved successfully', 'Dismiss', { duration: 3500 });
         },
         error: error => {
           console.error('Profile update failed', error);
@@ -213,6 +232,16 @@ export class ProfileComponent implements OnInit {
           if (!this.profileImagePreview) {
             this.profileImagePreview = this.profileImageFromApi;
           }
+          // patch tax value if present
+          if (typeof user.taxValue === 'number') {
+            this.profileForm.patchValue({ tax: user.taxValue });
+          }
+
+          // patch optional company/address/city
+          if (user.profileImagePath === undefined) {
+            // noop
+          }
+          this.profileForm.patchValue({ companyName: user['companyName'] ?? null, address: user['address'] ?? null, city: user['city'] ?? null });
         },
         error: error => {
           console.error('Profile retrieval failed', error);
@@ -227,6 +256,13 @@ export class ProfileComponent implements OnInit {
       surname: user.surname ?? '',
       email: user.email ?? ''
     });
+
+    if (typeof user.taxValue === 'number') {
+      this.profileForm.patchValue({ tax: user.taxValue });
+    }
+
+    // patch optional fields
+    this.profileForm.patchValue({ companyName: (user as any).companyName ?? null, address: (user as any).address ?? null, city: (user as any).city ?? null });
 
     this.fullName.set(this.composeFullName(user));
     this.initials.set(this.composeInitials(user));
@@ -283,5 +319,9 @@ interface ProfileFormValue {
   name: string;
   surname: string;
   email: string;
-  bio: string;
+  bio?: string;
+  tax?: number | null;
+  companyName?: string | null;
+  address?: string | null;
+  city?: string | null;
 }

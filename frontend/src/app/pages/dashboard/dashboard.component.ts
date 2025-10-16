@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -53,7 +57,8 @@ interface RevenueChartView {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, BaseChartDirective, MatFormFieldModule, MatSelectModule, TranslateModule],
+  providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -64,6 +69,71 @@ export class DashboardComponent implements OnInit {
   activities: ActivityListItem[] = [];
   revenueChart?: RevenueChartView;
 
+  // Chart.js bar chart config
+  barChartData: any = { labels: [], datasets: [] };
+  barChartOptions: any = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          label: (ctx: any) => {
+            // Show full formatted value in tooltip
+            const idx = ctx.dataIndex;
+            const point = this.revenueTrend[idx];
+            return point ? point.displayValue : ctx.formattedValue;
+          }
+        }
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          color: (ctx: any) => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            return isDark ? '#fff' : '#222';
+          },
+          font: { weight: 'bold', size: 16 },
+          opacity: 1
+        }
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: (ctx: any) => {
+            // Lighter grid lines for dark mode
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            return isDark ? 'rgba(255,255,255,0.22)' : 'rgba(148,163,184,0.18)';
+          }
+        },
+        ticks: {
+          color: (ctx: any) => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            return isDark ? '#fff' : '#222';
+          },
+          font: { weight: 'bold', size: 15 },
+          opacity: 1
+        }
+      }
+    }
+  };
+
+  getTotalRevenue(): string {
+    if (!this.revenueTrend.length) return '—';
+    // Toplamı hesapla (ilk para birimini kullan)
+    const total = this.revenueTrend.reduce((sum, p) => {
+      const num = Number((p.displayValue || '').replace(/[^\d.\-]/g, ''));
+      return sum + (isNaN(num) ? 0 : num);
+    }, 0);
+    // Para birimini ilk noktadan al
+    const currency = this.revenueTrend[0]?.displayValue?.replace(/[\d.,\s-]/g, '').trim() || '';
+    return this.formatAmount(total, currency);
+  }
+
   loading = false;
   errorMessage?: string;
   readonly revenueGradientId = `revenue-gradient-${Math.random().toString(36).slice(2, 8)}`;
@@ -71,24 +141,45 @@ export class DashboardComponent implements OnInit {
   private readonly chartPaddingBottom = 10;
 
 
+
+  currentLang = 'tr';
+
   constructor(
     private readonly dashboardService: DashboardService,
     private readonly authService: AuthService,
-    private readonly router: Router
-  ) {}
-
-  // Returns bar height as percent of max value
-  public getBarHeight(point: RevenueTrendPoint): number {
-    if (!this.revenueTrend || !this.revenueTrend.length) return 0;
-    const max = Math.max(...this.revenueTrend.map((p: any) => {
-      // Try to parse number from displayValue, fallback to 1
-      const num = Number((p.displayValue || '').replace(/[^\d.\-]/g, ''));
-      return isNaN(num) ? 1 : num;
-    }));
-    const val = Number((point.displayValue || '').replace(/[^\d.\-]/g, ''));
-    if (!max || isNaN(val)) return 0;
-    return Math.max(6, (val / max) * 100); // min 6% for visibility
+    private readonly router: Router,
+    private readonly translate: TranslateService
+  ) {
+    this.currentLang = this.translate.currentLang || this.translate.getDefaultLang() || 'tr';
   }
+
+  switchLang(lang: string) {
+    this.currentLang = lang;
+    this.translate.use(lang);
+  }
+
+  private updateBarChartData(): void {
+    if (!this.revenueTrend?.length) {
+      this.barChartData = { labels: [], datasets: [] };
+      return;
+    }
+    this.barChartData = {
+      labels: this.revenueTrend.map(p => p.label),
+      datasets: [
+        {
+          data: this.revenueTrend.map(p => {
+            // Try to parse number from displayValue
+            const num = Number((p.displayValue || '').replace(/[^\d.\-]/g, ''));
+            return isNaN(num) ? 0 : num;
+          }),
+          backgroundColor: 'rgba(37,99,235,0.85)',
+          borderRadius: 8,
+          maxBarThickness: 38
+        }
+      ]
+    };
+  }
+
 
   async ngOnInit(): Promise<void> {
     await this.loadOverview();
@@ -136,18 +227,50 @@ export class DashboardComponent implements OnInit {
     this.revenueInsights = overview.pipelineInsights.slice(0, 3).map(insight => this.mapPipelineInsight(insight));
     this.revenueTrend = this.mapRevenueTrend(overview.revenueTrend);
     this.revenueChart = this.buildRevenueChart(this.revenueTrend);
+    this.updateBarChartData();
     this.activities = overview.activityFeed.map(activity => this.mapActivity(activity)).slice(0, 6);
   }
 
   private mapSummaryCard(card: DashboardSummaryCard): SummaryStat {
     const { text, trend } = this.formatChange(card.change);
 
+    // Map known backend labels to i18n keys
+    const labelKey = this.getMetricLabelKey(card.label);
+
     return {
-      label: card.label,
+      label: labelKey,
       value: this.formatAmount(card.value.amount, card.value.currency),
       change: text,
       trend
     };
+  }
+
+  /**
+   * Maps backend metric labels to i18n keys for translation.
+   * Add new mappings as needed.
+   */
+  private getMetricLabelKey(label: string): string {
+    const map: Record<string, string> = {
+      // Turkish
+      'Toplam Gelir': 'dashboard.metrics.totalRevenue',
+      'Fatura Sayısı': 'dashboard.metrics.invoiceCount',
+      'Aktif Proje': 'dashboard.metrics.activeProject',
+      'Müşteri Sayısı': 'dashboard.metrics.clientCount',
+      'Ay bazlı gelir': 'dashboard.metrics.monthlyRevenue',
+      'Aktif projeler': 'dashboard.metrics.activeProjects',
+      'Yaklaşan faturalar': 'dashboard.metrics.upcomingInvoices',
+      'Ortalama teslim süresi': 'dashboard.metrics.avgDeliveryTime',
+      // English
+      'Total Revenue': 'dashboard.metrics.totalRevenue',
+      'Invoice Count': 'dashboard.metrics.invoiceCount',
+      'Active Project': 'dashboard.metrics.activeProject',
+      'Client Count': 'dashboard.metrics.clientCount',
+      'Monthly Revenue': 'dashboard.metrics.monthlyRevenue',
+      'Active Projects': 'dashboard.metrics.activeProjects',
+      'Upcoming Invoices': 'dashboard.metrics.upcomingInvoices',
+      'Average Delivery Time': 'dashboard.metrics.avgDeliveryTime',
+    };
+    return map[label] || label;
   }
 
   private formatAmount(amount: number, currency?: string | null): string {

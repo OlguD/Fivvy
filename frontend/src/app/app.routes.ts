@@ -3,6 +3,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { ClientsComponent } from './pages/clients/clients.component';
 import { ProjectsComponent } from './pages/projects/projects.component';
 import { InvoicesComponent } from './pages/invoices/invoices.component';
+import { InvoiceTemplateGalleryComponent } from './invoice-template-gallery/invoice-template-gallery.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { LoginComponent } from './pages/auth/login/login.component';
 import { RegisterComponent } from './pages/auth/register/register.component';
@@ -24,6 +25,7 @@ export const routes: Routes = [
             { path: 'clients', component: ClientsComponent },
             { path: 'projects', component: ProjectsComponent },
             { path: 'invoices', component: InvoicesComponent },
+            { path: 'invoices/templates', component: InvoiceTemplateGalleryComponent },
             { path: 'profile', component: ProfileComponent },
             { path: 'admin/users', component: AdminUsersComponent, canActivate: [adminGuard] }
         ]

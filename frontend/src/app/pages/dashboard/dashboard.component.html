@@ -1,75 +1,74 @@
 <div class="dashboard" *ngIf="!loading && !errorMessage; else dashboardState">
+
 	<section class="dashboard__metrics" *ngIf="summaryStats.length; else emptySummary">
 		<article class="metric-card" *ngFor="let metric of summaryStats">
 			<header class="metric-card__header">
-				<span class="metric-card__label">{{ metric.label }}</span>
-				<span
-					class="metric-card__trend"
-					[ngClass]="{'metric-card__trend--down': metric.trend === 'down'}"
-				>
-					{{ metric.change }}
-				</span>
+			<span class="metric-card__label">{{ metric.label | translate }}</span>
+						<span
+							class="metric-card__trend"
+							[ngClass]="{'metric-card__trend--down': metric.trend === 'down'}"
+						>
+							{{ metric.change }}
+						</span>
 			</header>
 			<div class="metric-card__value">{{ metric.value }}</div>
-			<div class="metric-card__spark" [ngClass]="{'metric-card__spark--down': metric.trend === 'down'}"></div>
+			<!-- <div class="metric-card__spark" [ngClass]="{'metric-card__spark--down': metric.trend === 'down'}"></div> -->
 		</article>
 	</section>
 
 		<section class="dashboard__grid dashboard__grid--single">
-			<article class="panel panel--revenue panel--revenue-large">
-				<header class="panel__header">
-					<div>
-						<h2 class="panel__title">Revenue performance</h2>
-						<p class="panel__subtitle">MRR ve pipeline görünümü</p>
-					</div>
-					<button mat-stroked-button type="button" class="panel__action" (click)="reload()">
-						<mat-icon aria-hidden="true">refresh</mat-icon>
-						Yenile
-					</button>
-				</header>
-						<div class="panel__body revenue-bar-chart" *ngIf="revenueTrend.length; else noRevenue">
-							<div class="bar-chart">
-								<div class="bar-chart__bars">
-									<div *ngFor="let point of revenueTrend; let i = index"
-											 class="bar-chart__bar-group">
-										<div class="bar-chart__bar"
-												 [style.height.%]="getBarHeight(point)"
-												 [attr.title]="point.displayValue">
-											<span class="bar-chart__value">{{ point.displayValue }}</span>
-										</div>
-										<div class="bar-chart__label">{{ point.label }}</div>
-									</div>
-								</div>
-							</div>
+		<article class="panel panel--revenue panel--revenue-large" style="min-height: 480px;">
+					<header class="panel__header">
+						<div>
+							<h2 class="panel__title">{{ 'dashboard.revenue.title' | translate }}</h2>
+							<p class="panel__subtitle">{{ 'dashboard.revenue.subtitle' | translate }}</p>
 						</div>
-			</article>
-		</section>
+						<div style="display: flex; align-items: center; gap: 1.2rem;">
+							<div class="revenue-total-badge" style="background: var(--primary, #2563eb); color: #fff; font-size: 1.08rem; font-weight: 600; border-radius: 1.2rem; padding: 0.45em 1.2em; margin-right: 0.2em; white-space: nowrap;">
+								{{ 'dashboard.revenue.total' | translate }}: {{ getTotalRevenue() }}
+							</div>
+							<button mat-stroked-button type="button" class="panel__action" (click)="reload()">
+								<mat-icon aria-hidden="true">refresh</mat-icon>
+								{{ 'app.actions.reload' | translate }}
+							</button>
+						</div>
+					</header>
+			<div class="panel__body revenue-bar-chart" style="min-height: 340px;" *ngIf="revenueTrend.length; else noRevenue">
+								<canvas baseChart
+									[data]="barChartData"
+									[options]="barChartOptions"
+									[type]="'bar'"
+									style="height: 320px; width: 100%; display: block; background: transparent;"
+								></canvas>
+			</div>
+		</article>
+	</section>
 
-	<section class="dashboard__grid dashboard__grid--single">
+		<section class="dashboard__grid dashboard__grid--single">
 		<article class="panel panel--activity">
-			<header class="panel__header">
-				<div>
-					<h2 class="panel__title">Latest activity</h2>
-					<p class="panel__subtitle">Gerçek zamanlı ekip güncellemeleri</p>
-				</div>
-				<button mat-button type="button" class="panel__link" (click)="reload()">
-					Yenile
-					<mat-icon aria-hidden="true">refresh</mat-icon>
-				</button>
-			</header>
+					<header class="panel__header">
+						<div>
+							<h2 class="panel__title">{{ 'dashboard.activity.title' | translate }}</h2>
+							<p class="panel__subtitle">{{ 'dashboard.activity.subtitle' | translate }}</p>
+						</div>
+						<button mat-button type="button" class="panel__link" (click)="reload()">
+							{{ 'app.actions.reload' | translate }}
+							<mat-icon aria-hidden="true">refresh</mat-icon>
+						</button>
+					</header>
 			<ul class="activity-list" *ngIf="activities.length; else noActivities">
-				<li *ngFor="let activity of activities" class="activity-item">
-					<div class="activity-item__avatar">
-						<span>{{ activity.avatar }}</span>
-					</div>
-					<div class="activity-item__content">
-						<h3>{{ activity.title }}</h3>
-						<p>{{ activity.description }}</p>
-					</div>
-					<div class="activity-item__meta">
-						<span class="activity-item__timestamp">{{ activity.timestamp }}</span>
-						<span class="activity-item__chip activity-item__chip--{{ activity.type }}">{{ activity.type }}</span>
-					</div>
+			<li *ngFor="let activity of activities" class="activity-item">
+								<div class="activity-item__avatar">
+									<span>{{ activity.avatar }}</span>
+								</div>
+								<div class="activity-item__content">
+									<h3>{{ activity.title }}</h3>
+									<p>{{ activity.description }}</p>
+								</div>
+								<div class="activity-item__meta">
+									<span class="activity-item__timestamp">{{ activity.timestamp }}</span>
+									<span class="activity-item__chip activity-item__chip--{{ activity.type }}">{{ ('dashboard.activity.type.' + activity.type) | translate }}</span>
+								</div>
 				</li>
 			</ul>
 		</article>
@@ -77,28 +76,28 @@
 </div>
 
 <ng-template #dashboardState>
-	<div class="dashboard__state" *ngIf="loading">Veriler yükleniyor...</div>
+	<div class="dashboard__state" *ngIf="loading">{{ 'dashboard.state.loading' | translate }}</div>
 	<div class="dashboard__state dashboard__state--error" *ngIf="!loading && errorMessage">
 		<p>{{ errorMessage }}</p>
 		<button mat-stroked-button type="button" (click)="reload()">
 			<mat-icon aria-hidden="true">refresh</mat-icon>
-			Tekrar dene
+			{{ 'app.actions.retry' | translate }}
 		</button>
 	</div>
 </ng-template>
 
 <ng-template #emptySummary>
-	<div class="panel panel--empty">Özet kartı bulunamadı.</div>
+	<div class="panel panel--empty">{{ 'dashboard.state.emptySummary' | translate }}</div>
 </ng-template>
 
 <ng-template #noRevenue>
-	<p class="panel__empty">Gelir trendi verisi henüz hazır değil.</p>
+	<p class="panel__empty">{{ 'dashboard.state.noRevenue' | translate }}</p>
 </ng-template>
 
 <ng-template #noInsights>
-	<p class="panel__empty">Pipeline içgörüsü bulunamadı.</p>
+	<p class="panel__empty">{{ 'dashboard.state.noInsights' | translate }}</p>
 </ng-template>
 
 <ng-template #noActivities>
-	<p class="panel__empty">Aktivite kaydı bulunamadı.</p>
+	<p class="panel__empty">{{ 'dashboard.state.noActivities' | translate }}</p>
 </ng-template>

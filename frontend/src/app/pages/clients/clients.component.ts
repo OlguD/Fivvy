@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -28,7 +29,8 @@ import { DataTableComponent, DataTableColumn, DataTableAction } from '../../shar
     MatDialogModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    DataTableComponent
+  DataTableComponent,
+  TranslateModule
   ],
   templateUrl: './clients.component.html',
   styleUrls: ['./clients.component.css']
@@ -42,24 +44,8 @@ export class ClientsComponent implements OnInit, OnDestroy {
   isLoading = false;
   error: string | null = null;
 
-  readonly tableColumns: DataTableColumn<ClientDto>[] = [
-    { key: 'id', label: 'ID' },
-    { key: 'companyName', label: 'Company' },
-    { key: 'contactName', label: 'Contact' },
-    { key: 'email', label: 'Email' },
-    { key: 'phone', label: 'Phone' },
-    { key: 'createdAt', label: 'Created', type: 'date' }
-  ];
-
-  readonly tableActions: DataTableAction<ClientDto>[] = [
-    {
-      label: 'Remove client',
-      icon: 'delete',
-      action: (client) => this.confirmRemove(client),
-      disabled: (client) => this.isClientBusy(client.id),
-      ariaLabel: (client) => `Remove client ${client.companyName}`
-    }
-  ];
+  tableColumns: DataTableColumn<ClientDto>[] = [];
+  tableActions: DataTableAction<ClientDto>[] = [];
 
   private readonly destroy$ = new Subject<void>();
   private readonly busyClients = new Set<number>();
@@ -67,8 +53,32 @@ export class ClientsComponent implements OnInit, OnDestroy {
   constructor(
     private readonly clientsService: ClientsService,
     private readonly dialog: MatDialog,
-    private readonly snackBar: MatSnackBar
-  ) {}
+    private readonly snackBar: MatSnackBar,
+    public readonly translate: TranslateService
+  ) {
+    this.setTranslatedTableColumnsAndActions();
+    this.translate.onLangChange.subscribe(() => this.setTranslatedTableColumnsAndActions());
+  }
+
+  private setTranslatedTableColumnsAndActions() {
+    this.tableColumns = [
+      { key: 'id', label: this.translate.instant('pages.clients.table.id') },
+      { key: 'companyName', label: this.translate.instant('pages.clients.table.company') },
+      { key: 'contactName', label: this.translate.instant('pages.clients.table.contact') },
+      { key: 'email', label: this.translate.instant('pages.clients.table.email') },
+      { key: 'phone', label: this.translate.instant('pages.clients.table.phone') },
+      { key: 'createdAt', label: this.translate.instant('pages.clients.table.createdAt'), type: 'date' }
+    ];
+    this.tableActions = [
+      {
+        label: this.translate.instant('pages.clients.actions.remove'),
+        icon: 'delete',
+        action: (client) => this.confirmRemove(client),
+        disabled: (client) => this.isClientBusy(client.id),
+        ariaLabel: (client) => `${this.translate.instant('pages.clients.actions.remove')} ${client.companyName}`
+      }
+    ];
+  }
 
   ngOnInit(): void {
     this.searchControl.valueChanges

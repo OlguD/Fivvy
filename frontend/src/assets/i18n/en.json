@@ -35,6 +35,39 @@
       "tr": "Türkçe"
     }
   },
+  "dashboard": {
+    "metrics": {
+  "totalRevenue": "Total Revenue",
+  "invoiceCount": "Invoice Count",
+  "activeProject": "Active Project",
+  "clientCount": "Client Count",
+  "monthlyRevenue": "Monthly Revenue",
+  "activeProjects": "Active Projects",
+  "upcomingInvoices": "Upcoming Invoices",
+  "avgDeliveryTime": "Average Delivery Time"
+    },
+    "revenue": {
+      "title": "Revenue performance",
+      "subtitle": "MRR and pipeline overview",
+      "total": "Total"
+    },
+    "activity": {
+      "title": "Latest activity",
+      "subtitle": "Real-time team updates",
+      "type": {
+        "client": "Client",
+        "invoice": "Invoice",
+        "project": "Project"
+      }
+    },
+    "state": {
+      "loading": "Loading data...",
+      "emptySummary": "No summary card found.",
+      "noRevenue": "Revenue trend data is not ready yet.",
+      "noInsights": "No pipeline insight found.",
+      "noActivities": "No activity record found."
+    }
+  },
   "pageMeta": {
     "dashboard": {
       "title": "Overview",
@@ -62,6 +95,69 @@
     }
   },
   "pages": {
+    "profile": {
+      "title": "Profile",
+      "actions": {
+        "export": "Export data",
+        "upgrade": "Upgrade workspace",
+        "reset": "Reset",
+        "save": "Save changes",
+        "cancel": "Cancel",
+        "manage2fa": "Manage 2FA"
+      },
+      "form": {
+  "newPassword": "New password",
+  "confirmPassword": "Confirm password",
+  "passwordsNoMatch": "Passwords do not match",
+  "updatePassword": "Update password",
+  "forgotPassword": "Forgot current password?",
+    "username": "Username",
+        "name": "Name",
+        "surname": "Surname",
+        "email": "Email"
+      },
+      "modules": {
+        "account": {
+          "title": "Account details",
+          "desc": "Workspace identity, contact details and bio visible to teammates."
+        },
+        "security": {
+          "title": "Password & security",
+          "desc": "Rotate credentials regularly and keep two-factor enabled."
+        }
+      },
+      "states": {
+        "saving": "Saving"
+      }
+    },
+  "invoices": {
+      "title": "Invoices",
+      "search": {
+        "placeholder": "Search by invoice number, client or status"
+      },
+      "table": {
+        "invoiceNumber": "Invoice #",
+        "client": "Client",
+        "status": "Status",
+        "invoiceDate": "Invoice date",
+        "dueDate": "Due date",
+        "tax": "Tax",
+        "total": "Total"
+      },
+      "actions": {
+        "reload": "Reload",
+        "create": "New invoice",
+        "retry": "Retry",
+        "delete": "Delete invoice",
+        "download": "Download"
+      },
+      "status": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "paid": "Paid",
+        "overdue": "Overdue"
+      }
+    },
     "projects": {
       "title": "Projects",
       "subtitle": "View and manage project records.",

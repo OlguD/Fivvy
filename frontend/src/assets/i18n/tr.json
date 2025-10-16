@@ -35,6 +35,39 @@
       "tr": "Türkçe"
     }
   },
+  "dashboard": {
+    "metrics": {
+  "totalRevenue": "Toplam Gelir",
+  "invoiceCount": "Fatura Sayısı",
+  "activeProject": "Aktif Proje",
+  "clientCount": "Müşteri Sayısı",
+  "monthlyRevenue": "Ay bazlı gelir",
+  "activeProjects": "Aktif projeler",
+  "upcomingInvoices": "Yaklaşan faturalar",
+  "avgDeliveryTime": "Ortalama teslim süresi"
+    },
+    "revenue": {
+      "title": "Gelir performansı",
+      "subtitle": "MRR ve pipeline görünümü",
+      "total": "Toplam"
+    },
+    "activity": {
+      "title": "Son aktiviteler",
+      "subtitle": "Gerçek zamanlı ekip güncellemeleri",
+      "type": {
+        "client": "Müşteri",
+        "invoice": "Fatura",
+        "project": "Proje"
+      }
+    },
+    "state": {
+      "loading": "Veriler yükleniyor...",
+      "emptySummary": "Özet kartı bulunamadı.",
+      "noRevenue": "Gelir trendi verisi henüz hazır değil.",
+      "noInsights": "Pipeline içgörüsü bulunamadı.",
+      "noActivities": "Aktivite kaydı bulunamadı."
+    }
+  },
   "pageMeta": {
     "dashboard": {
       "title": "Gösterge Paneli",
@@ -62,6 +95,69 @@
     }
   },
   "pages": {
+    "profile": {
+      "title": "Profil",
+      "actions": {
+        "export": "Verileri dışa aktar",
+        "upgrade": "Çalışma alanını yükselt",
+        "reset": "Sıfırla",
+        "save": "Değişiklikleri kaydet",
+        "cancel": "Vazgeç",
+        "manage2fa": "2FA'yı yönet"
+      },
+      "form": {
+  "newPassword": "Yeni şifre",
+  "confirmPassword": "Şifreyi tekrar girin",
+  "passwordsNoMatch": "Şifreler eşleşmiyor",
+  "updatePassword": "Şifreyi güncelle",
+  "forgotPassword": "Mevcut şifreni mi unuttun?",
+    "username": "Kullanıcı adı",
+        "name": "Ad",
+        "surname": "Soyad",
+        "email": "E-posta"
+      },
+      "modules": {
+        "account": {
+          "title": "Hesap detayları",
+          "desc": "Çalışma alanı kimliği, iletişim bilgileri ve ekip arkadaşlarına görünen biyografi."
+        },
+        "security": {
+          "title": "Şifre ve güvenlik",
+          "desc": "Kimlik bilgilerinizi düzenli olarak değiştirin ve iki faktörlü korumayı açık tutun."
+        }
+      },
+      "states": {
+        "saving": "Kaydediliyor"
+      }
+    },
+  "invoices": {
+      "title": "Faturalar",
+      "search": {
+        "placeholder": "Fatura numarası, müşteri veya duruma göre ara"
+      },
+      "table": {
+        "invoiceNumber": "Fatura #",
+        "client": "Müşteri",
+        "status": "Durum",
+        "invoiceDate": "Fatura tarihi",
+        "dueDate": "Son ödeme",
+        "tax": "Vergi",
+        "total": "Toplam"
+      },
+      "actions": {
+        "reload": "Yenile",
+        "create": "Yeni fatura",
+        "retry": "Tekrar dene",
+        "delete": "Faturayı sil",
+        "download": "İndir"
+      },
+      "status": {
+        "draft": "Taslak",
+        "sent": "Gönderildi",
+        "paid": "Ödendi",
+        "overdue": "Gecikmiş"
+      }
+    },
     "projects": {
       "title": "Projeler",
       "subtitle": "Proje kayıtlarını görüntüleyin ve yönetin.",

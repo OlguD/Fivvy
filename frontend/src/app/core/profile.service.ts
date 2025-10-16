@@ -14,6 +14,10 @@ export interface UserProfile {
   role: string;
   createdAt: string;
   profileImagePath?: string | null;
+  taxValue?: number;
+  companyName?: string | null;
+  address?: string | null;
+  city?: string | null;
 }
 
 export interface UpdateProfilePayload {
@@ -21,6 +25,10 @@ export interface UpdateProfilePayload {
   name: string;
   surname: string;
   email: string;
+  taxValue?: number;
+  companyName?: string | null;
+  address?: string | null;
+  city?: string | null;
 }
 
 export interface UpdatePasswordPayload {

@@ -12,6 +12,7 @@ import { ClientDto } from '../clients/clients.types';
 import { InvoicesService } from './invoices.service';
 import { InvoiceDto, InvoiceStatus, SaveInvoicePayload } from './invoices.types';
 import { InvoiceDeleteDialogComponent, InvoiceDeleteDialogData, InvoiceDeleteDialogResult } from './invoice-delete-dialog.component';
+import { RouterModule } from '@angular/router';
 import { InvoiceDetailModalComponent } from './invoice-detail-modal.component';
 import { DataTableComponent, DataTableColumn, DataTableAction } from '../../shared/components/data-table/data-table.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -28,7 +29,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     MatProgressSpinnerModule,
   MatDialogModule,
   DataTableComponent,
-  TranslateModule
+  TranslateModule,
+  RouterModule
   ],
   templateUrl: './invoices.component.html',
   styleUrls: ['./invoices.component.css']
@@ -89,7 +91,6 @@ export class InvoicesComponent implements OnInit, OnDestroy {
     { value: InvoiceStatus.Paid, label: 'Paid' },        // 'Paid'
     { value: InvoiceStatus.Overdue, label: 'Overdue' }   // 'Overdue'
   ];
-
   tableColumns: DataTableColumn<InvoiceDto>[] = [];
   tableActions: DataTableAction<InvoiceDto>[] = [];
 
@@ -116,6 +117,10 @@ export class InvoicesComponent implements OnInit, OnDestroy {
       notes: this.fb.control<string>('', { nonNullable: true }),
       lineItems: this.fb.array<FormGroup>([])
     });
+    this.setTranslatedTableColumnsAndActions();
+    this.translate.onLangChange.subscribe(() => {
+      this.setTranslatedTableColumnsAndActions();
+    });
   }
 
   private setErrorMessage(key: string): void {
@@ -138,6 +143,72 @@ export class InvoicesComponent implements OnInit, OnDestroy {
 
     this.loadData();
   }
+  private setTranslatedTableColumnsAndActions(): void {
+    this.tableColumns = [
+      {
+        key: 'invoiceNumber',
+        label: this.translate.instant('pages.invoices.table.invoiceNumber'),
+        format: (value, invoice) => value || ('#' + (invoice as InvoiceDto).id)
+      },
+      {
+        key: 'clientId',
+        label: this.translate.instant('pages.invoices.table.client'),
+        format: (value) => this.getClientName(value as number)
+      },
+      {
+        key: 'status',
+        label: this.translate.instant('pages.invoices.table.status'),
+        format: (value) => this.getStatusLabel(value as InvoiceStatus)
+      },
+      {
+        key: 'invoiceDate',
+        label: this.translate.instant('pages.invoices.table.invoiceDate'),
+        type: 'date'
+      },
+      {
+        key: 'dueDate',
+        label: this.translate.instant('pages.invoices.table.dueDate'),
+        type: 'date'
+      },
+      {
+        key: 'tax',
+        label: this.translate.instant('pages.invoices.table.tax'),
+        format: (value) => new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(Number(value ?? 0))
+      },
+      {
+        key: 'total',
+        label: this.translate.instant('pages.invoices.table.total'),
+        format: (value, invoice) => {
+          if (!invoice) return '₺0,00';
+          let total = value;
+          if (typeof total !== 'number' || isNaN(total) || total === 0) {
+            const subTotal = (invoice.lineItems || []).reduce((sum: number, item: any) => sum + ((item.quantity || 0) * (item.unitPrice || 0)), 0);
+            total = subTotal + (Number(invoice.tax) || 0);
+          }
+          return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(total);
+        }
+      }
+    ];
+
+    this.tableActions = [
+      {
+        label: this.translate.instant('pages.invoices.actions.delete'),
+        icon: 'delete',
+        action: (invoice) => this.deleteInvoice(invoice),
+        disabled: (invoice) => this.isSubmitting,
+        ariaLabel: (invoice) => `${this.translate.instant('pages.invoices.actions.delete')} ${invoice.invoiceNumber || '#' + invoice.id}`
+      }
+    ];
+
+    // add a Download action alongside Delete (translated label kept simple)
+    this.tableActions.push({
+      label: this.translate.instant('pages.invoices.actions.download') || 'Download',
+      icon: 'download',
+      action: (invoice) => this.downloadPdf(invoice),
+      disabled: (invoice) => this.isSubmitting,
+      ariaLabel: (invoice) => `Download ${invoice.invoiceNumber || '#' + invoice.id}`
+    });
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -157,6 +228,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
       { key: 'status', label: 'Status', format: (value) => this.getStatusLabel(value as InvoiceStatus) },
       { key: 'invoiceDate', label: 'Invoice date', type: 'date' },
       { key: 'dueDate', label: 'Due date', type: 'date' },
+      { key: 'tax', label: 'Tax', format: (value) => new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(Number(value ?? 0)) },
       {
         key: 'total',
         label: 'Total',
@@ -174,11 +246,18 @@ export class InvoicesComponent implements OnInit, OnDestroy {
 
     this.tableActions = [
       {
-        label: 'Delete invoice',
+        label: this.translate.instant('pages.invoices.actions.download') || 'Download',
+        icon: 'download',
+        action: (invoice) => this.downloadPdf(invoice),
+        disabled: (invoice) => this.isSubmitting,
+        ariaLabel: (invoice) => `Download ${invoice.invoiceNumber || '#' + invoice.id}`
+      },
+      {
+        label: this.translate.instant('pages.invoices.actions.delete') || 'Delete invoice',
         icon: 'delete',
         action: (invoice) => this.deleteInvoice(invoice),
         disabled: (invoice) => this.isSubmitting,
-        ariaLabel: (invoice) => `Delete invoice ${invoice.invoiceNumber || '#' + invoice.id}`
+        ariaLabel: (invoice) => `${this.translate.instant('pages.invoices.actions.delete')} ${invoice.invoiceNumber || '#' + invoice.id}`
       }
     ];
   }
@@ -437,6 +516,32 @@ export class InvoicesComponent implements OnInit, OnDestroy {
           }
         });
     });
+  }
+
+  downloadPdf(invoice: InvoiceDto): void {
+    if (!invoice) return;
+
+    this.isSubmitting = true;
+    this.invoicesService.downloadInvoicePdf(invoice.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `invoice-${invoice.invoiceNumber ?? invoice.id}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+          this.isSubmitting = false;
+        },
+        error: error => {
+          this.isSubmitting = false;
+          const message = this.extractErrorMessage(error);
+          this.snackBar.open(message, 'Dismiss', { duration: 4000 });
+        }
+      });
   }
 
   getLineItemTotal(group: FormGroup): number {

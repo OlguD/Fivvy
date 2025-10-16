@@ -2,6 +2,8 @@
   width: 100%;
   border-collapse: collapse;
   background: var(--surface-card);
+  /* use fixed layout so column widths are respected and alignment is stable */
+  table-layout: fixed;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--surface-shadow);
@@ -20,7 +22,8 @@
 
 .data-table th,
 .data-table td {
-  padding: 16px 20px;
+  /* slightly reduced padding to shift all columns left */
+  padding: 10px 10px;
   text-align: left;
   border-bottom: 1px solid var(--divider);
   line-height: 1.4;
@@ -69,8 +72,9 @@
 }
 
 .data-table tbody .data-table__row:hover {
-  transform: translateX(8px) scale(1.01);
-  box-shadow: 0 8px 32px var(--surface-shadow), 0 0 0 1px var(--divider);
+  /* do not shift row horizontally (prevents clipping of actions). Keep a subtle scale and shadow for hover */
+  transform: scale(1.005);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06), 0 0 0 1px var(--divider);
   background: linear-gradient(90deg, rgba(96, 165, 250, 0.08) 0%, var(--surface-card) 100%);
   z-index: 10;
 }
@@ -80,7 +84,8 @@
 }
 
 .data-table tbody .data-table__row:active {
-  transform: translateX(6px) scale(1.0);
+  /* smaller active scale */
+  transform: scale(1.0);
   transition-duration: 0.1s;
 }
 
@@ -93,16 +98,71 @@
 .data-table__actions {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.25rem;
   text-align: center;
-  width: 64px;
+  width: 56px; /* narrower so buttons fit inside */
   justify-content: center;
+  /* allow icons to be fully visible; buttons themselves will manage overflow */
+  overflow: visible;
 }
 
 .data-table__actions-header {
-  width: 64px;
+  width: 56px;
   text-align: center;
 }
+
+/* Ensure long cell text wraps and doesn't push layout */
+.data-table td {
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ensure vertical centering of cells and actions */
+.data-table th,
+.data-table td {
+  vertical-align: middle;
+}
+
+.data-table__actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  padding: 0;
+}
+
+/* Column-specific classes added to template for robust spacing control */
+.data-table th.col-0,
+.data-table td.col-0 {
+  padding-right: 8px !important; /* Invoice # column - keep moderate gap to next columns */
+  padding-left: 6px !important;
+  min-width: 56px; /* keep invoice number column compact */
+  max-width: 120px;
+  width: 160px; /* give invoice number a wider fixed area so it's readable */
+}
+.data-table th.col-1,
+.data-table td.col-1 {
+  padding-left: 6px !important; /* Second column (client) - slightly separated from # */
+  min-width: 80px;
+}
+
+/* Reduce left padding for all columns except the first so they shift left together. */
+.data-table th:not(.col-0),
+.data-table td:not(.col-0) {
+  padding-left: 4px !important;
+}
+
+/* Explicit column widths to stabilize layout. Adjust values if you want more/less space. */
+.data-table th.col-1, .data-table td.col-1 { width: 140px; }
+.data-table th.col-2, .data-table td.col-2 { width: 110px; }
+.data-table th.col-3, .data-table td.col-3 { width: 120px; }
+.data-table th.col-4, .data-table td.col-4 { width: 120px; }
+.data-table th.col-5, .data-table td.col-5 { width: 100px; }
+.data-table th.col-6, .data-table td.col-6 { width: 140px; }
+.data-table th.col-7, .data-table td.col-7 { width: 56px; }
 
 .data-table__row--busy {
   opacity: 0.6;
@@ -142,11 +202,46 @@
 }
 
 .data-table__actions button:hover:not(:disabled) {
-  transform: scale(1.15) rotate(5deg);
+  /* gentler button hover */
+  transform: scale(1.08) rotate(3deg);
 }
 
 .data-table__actions button:active:not(:disabled) {
   transform: scale(0.9) rotate(-5deg);
   transition-duration: 0.1s;
+}
+
+/* Reduce gap between Tax (6th) and Total (7th) columns */
+.data-table thead th:nth-child(6),
+.data-table tbody td:nth-child(6) {
+  /* reduce right padding on Tax column */
+  padding-right: 8px;
+}
+.data-table thead th:nth-child(7),
+.data-table tbody td:nth-child(7) {
+  /* reduce left padding on Total column */
+  padding-left: 8px;
+}
+
+/* Reduce gap after the first column (Invoice #) */
+.data-table thead th:nth-child(1),
+.data-table tbody td:nth-child(1) {
+  /* shrink space to the right of Invoice # as much as possible */
+  padding-right: 0px;
+  padding-left: 6px; /* reduce left padding too so the column is tighter */
+}
+
+/* Slightly reduce left padding for next few columns so they move closer */
+.data-table thead th:nth-child(2),
+.data-table tbody td:nth-child(2) {
+  padding-left: 2px; /* make second column very close to the # column */
+}
+.data-table thead th:nth-child(3),
+.data-table tbody td:nth-child(3),
+.data-table thead th:nth-child(4),
+.data-table tbody td:nth-child(4),
+.data-table thead th:nth-child(5),
+.data-table tbody td:nth-child(5) {
+  padding-left: 4px; /* keep others slightly reduced */
 }
 

@@ -1,11 +1,16 @@
 <div class="shell">
   <aside class="shell__sidebar" [ngClass]="{ 'shell__sidebar--open': sidebarOpen }">
     <div class="shell__brand">
-      <div class="shell__logo">Fv</div>
-      <div class="shell__brand-text">
+      <div class="shell__logo">
+        <ng-container *ngIf="!logoError; else logoFallback">
+          <img [src]="logoUrl" alt="Fivvy logo" (error)="onLogoError()" style="width:8.5rem;height:8.5rem;object-fit:contain;" />
+        </ng-container>
+        <ng-template #logoFallback>Fv</ng-template>
+      </div>
+      <!-- <div class="shell__brand-text">
         <span class="shell__brand-name">{{ 'app.brand.name' | translate }}</span>
         <span class="shell__brand-tag">{{ 'app.brand.tagline' | translate }}</span>
-      </div>
+      </div> -->
     </div>
 
     <nav class="shell__nav">

@@ -1,15 +1,4 @@
 <div class="admin-users">
-  <header class="admin-users__header">
-    <div>
-      <h1 class="admin-users__title">Kullanıcı yönetimi</h1>
-      <p class="admin-users__subtitle">Takımdaki hesapları, rolleri ve müşteri trafiğini yönetin.</p>
-    </div>
-    <button mat-stroked-button color="primary" type="button">
-      <mat-icon aria-hidden="true">download</mat-icon>
-      Dışa aktar (CSV)
-    </button>
-  </header>
-
   <section class="admin-users__stats" *ngIf="!isLoading(); else statsLoading">
     <article
       class="admin-users__stat-card"

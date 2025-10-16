@@ -1,3 +1,55 @@
+/* Force dark theme for language dropdown using :host-context for Angular */
+:host-context([data-theme='dark']) .custom-dropdown .dropdown-toggle {
+  background: #232b3b !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(96,165,250,0.13) !important;
+}
+:host-context([data-theme='dark']) .custom-dropdown .dropdown-menu {
+  background: #181f2e !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(96,165,250,0.13) !important;
+  box-shadow: 0 4px 16px rgba(2,6,23,0.22) !important;
+}
+:host-context([data-theme='dark']) .custom-dropdown .dropdown-menu li {
+  color: #f8fafc !important;
+  background: transparent !important;
+  transition: background 0.18s, color 0.18s;
+}
+:host-context([data-theme='dark']) .custom-dropdown .dropdown-menu li.selected,
+:host-context([data-theme='dark']) .custom-dropdown .dropdown-menu li:hover {
+  background: rgba(96,165,250,0.13) !important;
+  color: var(--primary, #60a5fa) !important;
+}
+[data-theme='dark'] .custom-dropdown .dropdown-menu {
+  background: #181f2e !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(96,165,250,0.13) !important;
+}
+/* Dark theme styles for language dropdown */
+[data-theme='dark'] .custom-dropdown .dropdown-toggle {
+  background: #232b3b;
+  color: #f8fafc;
+  border: 1px solid rgba(96,165,250,0.13);
+}
+[data-theme='dark'] .custom-dropdown .dropdown-toggle:focus {
+  outline: 2px solid var(--primary, #60a5fa);
+}
+[data-theme='dark'] .custom-dropdown .dropdown-menu {
+  background: #181f2e;
+  color: #f8fafc;
+  border: 1px solid rgba(96,165,250,0.13);
+  box-shadow: 0 4px 16px rgba(2,6,23,0.22);
+}
+[data-theme='dark'] .custom-dropdown .dropdown-menu li {
+  color: #f8fafc;
+  background: transparent;
+  transition: background 0.18s, color 0.18s;
+}
+[data-theme='dark'] .custom-dropdown .dropdown-menu li.selected,
+[data-theme='dark'] .custom-dropdown .dropdown-menu li:hover {
+  background: rgba(96,165,250,0.13);
+  color: var(--primary, #60a5fa);
+}
 .shell__sidebar nav {
   margin-top: 2.2rem;
 }
@@ -131,14 +183,17 @@ body, html, .mat-typography, .projects__table, .clients__table, .invoices__table
 }
 
 .shell__logo {
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 0.75rem;
   display: grid;
   place-items: center;
   font-weight: 700;
-  background: var(--btn-gradient);
-  color: var(--btn-text);
+  /* Make background transparent so only the logo image shows */
+  background: transparent;
+  color: inherit;
+  /* Slight upward nudge to compensate larger logo size */
+  transform: translateY(-0.9rem);
 }
 
 .shell__brand-text {

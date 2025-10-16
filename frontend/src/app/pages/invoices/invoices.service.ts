@@ -47,6 +47,16 @@ export class InvoicesService {
     });
   }
 
+  /**
+   * Downloads invoice PDF as a Blob from the backend. Endpoint: GET /api/invoice/{invoiceId}/pdf
+   */
+  downloadInvoicePdf(invoiceId: number): Observable<Blob> {
+    return this.http.get(`${this.endpoint}/${invoiceId}/pdf`, {
+      headers: this.buildHeaders(),
+      responseType: 'blob'
+    });
+  }
+
   private buildHeaders(): HttpHeaders {
     const token = this.authService.getToken();
 
