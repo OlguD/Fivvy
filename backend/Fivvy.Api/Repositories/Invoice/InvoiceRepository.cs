@@ -30,7 +30,7 @@ public class InvoiceRepository : IInvoiceRepository
         return invoices;
     }
 
-    public async Task<InvoiceModel> GetInvoiceAsync(string token, int invoiceId)
+    public async Task<InvoiceModel> GetInvoiceByIdAsync(string token, int invoiceId)
     {
         var userId = _userRepository.ExtractUserIdFromToken(token);
 
@@ -59,6 +59,40 @@ public class InvoiceRepository : IInvoiceRepository
         }
 
         model.LineItems ??= new List<InvoiceLineItemModel>();
+
+        // Compute SubTotal from line items if present, otherwise use provided SubTotal
+        decimal computedSubTotal = 0m;
+        if (model.LineItems != null && model.LineItems.Any())
+        {
+            computedSubTotal = model.LineItems.Sum(li => li.Quantity * li.UnitPrice);
+        }
+        else
+        {
+            computedSubTotal = model.SubTotal;
+        }
+
+        // Try to apply user's TaxValue percentage to compute Tax and Total
+        try
+        {
+            var user = await _userRepository.GetUserById(userId);
+            if (user != null)
+            {
+                var taxPercent = Convert.ToDecimal(user.TaxValue);
+                var computedTax = decimal.Round(computedSubTotal * taxPercent / 100m, 2);
+                model.SubTotal = computedSubTotal;
+                model.Tax = computedTax;
+                model.Total = computedSubTotal + computedTax;
+            }
+            else
+            {
+                model.SubTotal = computedSubTotal;
+            }
+        }
+        catch
+        {
+            // If we fail to retrieve user, fall back to provided values
+            model.SubTotal = computedSubTotal;
+        }
 
         await _context.Invoices.AddAsync(model);
         await _context.SaveChangesAsync();
@@ -92,13 +126,46 @@ public class InvoiceRepository : IInvoiceRepository
         existing.InvoiceDate = invoice.InvoiceDate;
         existing.DueDate = invoice.DueDate;
         existing.Status = invoice.Status;
-        existing.SubTotal = invoice.SubTotal;
-        existing.Tax = invoice.Tax;
-        existing.Total = invoice.Total;
+        // Recompute SubTotal from incoming line items when possible
+        decimal incomingSubTotal = 0m;
+        var incomingLineItems = invoice.LineItems ?? new List<InvoiceLineItemModel>();
+        if (incomingLineItems.Any())
+        {
+            incomingSubTotal = incomingLineItems.Sum(li => li.Quantity * li.UnitPrice);
+        }
+        else
+        {
+            incomingSubTotal = invoice.SubTotal;
+        }
+
+        existing.SubTotal = incomingSubTotal;
+
+        // Compute tax and total using user's TaxValue percentage
+        try
+        {
+            var user = await _userRepository.GetUserById(userId);
+            if (user != null)
+            {
+                var taxPercent = Convert.ToDecimal(user.TaxValue);
+                var computedTax = decimal.Round(incomingSubTotal * taxPercent / 100m, 2);
+                existing.Tax = computedTax;
+                existing.Total = incomingSubTotal + computedTax;
+            }
+            else
+            {
+                // fallback to incoming values
+                existing.Tax = invoice.Tax;
+                existing.Total = invoice.Total;
+            }
+        }
+        catch
+        {
+            existing.Tax = invoice.Tax;
+            existing.Total = invoice.Total;
+        }
         existing.Notes = invoice.Notes;
 
-        var incomingLineItems = invoice.LineItems ?? new List<InvoiceLineItemModel>();
-        var lineItemSet = _context.Set<InvoiceLineItemModel>();
+    var lineItemSet = _context.Set<InvoiceLineItemModel>();
 
         var incomingIds = incomingLineItems.Where(li => li.Id != 0).Select(li => li.Id).ToHashSet();
 

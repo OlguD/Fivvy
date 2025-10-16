@@ -7,6 +7,9 @@ using System.Text;
 using Fivvy.Api.Helpers;
 using Fivvy.Api.Repositories.Invoice;
 using Microsoft.Extensions.FileProviders;
+using Fivvy.Api.Services;
+using QuestPDF;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +91,7 @@ builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<JwtHelper>();
+builder.Services.AddScoped<PDFService>();
 
 builder.Services.AddControllers();
 
@@ -106,6 +110,11 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Configure QuestPDF license (Community). Adjust license type if your organization requires a commercial license.
+Settings.License = LicenseType.Community;
+// Enable QuestPDF debug mode in development to produce detailed layout diagnostics when errors occur
+Settings.EnableDebugging = false; // default off; we'll enable per-environment below
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -116,6 +125,8 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fivvy API V1");
         c.RoutePrefix = string.Empty;
     });
+    // Enable detailed QuestPDF debug output in development to help identify layout problems
+    QuestPDF.Settings.EnableDebugging = true;
 }
 
 // CORS EN BAŞTA

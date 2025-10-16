@@ -44,7 +44,7 @@ public class InvoiceController : ControllerBase
 
         try
         {
-            var invoice = await _invoiceRepository.GetInvoiceAsync(token, invoiceId);
+            var invoice = await _invoiceRepository.GetInvoiceByIdAsync(token, invoiceId);
             return Ok(invoice);
         } catch (KeyNotFoundException)
         {
