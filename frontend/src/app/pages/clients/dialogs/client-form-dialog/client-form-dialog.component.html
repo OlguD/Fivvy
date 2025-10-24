@@ -43,7 +43,8 @@
 	<button
 		mat-raised-button
 		color="primary"
-		type="submit"
+		type="button"
+		(click)="submit()"
 		[disabled]="form.invalid || isSubmitting"
 		class="dialog__submit"
 	>

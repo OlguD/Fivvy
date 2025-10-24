@@ -10,12 +10,15 @@ import { RegisterComponent } from './pages/auth/register/register.component';
 import { authGuard } from './core/auth.guard';
 import { AppShellComponent } from './layout/app-shell/app-shell.component';
 import { AdminUsersComponent } from './pages/admin/admin-users/admin-users.component';
+import { ClientPortalComponent } from './pages/client-portal/client-portal.component';
 import { adminGuard } from './core/admin.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
     { path: 'auth/login', component: LoginComponent },
     { path: 'auth/register', component: RegisterComponent },
+    // Public client portal route (used by external links with a temporary token)
+    { path: 'client/:clientId/portal', component: ClientPortalComponent },
     {
         path: '',
         component: AppShellComponent,
@@ -25,6 +28,7 @@ export const routes: Routes = [
             { path: 'clients', component: ClientsComponent },
             { path: 'projects', component: ProjectsComponent },
             { path: 'invoices', component: InvoicesComponent },
+            { path: 'client-portal', component: ClientPortalComponent },
             { path: 'invoices/templates', component: InvoiceTemplateGalleryComponent },
             { path: 'profile', component: ProfileComponent },
             { path: 'admin/users', component: AdminUsersComponent, canActivate: [adminGuard] }

@@ -59,9 +59,9 @@
   display: inline-block;
 }
 .dropdown-toggle {
-  background: var(--theme-bg, #fff);
+  background: var(--theme-bg, var(--surface-card));
   color: var(--theme-text, #222);
-  border: 1px solid var(--theme-border, #ccc);
+  border: 1px solid var(--theme-border, var(--divider));
   border-radius: 6px;
   padding: 6px 18px 6px 12px;
   font-size: 1rem;
@@ -102,8 +102,8 @@ body, html, .mat-typography, .projects__table, .clients__table, .invoices__table
   position: absolute;
   top: 110%;
   left: 0;
-  background: var(--theme-bg, #fff);
-  border: 1px solid var(--theme-border, #ccc);
+  background: var(--theme-bg, var(--surface-card));
+  border: 1px solid var(--theme-border, var(--divider));
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   min-width: 120px;
@@ -260,6 +260,16 @@ body, html, .mat-typography, .projects__table, .clients__table, .invoices__table
 
 .shell__logout:hover {
   background: var(--btn-ghost-hover);
+}
+
+/* Dark theme: ensure logout button text and icon are visible */
+[data-theme='dark'] .shell__logout {
+  color: var(--btn-text);
+}
+
+[data-theme='dark'] .shell__logout:hover {
+  background: color-mix(in srgb, var(--btn-ghost-hover) 60%, rgba(21,21,21,0.6));
+  color: var(--btn-text);
 }
 
 .shell__main {

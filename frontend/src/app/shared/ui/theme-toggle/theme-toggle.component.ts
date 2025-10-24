@@ -19,5 +19,12 @@ export class ThemeToggleComponent {
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+    // ensure immediate DOM attribute change as a fallback for edge cases
+    try {
+      const mode = this.themeService.currentTheme === 'dark' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', mode);
+    } catch {
+      // ignore in non-browser environments
+    }
   }
 }

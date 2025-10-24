@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { firstValueFrom } from 'rxjs';
 import { DashboardService } from './dashboard.service';
+import { ThemeService } from '../../core/theme.service';
 import { AuthService } from '../../core/auth.service';
 import {
   ActivityItem as DashboardActivityItem,
@@ -93,10 +94,7 @@ export class DashboardComponent implements OnInit {
           display: false
         },
         ticks: {
-          color: (ctx: any) => {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            return isDark ? '#fff' : '#222';
-          },
+          color: '#222', // will be updated in refreshChartColors()
           font: { weight: 'bold', size: 16 },
           opacity: 1
         }
@@ -104,23 +102,20 @@ export class DashboardComponent implements OnInit {
       y: {
         beginAtZero: true,
         grid: {
-          color: (ctx: any) => {
-            // Lighter grid lines for dark mode
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            return isDark ? 'rgba(255,255,255,0.22)' : 'rgba(148,163,184,0.18)';
-          }
+          color: 'rgba(148,163,184,0.18)'
         },
         ticks: {
-          color: (ctx: any) => {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            return isDark ? '#fff' : '#222';
-          },
+          color: '#222', // will be updated in refreshChartColors()
           font: { weight: 'bold', size: 15 },
           opacity: 1
         }
       }
     }
   };
+
+  // reference to the chart directive to trigger updates when theme changes
+  // will be set via ViewChild when available
+  @ViewChild(BaseChartDirective) chartRef?: BaseChartDirective;
 
   getTotalRevenue(): string {
     if (!this.revenueTrend.length) return '—';
@@ -148,9 +143,83 @@ export class DashboardComponent implements OnInit {
     private readonly dashboardService: DashboardService,
     private readonly authService: AuthService,
     private readonly router: Router,
-    private readonly translate: TranslateService
+    private readonly translate: TranslateService,
+    private readonly themeService: ThemeService
   ) {
     this.currentLang = this.translate.currentLang || this.translate.getDefaultLang() || 'tr';
+  }
+
+  // helper: read computed CSS variable from root, fallback if not present
+  private getCssVar(name: string, fallback = ''): string {
+    try {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(name)?.trim();
+      return v || fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  // Refresh dynamic colors used by charts (call when theme changes)
+  private refreshChartColors(): void {
+    const primary = this.getCssVar('--primary', '#2563eb');
+    const btnText = this.getCssVar('--btn-text', '#fff');
+    const appText = this.getCssVar('--app-text', '#222');
+    const gridDark = 'rgba(255,255,255,0.22)';
+    const gridLight = 'rgba(148,163,184,0.18)';
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+    // update scale tick colors
+    if (this.barChartOptions?.scales?.x?.ticks) {
+      this.barChartOptions.scales.x.ticks.color = isDark ? btnText : appText;
+    }
+    if (this.barChartOptions?.scales?.y?.ticks) {
+      this.barChartOptions.scales.y.ticks.color = isDark ? btnText : appText;
+    }
+    if (this.barChartOptions?.scales?.y?.grid) {
+      this.barChartOptions.scales.y.grid.color = isDark ? gridDark : gridLight;
+    }
+
+    // update dataset colors
+    if (this.barChartData?.datasets?.length) {
+      const rgbaPrimary = this.toRgba(primary, isDark ? 0.9 : 0.85);
+      this.barChartData.datasets[0].backgroundColor = rgbaPrimary;
+      // small shadow effect via borderColor if desired
+      this.barChartData.datasets[0].borderColor = this.toRgba(primary, isDark ? 0.9 : 0.95);
+    }
+
+    // request chart update when available
+    try {
+      this.chartRef?.chart?.update();
+    } catch {
+      // ignore if chart not yet initialized
+    }
+  }
+
+  private toRgba(color: string, alpha = 1): string {
+    // accept hex or rgb/rgba or var() — attempt basic conversions
+    if (!color) return `rgba(37,99,235,${alpha})`;
+    color = color.trim();
+    if (color.startsWith('rgba') || color.startsWith('rgb')) {
+      // replace existing alpha if rgba
+      if (color.startsWith('rgba')) {
+        return color.replace(/rgba\(([^)]+)\)/, `rgba($1)`);
+      }
+      // rgb(...) -> rgba
+      return color.replace(/rgb\(([^)]+)\)/, `rgba($1, ${alpha})`);
+    }
+    if (color.startsWith('#')) {
+      // hex to rgba
+      const hex = color.replace('#', '');
+      const normalized = hex.length === 3 ? hex.split('').map(c => c + c).join('') : hex;
+      const bigint = parseInt(normalized, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+    // fallback: return color directly (may be var(...))
+    return color;
   }
 
   switchLang(lang: string) {
@@ -163,25 +232,40 @@ export class DashboardComponent implements OnInit {
       this.barChartData = { labels: [], datasets: [] };
       return;
     }
+
+    const labels = this.revenueTrend.map(p => p.label);
+    const data = this.revenueTrend.map(p => {
+      // Try to parse number from displayValue
+      const num = Number((p.displayValue || '').replace(/[^\d.\-]/g, ''));
+      return isNaN(num) ? 0 : num;
+    });
+
+    // resolve primary color from CSS so it adapts to theme
+    const primary = this.getCssVar('--primary', '#2563eb');
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const bg = this.toRgba(primary, isDark ? 0.9 : 0.85);
+    const border = this.toRgba(primary, isDark ? 0.95 : 1);
+
     this.barChartData = {
-      labels: this.revenueTrend.map(p => p.label),
+      labels,
       datasets: [
         {
-          data: this.revenueTrend.map(p => {
-            // Try to parse number from displayValue
-            const num = Number((p.displayValue || '').replace(/[^\d.\-]/g, ''));
-            return isNaN(num) ? 0 : num;
-          }),
-          backgroundColor: 'rgba(37,99,235,0.85)',
+          data,
+          backgroundColor: bg,
+          borderColor: border,
           borderRadius: 8,
           maxBarThickness: 38
         }
       ]
     };
+
   }
 
-
   async ngOnInit(): Promise<void> {
+    // refresh colors initially and when theme changes
+    this.refreshChartColors();
+    this.themeService.theme$.subscribe(() => this.refreshChartColors());
+
     await this.loadOverview();
   }
 
@@ -227,7 +311,8 @@ export class DashboardComponent implements OnInit {
     this.revenueInsights = overview.pipelineInsights.slice(0, 3).map(insight => this.mapPipelineInsight(insight));
     this.revenueTrend = this.mapRevenueTrend(overview.revenueTrend);
     this.revenueChart = this.buildRevenueChart(this.revenueTrend);
-    this.updateBarChartData();
+  this.updateBarChartData();
+  this.refreshChartColors();
     this.activities = overview.activityFeed.map(activity => this.mapActivity(activity)).slice(0, 6);
   }
 

@@ -7,7 +7,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Subject, debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, firstValueFrom } from 'rxjs';
+import { AuthService } from '../../core/auth.service';
 import { ClientsService } from './clients.service';
 import { ClientDto } from './clients.types';
 import {
@@ -54,11 +55,14 @@ export class ClientsComponent implements OnInit, OnDestroy {
     private readonly clientsService: ClientsService,
     private readonly dialog: MatDialog,
     private readonly snackBar: MatSnackBar,
-    public readonly translate: TranslateService
+    public readonly translate: TranslateService,
+    private readonly authService: AuthService
   ) {
     this.setTranslatedTableColumnsAndActions();
     this.translate.onLangChange.subscribe(() => this.setTranslatedTableColumnsAndActions());
   }
+
+  // authService injected via constructor
 
   private setTranslatedTableColumnsAndActions() {
     this.tableColumns = [
@@ -76,8 +80,41 @@ export class ClientsComponent implements OnInit, OnDestroy {
         action: (client) => this.confirmRemove(client),
         disabled: (client) => this.isClientBusy(client.id),
         ariaLabel: (client) => `${this.translate.instant('pages.clients.actions.remove')} ${client.companyName}`
+      },
+      {
+        label: this.translate.instant('pages.clients.actions.portalLink'),
+        icon: 'link',
+        action: (client) => this.generatePortalLinkForClient(client),
+        disabled: (client) => this.isClientBusy(client.id) || !this.canGeneratePortalForClient(client),
+        ariaLabel: (client) => `${this.translate.instant('pages.clients.actions.portalLink')} ${client.companyName}`
       }
     ];
+  }
+
+  private canGeneratePortalForClient(_client: ClientDto): boolean {
+    // Frontend DTO currently doesn't expose ownership; only allow admins here.
+    return this.authService.isAdmin();
+  }
+
+  private async generatePortalLinkForClient(client: ClientDto): Promise<void> {
+    // Only allow when current user is admin or owner
+    const isAdmin = this.translate ? false : false; // placeholder to satisfy linter in older templates
+    try {
+      this.busyClients.add(client.id);
+      const response = await firstValueFrom(this.clientsService.createPortalToken(client.id));
+      // copy to clipboard
+      if (response?.link) {
+        await navigator.clipboard.writeText(response.link);
+        this.snackBar.open(this.translate.instant('pages.clients.messages.portalLinkCopied'), 'OK', { duration: 3500 });
+      } else {
+        this.snackBar.open(this.translate.instant('pages.clients.messages.portalLinkFailed'), 'OK', { duration: 3500 });
+      }
+    } catch (err) {
+      const message = this.extractErrorMessage(err);
+      this.snackBar.open(message, 'Dismiss', { duration: 4000 });
+    } finally {
+      this.busyClients.delete(client.id);
+    }
   }
 
   ngOnInit(): void {

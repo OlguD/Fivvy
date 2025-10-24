@@ -65,7 +65,7 @@ export interface InvoiceDeleteDialogResult {
         padding: 0.75rem 1rem;
         border-radius: 0.8rem;
         background: #ffeaea;
-        border: 1px solid #ffbdbd;
+  border: 1px solid var(--divider);
         color: #d32f2f;
         font-weight: 600;
       }
@@ -74,7 +74,7 @@ export interface InvoiceDeleteDialogResult {
       }
       .dialog__confirm {
         background: var(--btn-gradient, #d32f2f);
-        color: var(--btn-text, #fff);
+  color: var(--btn-text);
       }
     `
   ]

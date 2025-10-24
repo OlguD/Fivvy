@@ -24,7 +24,7 @@
 							<p class="panel__subtitle">{{ 'dashboard.revenue.subtitle' | translate }}</p>
 						</div>
 						<div style="display: flex; align-items: center; gap: 1.2rem;">
-							<div class="revenue-total-badge" style="background: var(--primary, #2563eb); color: #fff; font-size: 1.08rem; font-weight: 600; border-radius: 1.2rem; padding: 0.45em 1.2em; margin-right: 0.2em; white-space: nowrap;">
+							<div class="revenue-total-badge" style="background: var(--primary, #2563eb); color: var(--btn-text); font-size: 1.08rem; font-weight: 600; border-radius: 1.2rem; padding: 0.45em 1.2em; margin-right: 0.2em; white-space: nowrap;">
 								{{ 'dashboard.revenue.total' | translate }}: {{ getTotalRevenue() }}
 							</div>
 							<button mat-stroked-button type="button" class="panel__action" (click)="reload()">

@@ -86,6 +86,20 @@ export class AuthService {
         }
     }
 
+    getCurrentUserId(): number | null {
+        const userInfo = localStorage.getItem('currentUser');
+        if (!userInfo) return null;
+        try {
+            const parsed = JSON.parse(userInfo);
+            const id = parsed?.id ?? parsed?.userId ?? parsed?.sub;
+            if (typeof id === 'number') return id;
+            if (typeof id === 'string' && id && !Number.isNaN(Number(id))) return Number(id);
+            return null;
+        } catch {
+            return null;
+        }
+    }
+
     private decodeToken(token: string): unknown {
         try {
             const parts = token.split('.');
@@ -140,10 +154,16 @@ export class AuthService {
     }
 
     shouldSkipAuthHeader(url: string): boolean {
+        // Skip auth header for auth endpoints and for public client portal data
+        const lower = url.toLowerCase();
+        if (lower.includes('/client/') && lower.includes('/portal')) return true;
         return this.matchesAuthPath(url, ['/auth/login', '/auth/register', '/auth/refresh']);
     }
 
     shouldSkipRefresh(url: string): boolean {
+        // Also skip attempting refresh for client portal endpoints (public)
+        const lower = url.toLowerCase();
+        if (lower.includes('/client/') && lower.includes('/portal')) return true;
         return this.matchesAuthPath(url, ['/auth/login', '/auth/register', '/auth/refresh', '/auth/logout']);
     }
 

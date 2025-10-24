@@ -96,7 +96,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
   styles: [
     `
     .preview-root { padding: 16px; text-align: center; }
-    .preview-frame { border: 1px solid #e0e0e0; padding: 12px; background: #fff; display:flex; justify-content:center; }
+  .preview-frame { border: 1px solid var(--divider); padding: 12px; background: var(--surface-card); display:flex; justify-content:center; }
     .preview-frame app-invoice-template-preview-renderer { width: 100%; }
     .desc { color: #666; margin-top: 8px }
     .actions { margin-top: 12px }

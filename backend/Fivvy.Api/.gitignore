@@ -11,6 +11,8 @@
 **/Migrations/
 Migrations/
 
+wwwroot/
+
 # User-specific files
 *.suo
 *.user

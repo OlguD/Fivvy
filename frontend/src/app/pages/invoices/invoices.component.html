@@ -10,10 +10,10 @@
 				<mat-icon aria-hidden="true">refresh</mat-icon>
 				{{ 'pages.invoices.actions.reload' | translate }}
 			</button>
-			<a mat-stroked-button class="templates-link" [routerLink]="['/invoices/templates']">
+			<!-- <a mat-stroked-button class="templates-link" [routerLink]="['/invoices/templates']">
 				<mat-icon aria-hidden="true">style</mat-icon>
 				Templates
-			</a>
+			</a> -->
 			<button mat-raised-button color="primary" type="button" (click)="openCreateForm()" [disabled]="isLoading">
 				<mat-icon aria-hidden="true">note_add</mat-icon>
 				{{ 'pages.invoices.actions.create' | translate }}

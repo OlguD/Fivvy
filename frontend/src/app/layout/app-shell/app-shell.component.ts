@@ -207,4 +207,16 @@ export class AppShellComponent implements OnInit, OnDestroy {
 
     this.closeSidebar();
   }
+
+  /**
+   * Returns whether the sidebar should be shown for the current route.
+   * Hide the sidebar for non-admin users when viewing the client portal.
+   */
+  shouldShowSidebar(): boolean {
+    const route = this.router.url.split('?')[0];
+    if (route.startsWith('/client-portal') && !this.isAdmin) {
+      return false;
+    }
+    return true;
+  }
 }

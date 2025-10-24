@@ -27,15 +27,22 @@ public class PDFService
         {
             throw new KeyNotFoundException("Invoice not found");
         }
-    // Path to logo (absolute path provided by user)
+        // Delegate to new generator using current user's profile to populate company header
+        var currentUser = await _userRepository.Profile(token);
+        var companyName = string.IsNullOrWhiteSpace(currentUser.CompanyName) ? null : currentUser.CompanyName;
+        var companyAddress = string.IsNullOrWhiteSpace(currentUser.Address) ? null : currentUser.Address;
+        var companyCity = string.IsNullOrWhiteSpace(currentUser.City) ? null : currentUser.City;
+
+        return await GeneratePdfFromInvoiceAsync(invoice, companyName, companyAddress, companyCity);
+    }
+
+    // New: generate PDF from an invoice and optional company header values (used for client portal)
+    public async Task<byte[]> GeneratePdfFromInvoiceAsync(InvoiceModel invoice, string? companyName = null, string? companyAddress = null, string? companyCity = null)
+    {
+        // Path to logo (absolute path provided by user)
         var logoPath = "/Users/olgudegirmenci/Desktop/Fivvy/frontend/src/assets/logo1.png";
 
-    // Load current user's company details from DB using the provided token
-    var currentUser = await _userRepository.Profile(token);
-    var companyName = string.IsNullOrWhiteSpace(currentUser.CompanyName) ? null : currentUser.CompanyName;
-    var companyAddress = string.IsNullOrWhiteSpace(currentUser.Address) ? null : currentUser.Address;
-    var companyCity = string.IsNullOrWhiteSpace(currentUser.City) ? null : currentUser.City;
-    var hasCompanyInfo = !string.IsNullOrWhiteSpace(companyName) || !string.IsNullOrWhiteSpace(companyAddress) || !string.IsNullOrWhiteSpace(companyCity);
+        var hasCompanyInfo = !string.IsNullOrWhiteSpace(companyName) || !string.IsNullOrWhiteSpace(companyAddress) || !string.IsNullOrWhiteSpace(companyCity);
 
         var pdf = Document.Create(container =>
         {
@@ -46,13 +53,10 @@ public class PDFService
                 page.DefaultTextStyle(x => x.FontSize(11).FontColor(Colors.Grey.Darken3));
                 page.Header().PaddingBottom(10).Row(row =>
                 {
-                    // Left: logo + company name
-                    // Larger logo area (simplified to avoid nested rows which can create conflicting constraints)
                     row.ConstantItem(180).Column(c =>
                     {
                         if (File.Exists(logoPath))
                         {
-                            // Use fixed width only and allow height to scale to preserve aspect ratio
                             c.Item().Width(160).AlignCenter().ScaleToFit().Image(logoPath);
                         }
                         else
@@ -61,16 +65,13 @@ public class PDFService
                         }
                     });
 
-                    // Middle: invoice title and dates
                     row.RelativeItem().Column(c =>
                     {
-                        // Slightly smaller invoice title as requested
                         c.Item().Text($"Invoice #{invoice.InvoiceNumber ?? invoice.Id.ToString()}").FontSize(14).Bold().FontColor(Colors.Black);
                         c.Item().Text($"Issued: {invoice.InvoiceDate:yyyy-MM-dd}").FontSize(10).FontColor(Colors.Grey.Darken1);
                         c.Item().Text($"Due: {invoice.DueDate:yyyy-MM-dd}").FontSize(10).FontColor(Colors.Grey.Darken1);
                     });
 
-                    // Right: company address / invoice meta (render only if user has at least one company field)
                     if (hasCompanyInfo)
                     {
                         row.ConstantItem(180).AlignRight().Column(c =>
@@ -78,7 +79,6 @@ public class PDFService
                             if (!string.IsNullOrWhiteSpace(companyName)) c.Item().Text(companyName).Bold().FontSize(12);
                             if (!string.IsNullOrWhiteSpace(companyAddress)) c.Item().Text(companyAddress);
                             if (!string.IsNullOrWhiteSpace(companyCity)) c.Item().Text(companyCity);
-                            // c.Item().Text($"Invoice ID: {invoice.Id}").FontSize(10).FontColor(Colors.Grey.Lighten1);
                         });
                     }
                 });
@@ -87,7 +87,6 @@ public class PDFService
                 {
                     col.Item().PaddingVertical(6).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
 
-                    // Bill to / Client
                     col.Item().Row(row =>
                     {
                         row.RelativeItem().Column(c =>
@@ -117,7 +116,6 @@ public class PDFService
                             columns.ConstantColumn(90);
                         });
 
-                        // Header styling
                         table.Header(header =>
                         {
                             header.Cell().Background(Colors.Grey.Lighten3).Padding(8).Text("Description").SemiBold();
@@ -126,7 +124,6 @@ public class PDFService
                             header.Cell().Background(Colors.Grey.Lighten3).Padding(8).AlignRight().Text("Total").SemiBold();
                         });
 
-                        // Rows with zebra shading
                         var lines = invoice.LineItems ?? Enumerable.Empty<InvoiceLineItemModel>();
                         var rowIndex = 0;
                         foreach (var line in lines)
@@ -139,7 +136,6 @@ public class PDFService
                         }
                     });
 
-                    // Totals box
                     col.Item().PaddingTop(12).Column(c =>
                     {
                         c.Item().Row(r =>
@@ -163,7 +159,6 @@ public class PDFService
                         });
                     });
 
-                    // Footer note
                     col.Item().PaddingTop(18).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
                     col.Item().PaddingTop(6).Text("Thank you for your business!").FontSize(10).FontColor(Colors.Grey.Darken1).AlignCenter();
                 });

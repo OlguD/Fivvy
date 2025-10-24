@@ -36,7 +36,7 @@
 	place-items: center;
 	font-size: 1.6rem;
 	font-weight: 700;
-	box-shadow: 0 16px 32px rgba(37, 99, 235, 0.24);
+	/* box-shadow: 0 16px 32px rgba(37, 99, 235, 0.24); */
 	overflow: hidden;
 	position: relative;
 }

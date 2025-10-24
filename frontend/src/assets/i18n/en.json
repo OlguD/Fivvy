@@ -152,10 +152,8 @@
         "download": "Download"
       },
       "status": {
-        "draft": "Draft",
-        "sent": "Sent",
-        "paid": "Paid",
-        "overdue": "Overdue"
+  "unapproved": "Unapproved",
+  "approved": "Approved"
       }
     },
     "projects": {
@@ -245,7 +243,8 @@
       "actions": {
         "reload": "Reload",
         "new": "New client",
-        "add": "Add client"
+        "add": "Add client",
+        "portalLink": "Portal link"
       },
       "table": {
         "id": "ID",
@@ -264,7 +263,9 @@
         "emptySearchDescription": "Try a different search term."
       },
       "messages": {
-        "retry": "Retry"
+        "retry": "Retry",
+        "portalLinkCopied": "Portal link copied to clipboard",
+        "portalLinkFailed": "Failed to generate portal link"
       },
       "errors": {
         "generic": "Something went wrong. Please try again."

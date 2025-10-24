@@ -7,9 +7,9 @@
 	--app-text: #0f172a;
 	--surface-card: rgba(255, 255, 255, 0.86);
 	--surface-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
-	--primary: #fb923c; /* warm orange */
+	--primary: #2563eb; /* primary blue */
 	/* original --primary: #2563eb; */
-	--primary-strong: #f97316; /* deeper orange */
+	--primary-strong: #1d4ed8; /* deeper blue */
 	/* original --primary-strong: #1d4ed8; */
 	--mdc-theme-primary: var(--primary);
 	--mdc-theme-secondary: var(--primary);
@@ -19,78 +19,84 @@
 	--field-text: #0f172a;
 	--field-border: rgba(15, 23, 42, 0.12);
 	--field-bg: rgba(255, 255, 255, 0.95);
-	--field-focus-border: rgba(249, 115, 22, 0.65);
+	--field-focus-border: rgba(37, 99, 235, 0.65);
 	/* original --field-focus-border: rgba(37, 99, 235, 0.65); */
-	--field-focus-shadow: rgba(249, 115, 22, 0.18);
+	--field-focus-shadow: rgba(37, 99, 235, 0.18);
 	/* original --field-focus-shadow: rgba(37, 99, 235, 0.18); */
 	--field-error-border: #ef4444;
 	--field-error-text: #b91c1c;
 	--btn-text: #ffffff;
-	--btn-gradient: linear-gradient(135deg, #fb923c, #f97316);
-	/* original --btn-gradient: linear-gradient(135deg, #2563eb, #4f46e5); */
-	--btn-hover-shadow: 0 16px 32px rgba(249, 115, 22, 0.25);
+	 /* Use a subtle, token-driven accent instead of a saturated blue gradient.
+		 color-mix reduces visual saturation and adapts to light/dark surfaces. */
+	 --btn-gradient: linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, transparent), color-mix(in srgb, var(--primary-strong) 8%, transparent));
+	--btn-hover-shadow: 0 16px 32px rgba(96, 165, 250, 0.25);
 	/* original --btn-hover-shadow: 0 16px 32px rgba(37, 99, 235, 0.25); */
 	--btn-disabled-bg: rgba(148, 163, 184, 0.6);
 	--btn-disabled-text: rgba(255, 255, 255, 0.8);
-		--btn-secondary-bg: rgba(249, 115, 22, 0.1);
+		--btn-secondary-bg: rgba(37, 99, 235, 0.1);
 		/* original --btn-secondary-bg: rgba(37, 99, 235, 0.1); */
-		--btn-secondary-border: rgba(249, 115, 22, 0.35);
+		--btn-secondary-border: rgba(37, 99, 235, 0.35);
 		/* original --btn-secondary-border: rgba(37, 99, 235, 0.35); */
-		--btn-secondary-text: #f97316;
+		--btn-secondary-text: #1d4ed8;
 		/* original --btn-secondary-text: #1d4ed8; */
 		--btn-ghost-hover: rgba(15, 23, 42, 0.06);
 		--input-disabled-bg: rgba(148, 163, 184, 0.18);
 		--input-disabled-text: rgba(100, 116, 139, 0.9);
 	--footer-text: rgba(15, 23, 42, 0.9);
-	--link-hover: rgba(249, 115, 22, 0.12);
+	--link-hover: rgba(37, 99, 235, 0.12);
 	/* original --link-hover: rgba(37, 99, 235, 0.12); */
 	--divider: rgba(15, 23, 42, 0.08);
 }
 
 [data-theme='dark'] {
 	color-scheme: dark;
-	--app-bg: #020617;
+	--app-bg: rgba(21, 21, 21, 1);
 	--app-text: #e2e8f0;
-	--surface-card: rgba(15, 23, 42, 0.8);
-	--surface-shadow: 0 28px 52px rgba(2, 6, 23, 0.6);
-	--primary: #fdba74; /* softer orange for dark */
+	--surface-card: rgba(21, 21, 21, 0.86);
+	--surface-shadow: 0 28px 52px rgba(21, 21, 21, 0.6);
+	--primary: #60a5fa; /* softer blue for dark */
 	/* original --primary: #60a5fa; */
-	--primary-strong: #fb923c;
+	--primary-strong: #2563eb;
 	/* original --primary-strong: #3b82f6; */
 	--mdc-theme-primary: var(--primary);
 	--mdc-theme-secondary: var(--primary);
-	--auth-login-bg: radial-gradient(circle at top, #0b0a08, #020617 70%);
+	--auth-login-bg: radial-gradient(circle at top, rgba(34,34,34,1), rgba(21,21,21,1) 70%);
 	--auth-login-text: #e2e8f0;
 	--field-label: #cbd5f5;
 	--field-text: #f8fafc;
 	--field-border: rgba(148, 163, 184, 0.24);
 	--field-bg: rgba(15, 23, 42, 0.6);
-	--field-focus-border: rgba(251, 146, 60, 0.7);
+	--field-focus-border: rgba(96, 165, 250, 0.7);
 	/* original --field-focus-border: rgba(96, 165, 250, 0.7); */
-	--field-focus-shadow: rgba(249, 115, 22, 0.28);
+	--field-focus-shadow: rgba(37, 99, 235, 0.28);
 	/* original --field-focus-shadow: rgba(37, 99, 235, 0.28); */
 	--field-error-border: #f87171;
 	--field-error-text: #fca5a5;
-	--btn-text: #0b1120;
-	--btn-gradient: linear-gradient(135deg, #fdba74, #f97316);
-	/* original --btn-gradient: linear-gradient(135deg, #60a5fa, #4f46e5); */
-	--btn-hover-shadow: 0 6px 16px rgba(251, 146, 60, 0.16);
+	--divider-strong: rgba(255, 255, 255, 0.10);
+	/* Ensure button labels remain white in dark theme for readability */
+	--btn-text: #ffffff;
+	/* Dark theme: keep button accent subtle to avoid harsh blue glows */
+	--btn-gradient: linear-gradient(135deg, color-mix(in srgb, var(--primary) 12%, transparent), color-mix(in srgb, var(--primary-strong) 6%, transparent));
+	--btn-hover-shadow: 0 6px 16px rgba(96, 165, 250, 0.16);
 	/* original --btn-hover-shadow: 0 6px 16px rgba(96, 165, 250, 0.16); */
 	--btn-disabled-bg: rgba(71, 85, 105, 0.6);
 	--btn-disabled-text: rgba(226, 232, 240, 0.8);
-	--btn-secondary-bg: rgba(251, 146, 60, 0.16);
+	--btn-secondary-bg: rgba(96, 165, 250, 0.16);
 	/* original --btn-secondary-bg: rgba(96, 165, 250, 0.16); */
-	--btn-secondary-border: rgba(251, 146, 60, 0.4);
+	--btn-secondary-border: rgba(96, 165, 250, 0.4);
 	/* original --btn-secondary-border: rgba(96, 165, 250, 0.4); */
-	--btn-secondary-text: #fff4eb;
+	--btn-secondary-text: #e0f2fe;
 	/* original --btn-secondary-text: #e0f2fe; */
 		--btn-ghost-hover: rgba(148, 163, 184, 0.2);
 		--input-disabled-bg: rgba(51, 65, 85, 0.4);
 		--input-disabled-text: rgba(203, 213, 225, 0.75);
 	--footer-text: rgba(148, 163, 184, 0.9);
-	--link-hover: rgba(251, 146, 60, 0.16);
+	--link-hover: rgba(96, 165, 250, 0.16);
 	/* original --link-hover: rgba(96, 165, 250, 0.16); */
-	--divider: rgba(148, 163, 184, 0.16);
+	/* Use a subtle light divider on dark backgrounds so borders are visible but not harsh */
+	--divider: rgba(255, 255, 255, 0.08);
+	/* stronger divider for subtle outlines when needed */
+	--divider-strong: rgba(255, 255, 255, 0.10);
 }
 
 * {
@@ -104,7 +110,7 @@ body {
 
 body {
 	margin: 0;
-	font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: "Aeonik Fono Regular", "Aeonik Fono Regular Placeholder", sans-serif;
 	background: var(--app-bg);
 	color: var(--app-text);
 	transition: background 0.3s ease, color 0.3s ease;
@@ -174,24 +180,20 @@ button {
 }
 
 .mat-mdc-button-base.mat-mdc-raised-button.mat-primary {
-	--mat-mdc-button-ripple-color: rgba(249, 115, 22, 0.22);
-	/* original --mat-mdc-button-ripple-color: rgba(37, 99, 235, 0.22); */
-	--mat-mdc-button-persistent-ripple-color: rgba(249, 115, 22, 0.18);
-	/* original --mat-mdc-button-persistent-ripple-color: rgba(37, 99, 235, 0.18); */
+	--mat-mdc-button-ripple-color: rgba(37, 99, 235, 0.22);
+	--mat-mdc-button-persistent-ripple-color: rgba(37, 99, 235, 0.18);
 }
 
 .mat-mdc-raised-button.mat-primary,
 .mat-mdc-raised-button.mat-primary:active {
 	background: var(--btn-gradient);
 	color: var(--btn-text);
-		box-shadow: 0 2px 5px rgba(251, 146, 60, 0.09);
-		/* original box-shadow: 0 2px 5px rgba(96, 165, 250, 0.09); */
+		box-shadow: 0 2px 5px rgba(96, 165, 250, 0.09);
 	transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease, color 0.2s ease;
 }
 
 .mat-mdc-raised-button.mat-primary:hover {
-		box-shadow: 0 18px 42px rgba(249, 115, 22, 0.28);
-    /* original hover shadow: rgba(37, 99, 235, 0.28) */
+		box-shadow: 0 18px 42px rgba(37, 99, 235, 0.28);
 	transform: translateY(-1px);
 }
 
@@ -202,8 +204,25 @@ button {
 }
 
 .mat-mdc-raised-button.mat-primary:focus-visible {
-	box-shadow: var(--btn-hover-shadow), 0 0 0 3px rgba(249, 115, 22, 0.3);
-    /* original focus outline color: rgba(37, 99, 235, 0.3) */
+	box-shadow: var(--btn-hover-shadow), 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+/* Dark theme: ensure raised primary buttons remain readable and use softer shadows */
+[data-theme='dark'] .mat-mdc-raised-button.mat-primary,
+[data-theme='dark'] .mat-mdc-raised-button.mat-primary:active {
+	background: var(--btn-gradient);
+	color: var(--btn-text);
+	box-shadow: 0 4px 10px rgba(96, 165, 250, 0.08);
+	transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+[data-theme='dark'] .mat-mdc-raised-button.mat-primary:hover {
+	box-shadow: var(--btn-hover-shadow);
+	transform: translateY(-1px);
+}
+
+[data-theme='dark'] .mat-mdc-raised-button.mat-primary:focus-visible {
+	box-shadow: var(--btn-hover-shadow), 0 0 0 3px rgba(96, 165, 250, 0.18);
 }
 
 .mat-mdc-raised-button.mat-primary .mdc-button__label {
@@ -212,31 +231,42 @@ button {
 
 .mat-mdc-stroked-button {
 	--mdc-outlined-button-outline-color: var(--btn-secondary-border);
-	--mat-mdc-button-ripple-color: rgba(249, 115, 22, 0.16);
-	/* original ripple color: rgba(37, 99, 235, 0.16) */
+	--mat-mdc-button-ripple-color: rgba(37, 99, 235, 0.16);
 	border-radius: 0.9rem;
 	background: var(--btn-gradient);
 	color: var(--btn-text);
-	box-shadow: 0 4px 8px rgba(251, 146, 60, 0.10);
-	/* original stroked button shadow: rgba(96, 165, 250, 0.10) */
+		box-shadow: 0 4px 8px rgba(96, 165, 250, 0.10);
 	transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease, color 0.2s ease;
 }
 
 .mat-mdc-stroked-button:hover {
-	background: rgba(249, 115, 22, 0.16);
-	/* original hover background: rgba(37, 99, 235, 0.16) */
+	background: rgba(37, 99, 235, 0.16);
 	transform: translateY(-1px);
 }
 
 [data-theme='dark'] .mat-mdc-stroked-button {
-	color: var(--btn-secondary-text);
+	/* Use primary button text color in dark theme so stroked buttons (like Reload) are clearly readable */
+	color: var(--btn-text);
 	background: var(--btn-secondary-bg);
 	border-color: var(--btn-secondary-border);
 }
 
+/* Stronger selector to cover attribute-based and element-based usages of stroked buttons
+   (some templates use the attribute form: <button mat-stroked-button> or <a mat-stroked-button>) */
+[data-theme='dark'] button[mat-stroked-button],
+[data-theme='dark'] a[mat-stroked-button],
+[data-theme='dark'] .mat-stroked-button {
+	color: var(--btn-text) !important;
+}
+
+[data-theme='dark'] button[mat-stroked-button] .mat-icon,
+[data-theme='dark'] a[mat-stroked-button] .mat-icon,
+[data-theme='dark'] .mat-stroked-button .mat-icon {
+	color: inherit !important;
+}
+
 [data-theme='dark'] .mat-mdc-stroked-button:hover {
-	background: rgba(251, 146, 60, 0.22);
-	/* original dark hover background: rgba(96, 165, 250, 0.22) */
+	background: rgba(96, 165, 250, 0.22);
 }
 
 .mat-mdc-stroked-button:disabled {
@@ -264,8 +294,7 @@ button {
 
 .mat-mdc-icon-button:hover {
 	color: var(--primary);
-	background-color: rgba(249, 115, 22, 0.12);
-	/* original icon hover bg: rgba(37, 99, 235, 0.12) */
+	background-color: rgba(37, 99, 235, 0.12);
 	transform: translateY(-1px);
 }
 
@@ -275,8 +304,7 @@ button {
 
 [data-theme='dark'] .mat-mdc-icon-button:hover {
 	color: var(--primary);
-	background-color: rgba(251, 146, 60, 0.22);
-	/* original dark icon hover bg: rgba(96, 165, 250, 0.22) */
+	background-color: rgba(96, 165, 250, 0.22);
 }
 
 .mat-mdc-dialog-container .mdc-dialog__surface {
@@ -320,9 +348,15 @@ button {
 [data-theme='dark'] .cdk-overlay-dark-backdrop {
 	background: rgba(2, 6, 23, 0.9);
 }
+[data-theme='dark'] .cdk-overlay-dark-backdrop {
+    background: rgba(21, 21, 21, 0.9);
+}
 
 .cdk-overlay-dark-backdrop {
 	background: rgba(15, 23, 42, 0.9);
+}
+.cdk-overlay-dark-backdrop {
+    background: rgba(21, 21, 21, 0.9);
 }
 
 .auth-layout {
@@ -529,23 +563,20 @@ button {
 }
 
 .fvy-button--primary:not(:disabled):hover {
-	box-shadow: 0 18px 42px rgba(249, 115, 22, 0.3);
-	/* original fvy-button hover shadow: rgba(37, 99, 235, 0.3) */
+	box-shadow: 0 18px 42px rgba(37, 99, 235, 0.3);
 }
 
 [data-theme='dark'] .fvy-button--primary:not(:disabled):hover {
-		box-shadow: 0 2px 5px rgba(251, 146, 60, 0.09);
-		/* original dark fvy-button shadow: rgba(96, 165, 250, 0.09) */
+		box-shadow: 0 2px 5px rgba(96, 165, 250, 0.09);
+		/* dark: softer blue shadow */
 }
 
 .fvy-button--secondary:not(:disabled):hover {
-	background: rgba(249, 115, 22, 0.16);
-	/* original fvy-button secondary hover: rgba(37, 99, 235, 0.16) */
+	background: rgba(37, 99, 235, 0.16);
 }
 
 [data-theme='dark'] .fvy-button--secondary:not(:disabled):hover {
-	background: rgba(251, 146, 60, 0.24);
-	/* original dark fvy-button secondary hover: rgba(96, 165, 250, 0.24) */
+	background: rgba(96, 165, 250, 0.24);
 }
 
 .fvy-button--ghost:not(:disabled):hover {
@@ -637,12 +668,12 @@ button {
 
 /* Global Premium Row Hover Animation */
 .premium-row-hover {
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  background-color: #ffffff;
-  transform-origin: center;
-  isolation: isolate;
+	cursor: pointer;
+	transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+	position: relative;
+	background-color: var(--surface-card);
+	transform-origin: center;
+	isolation: isolate;
 }
 
 .premium-row-hover::after {
@@ -652,7 +683,8 @@ button {
   top: 0;
   width: 4px;
   height: 100%;
-	background: linear-gradient(135deg, #fb923c, #f97316);
+	  /* subtle single-accent bar derived from primary token (not a bright blue gradient) */
+	  background: color-mix(in srgb, var(--primary) 22%, transparent);
 		/* original gradient: linear-gradient(135deg, #3b82f6, #8b5cf6); */
   transform: scaleY(0);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -663,14 +695,13 @@ button {
 
 .premium-row-hover:hover {
   transform: translateX(8px) scale(1.01);
-		box-shadow: -4px 0 0 0 rgba(251, 146, 60, 0.1),
-								0 8px 32px rgba(251, 146, 60, 0.12),
-								0 0 0 1px rgba(251, 146, 60, 0.08);
-		/* original box-shadow: -4px 0 0 0 rgba(59, 130, 246, 0.1), 0 8px 32px rgba(59, 130, 246, 0.12), 0 0 0 1px rgba(59, 130, 246, 0.08) */
-		background: linear-gradient(90deg, 
-			rgba(255, 244, 230, 0.45) 0%, 
-			rgba(255, 255, 255, 0.8) 100%);
-		/* original background gradient: rgba(219, 234, 254, 0.4) -> use if you want the blue wash */
+		  box-shadow: -4px 0 0 0 rgba(96, 165, 250, 0.1),
+						0 8px 32px rgba(96, 165, 250, 0.12),
+						0 0 0 1px rgba(96, 165, 250, 0.08);
+				/* original box-shadow: -4px 0 0 0 rgba(59, 130, 246, 0.1), 0 8px 32px rgba(59, 130, 246, 0.12), 0 0 0 1px rgba(59, 130, 246, 0.08) */
+				/* subtle wash using primary token rather than saturated blue */
+				background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 12%, transparent) 0%, color-mix(in srgb, var(--surface-card) 4%, transparent) 100%);
+				/* original background gradient: rgba(219, 234, 254, 0.4) -> use if you want the blue wash */
   z-index: 10;
 }
 
@@ -690,7 +721,21 @@ button {
 }
 
 .premium-row-hover--disabled:hover {
-  transform: none;
-  box-shadow: none;
-  background-color: #ffffff;
+	transform: none;
+	box-shadow: none;
+	background-color: var(--surface-card);
+}
+
+/* Ensure the sidebar/logout button doesn't inherit the primary blue color globally.
+   Keep it neutral in light theme and white in dark theme for readability. */
+.shell__logout,
+.shell__logout .mat-icon,
+.shell__logout span {
+  color: var(--app-text) !important;
+}
+
+[data-theme='dark'] .shell__logout,
+[data-theme='dark'] .shell__logout .mat-icon,
+[data-theme='dark'] .shell__logout span {
+  color: var(--btn-text) !important;
 }

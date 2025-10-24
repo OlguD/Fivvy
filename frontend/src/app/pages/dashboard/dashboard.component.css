@@ -31,18 +31,18 @@
 }
 .bar-chart__bar {
   width: 32px;
-  background: linear-gradient(180deg, var(--primary), #60a5fa 90%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 86%, var(--app-bg) 14%), color-mix(in srgb, var(--primary) 60%, var(--app-bg) 40%) 90%);
   border-radius: 8px 8px 0 0;
   position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   transition: height 0.3s;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--primary) 6%, transparent);
 }
 .bar-chart__bar:hover {
-  background: linear-gradient(180deg, #2563eb, #60a5fa 90%);
-  box-shadow: 0 4px 16px rgba(37,99,235,0.18);
+  background: linear-gradient(180deg, var(--primary-strong), var(--primary) 90%);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--primary) 12%, transparent);
 }
 .bar-chart__value {
   position: absolute;
@@ -51,18 +51,18 @@
   transform: translateX(-50%);
   font-size: 0.98em;
   font-weight: 600;
-  color: var(--primary);
-  background: var(--surface-card, #fff);
+  color: var(--btn-text);
+  background: var(--surface-card);
   padding: 2px 8px;
   border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--app-text) 6%, transparent);
   pointer-events: none;
   white-space: nowrap;
 }
 .bar-chart__label {
   margin-top: 0.5em;
   font-size: 0.97em;
-  color: var(--app-text, #222);
+  color: var(--app-text);
   text-align: center;
   max-width: 60px;
   overflow: hidden;
@@ -121,11 +121,44 @@
   padding: 1.6rem;
   border-radius: 1.2rem;
   box-shadow: var(--surface-shadow);
+  border: 1px solid var(--divider-strong);
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
   position: relative;
   overflow: hidden;
+}
+
+/* Add subtle gradient overlay and hover behaviour like admin stat cards */
+.metric-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  /* gentle top-left blue wash that remains subtle in both themes */
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, transparent), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.metric-card:hover::after {
+  opacity: 1;
+}
+
+/* Slight lift on hover to match admin behaviour */
+.metric-card:hover {
+  transform: translateY(-3px);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 14px 36px color-mix(in srgb, var(--app-text) 6%, transparent);
+}
+
+/* Dark-theme tuning: make overlay subtler and avoid glare */
+[data-theme='dark'] .metric-card::after {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 10%, rgba(21,21,21,0.6)), transparent 60%);
+}
+[data-theme='dark'] .metric-card:hover {
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--app-bg) 60%, transparent);
 }
 
 .metric-card__header {
@@ -146,7 +179,7 @@
   font-weight: 600;
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
-  background: rgba(37, 99, 235, 0.08);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
   color: var(--primary);
 }
 
@@ -179,6 +212,7 @@
   background: var(--surface-card);
   border-radius: 1.2rem;
   box-shadow: var(--surface-shadow);
+  border: 1px solid var(--divider-strong);
   padding: 1.8rem 2rem;
   display: flex;
   flex-direction: column;
@@ -249,7 +283,7 @@
 }
 
 .revenue-chart__area {
-  fill: rgba(37, 99, 235, 0.15);
+  fill: color-mix(in srgb, var(--primary) 12%, transparent);
 }
 
 .revenue-chart__line {
@@ -261,7 +295,7 @@
 }
 
 .revenue-chart__dot {
-  fill: #fff;
+  fill: var(--btn-text);
   stroke: var(--primary);
   stroke-width: 0.9;
 }
@@ -291,6 +325,17 @@
 .revenue-chart__axis-value {
   font-weight: 600;
   font-size: 1rem;
+}
+
+/* Ensure chart axis labels/values are readable in dark theme */
+[data-theme='dark'] .bar-chart__label,
+[data-theme='dark'] .revenue-chart__axis-label,
+[data-theme='dark'] .revenue-chart__axis-value {
+  color: var(--btn-text) !important;
+}
+
+[data-theme='dark'] .revenue-chart__axis-label {
+  opacity: 0.92;
 }
 
 .insights-list {

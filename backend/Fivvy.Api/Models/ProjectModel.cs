@@ -17,8 +17,8 @@ public class ProjectModel
     [JsonIgnore]
     public ClientModel? Client { get; set; }
 
-    [NotMapped]
-    public bool IsActive => !EndDate.HasValue || EndDate.Value >= DateTime.UtcNow;
+    // Persisted flag to denote active status. Controller/service should set this when invoice is approved.
+    public bool IsActive { get; set; }
 
     public double ProjectPrice { get; set; }
 }

@@ -152,10 +152,8 @@
         "download": "İndir"
       },
       "status": {
-        "draft": "Taslak",
-        "sent": "Gönderildi",
-        "paid": "Ödendi",
-        "overdue": "Gecikmiş"
+  "unapproved": "Onaylanmadı",
+  "approved": "Onaylandı"
       }
     },
     "projects": {
@@ -245,7 +243,8 @@
       "actions": {
         "reload": "Yenile",
         "new": "Yeni müşteri",
-        "add": "Müşteri ekle"
+        "add": "Müşteri ekle",
+        "portalLink": "Portal linki"
       },
       "table": {
         "id": "ID",
@@ -264,7 +263,9 @@
         "emptySearchDescription": "Farklı bir arama deneyin."
       },
       "messages": {
-        "retry": "Tekrar dene"
+        "retry": "Tekrar dene",
+        "portalLinkCopied": "Portal linki panoya kopyalandı",
+        "portalLinkFailed": "Portal linki oluşturulamadı"
       },
       "errors": {
         "generic": "Bir şeyler ters gitti. Lütfen tekrar deneyin."

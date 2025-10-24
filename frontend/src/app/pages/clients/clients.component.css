@@ -50,13 +50,15 @@
 		box-shadow: var(--btn-hover-shadow);
 	}
 
+	/* Use theme-driven hover shadow so dark/light variants are handled by tokens */
 	.clients__add-btn.mat-mdc-raised-button:hover {
-		box-shadow: 0 18px 42px rgba(37, 99, 235, 0.28);
+		box-shadow: var(--btn-hover-shadow);
 		transform: translateY(-1px);
 	}
 
 	.clients__add-btn.mat-mdc-raised-button:focus-visible {
-		box-shadow: var(--btn-hover-shadow), 0 0 0 3px rgba(37, 99, 235, 0.28);
+		/* focus ring uses a softer tint; var handles dark/light variants */
+		box-shadow: var(--btn-hover-shadow), 0 0 0 3px rgba(96, 165, 250, 0.18);
 		outline: none;
 	}
 

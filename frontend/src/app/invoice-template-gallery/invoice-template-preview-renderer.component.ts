@@ -84,41 +84,41 @@ interface TemplateItem {
   `,
   styles: [
     `
-    .inv-root { font-family: 'Helvetica Neue', Arial; color:#222; background:#fff; padding:18px; max-width:900px; margin:0 auto }
-    .inv-header { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e6e6e6; padding-bottom:12px }
+  .inv-root { font-family: inherit; color: var(--app-text); background: var(--surface-card); padding:18px; max-width:900px; margin:0 auto }
+  .inv-header { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--divider); padding-bottom:12px }
     .brand-name { font-size:20px; font-weight:700 }
     .brand-sub { color:#666 }
     .inv-parties { display:flex; justify-content:space-between; gap:20px; padding:14px 0 }
     .label { font-size:12px; color:#777 }
-    .inv-table { width:100%; border-collapse:collapse; margin-top:8px }
-    .inv-table th, .inv-table td { padding:10px 8px; border-bottom:1px solid #f0f0f0 }
-    .inv-table thead th { background:#fafafa; color:#333; text-align:left }
+  .inv-table { width:100%; border-collapse:collapse; margin-top:8px; background: transparent }
+  .inv-table th, .inv-table td { padding:10px 8px; border-bottom:1px solid var(--divider) }
+  .inv-table thead th { background: transparent; color: var(--app-text); text-align:left }
     .center { text-align:center }
     .right { text-align:right }
     tfoot tr td { border-top: none }
-    tfoot .grand td { font-weight:700; font-size:15px; border-top:1px solid #ddd }
+  tfoot .grand td { font-weight:700; font-size:15px; border-top:1px solid var(--divider) }
     .inv-footer { margin-top:20px; color:#666; font-size:13px }
 
     /* Modern (id = 2) styles: bold header, accent color, compact table */
-    .inv-root.modern { font-family: 'Inter', 'Helvetica Neue', Arial; color:#111 }
-    .inv-root.modern .inv-header { background: linear-gradient(90deg,#1976d2,#42a5f5); color:#fff; padding:18px; border-radius:6px }
+  .inv-root.modern { font-family: inherit; color: var(--app-text) }
+  .inv-root.modern .inv-header { background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 18%, transparent), color-mix(in srgb, var(--primary-strong) 8%, transparent)); color: color-mix(in srgb, var(--btn-text) 90%, transparent); padding:18px; border-radius:6px }
     .inv-root.modern .brand-name { font-size:22px; font-weight:800 }
     .inv-root.modern .brand-sub { color: rgba(255,255,255,0.85) }
     .inv-root.modern .inv-parties { padding:18px 0 }
-    .inv-root.modern .inv-table thead th { background: transparent; color:#1976d2; font-weight:700 }
+  .inv-root.modern .inv-table thead th { background: transparent; color: var(--primary); font-weight:700 }
     .inv-root.modern .inv-table th, .inv-root.modern .inv-table td { padding:8px 6px; }
-    .inv-root.modern .inv-table tbody tr td { border-bottom: 1px dashed #e6f0fb }
-    .inv-root.modern .inv-footer { color:#444 }
+  .inv-root.modern .inv-table tbody tr td { border-bottom: 1px dashed color-mix(in srgb, var(--primary) 30%, transparent) }
+  .inv-root.modern .inv-footer { color: color-mix(in srgb, var(--app-text) 80%, transparent) }
 
     /* Minimal (id = 3) styles: lots of whitespace, thin fonts, subtle lines */
-    .inv-root.minimal { font-family: 'Georgia', 'Times New Roman', serif; color:#111; background: #fbfbfb }
+  .inv-root.minimal { font-family: inherit; color:#111; background: var(--surface-card) }
     .inv-root.minimal .inv-header { border-bottom: none; padding-bottom:6px }
     .inv-root.minimal .brand-name { font-size:18px; font-weight:600; color:#222 }
     .inv-root.minimal .brand-sub { color:#999; font-style:italic }
     .inv-root.minimal .inv-parties { gap:40px; padding:8px 0 }
-    .inv-root.minimal .inv-table { background: #fff; border: 1px solid #efefef; }
-    .inv-root.minimal .inv-table thead th { background: transparent; color:#666; font-weight:500 }
-    .inv-root.minimal .inv-table th, .inv-root.minimal .inv-table td { padding:14px 10px; border-bottom:1px solid #f6f6f6 }
+  .inv-root.minimal .inv-table { background: var(--surface-card); border: 1px solid var(--divider); }
+  .inv-root.minimal .inv-table thead th { background: transparent; color: var(--app-text); font-weight:500 }
+  .inv-root.minimal .inv-table th, .inv-root.minimal .inv-table td { padding:14px 10px; border-bottom:1px solid var(--divider) }
     .inv-root.minimal tfoot .grand td { font-size:16px; }
     `
   ]

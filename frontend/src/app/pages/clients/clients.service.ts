@@ -41,6 +41,11 @@ export class ClientsService {
     });
   }
 
+  createPortalToken(clientId: number): Observable<{ token: string; link: string; expiresInMinutes: number }> {
+    const headers = this.buildHeaders().set('Content-Type', 'application/json');
+    return this.http.post<{ token: string; link: string; expiresInMinutes: number }>(`${this.endpoint}/${clientId}/portal/token`, null, { headers });
+  }
+
   private buildHeaders(): HttpHeaders {
     const token = this.authService.getToken();
 

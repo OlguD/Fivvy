@@ -12,13 +12,21 @@ public class InvoiceModel
     public DateTime InvoiceDate { get; set; }
     public DateTime DueDate { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public InvoiceStatus Status { get; set; } = InvoiceStatus.Draft;
+    public InvoiceStatus Status { get; set; } = InvoiceStatus.Unapproved;
     public ICollection<InvoiceLineItemModel> LineItems { get; set; } = new List<InvoiceLineItemModel>();
 
     public decimal SubTotal { get; set; }
     public decimal Tax { get; set; }
     public decimal Total { get; set; }
     public string? Notes { get; set; }
+
+    // Optional link to a project that this invoice is for
+    public int? ProjectId { get; set; }
+    [JsonIgnore]
+    public ProjectModel? Project { get; set; }
+
+    // When invoice is approved/paid by client
+    public DateTime? PaidAt { get; set; }
 
     [JsonIgnore]
     public ClientModel? Client { get; set; }
@@ -27,10 +35,9 @@ public class InvoiceModel
 
 public enum InvoiceStatus
 {
-    Draft,
-    Sent,
-    Paid,
-    Overdue
+    // Simplified status: whether the client has approved the invoice or not.
+    Unapproved,
+    Approved
 }
 
 

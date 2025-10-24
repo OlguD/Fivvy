@@ -10,7 +10,7 @@ import { forkJoin, Subject, debounceTime, distinctUntilChanged, takeUntil } from
 import { ClientsService } from '../clients/clients.service';
 import { ClientDto } from '../clients/clients.types';
 import { InvoicesService } from './invoices.service';
-import { InvoiceDto, InvoiceStatus, SaveInvoicePayload } from './invoices.types';
+import { InvoiceDto, InvoiceStatus, SaveInvoicePayload, normalizeInvoiceStatus } from './invoices.types';
 import { InvoiceDeleteDialogComponent, InvoiceDeleteDialogData, InvoiceDeleteDialogResult } from './invoice-delete-dialog.component';
 import { RouterModule } from '@angular/router';
 import { InvoiceDetailModalComponent } from './invoice-detail-modal.component';
@@ -86,10 +86,8 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   formMode: 'create' | 'edit' = 'create';
 
   readonly statuses = [
-    { value: InvoiceStatus.Draft, label: 'Draft' },      // 'Draft'
-    { value: InvoiceStatus.Sent, label: 'Sent' },        // 'Sent'
-    { value: InvoiceStatus.Paid, label: 'Paid' },        // 'Paid'
-    { value: InvoiceStatus.Overdue, label: 'Overdue' }   // 'Overdue'
+    { value: InvoiceStatus.Unapproved, label: 'Onaylanmadı' },
+    { value: InvoiceStatus.Approved, label: 'Onaylandı' }
   ];
   tableColumns: DataTableColumn<InvoiceDto>[] = [];
   tableActions: DataTableAction<InvoiceDto>[] = [];
@@ -112,7 +110,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
       clientId: this.fb.control<number | null>(null, { validators: [Validators.required] }),
       invoiceDate: this.fb.control<string>('', { validators: [Validators.required], nonNullable: true }),
       dueDate: this.fb.control<string>('', { validators: [Validators.required], nonNullable: true }),
-      status: this.fb.control<InvoiceStatus>(InvoiceStatus.Draft, { validators: [Validators.required], nonNullable: true }),
+  status: this.fb.control<InvoiceStatus>(InvoiceStatus.Unapproved, { validators: [Validators.required], nonNullable: true }),
       tax: this.fb.control<number>(0, { validators: [Validators.min(0)], nonNullable: true }),
       notes: this.fb.control<string>('', { nonNullable: true }),
       lineItems: this.fb.array<FormGroup>([])
@@ -216,8 +214,9 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   }
 
   getStatusLabel(status: InvoiceStatus): string {
-    // === yerine == kullan, sayısal değerler için
-    const match = this.statuses.find(s => s.value == status);
+    // Normalize status in case it's a legacy string/number
+    const normalized = normalizeInvoiceStatus(status as unknown);
+    const match = this.statuses.find(s => s.value == normalized);
     return match ? match.label : 'Unknown';
   }
 
@@ -322,7 +321,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
       clientId: null,
       invoiceDate: '',
       dueDate: '',
-      status: InvoiceStatus.Draft,
+  status: InvoiceStatus.Unapproved,
       tax: 0,
       notes: ''
     });
@@ -452,7 +451,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
       clientId: Number(value.clientId),
       invoiceDate: invoiceDateIso,
       dueDate: dueDateIso,
-      status: value.status ?? InvoiceStatus.Draft,
+  status: value.status ?? InvoiceStatus.Unapproved,
       subTotal,
       tax,
       total,

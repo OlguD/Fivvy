@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { InvoicesService } from './invoices.service';
+import { normalizeInvoiceStatus } from './invoices.types';
 
 @Component({
   selector: 'app-invoice-detail-modal',
@@ -110,11 +111,15 @@ import { InvoicesService } from './invoices.service';
   styles: [
     `
       .invoice-modal {
-        font-family: Arial, sans-serif;
-        color: #333;
+        font-family: inherit;
+        color: var(--app-text);
         width: 100%;
         max-width: 1200px;
         min-width: 320px;
+        background: var(--surface-card);
+        border: 1px solid var(--divider);
+        border-radius: 1rem;
+        padding: 1rem;
       }
 
       @media (max-width: 768px) {
@@ -128,7 +133,7 @@ import { InvoicesService } from './invoices.service';
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 2px solid #ccc;
+        border-bottom: 2px solid var(--divider);
         padding-bottom: 1rem;
         margin-bottom: 1rem;
       }
@@ -136,7 +141,7 @@ import { InvoicesService } from './invoices.service';
       .invoice-modal__logo {
         font-size: 1.5rem;
         font-weight: bold;
-        color: #2196F3;
+        color: var(--primary);
       }
 
       .invoice-modal__title h1 {
@@ -147,7 +152,7 @@ import { InvoicesService } from './invoices.service';
       .invoice-modal__title h2 {
         margin: 0;
         font-size: 1.25rem;
-        color: #555;
+        color: color-mix(in srgb, var(--app-text) 70%, transparent);
       }
 
       .invoice-modal__details {
@@ -155,6 +160,9 @@ import { InvoicesService } from './invoices.service';
         justify-content: space-between;
         margin-bottom: 1.5rem;
         gap: 2rem;
+        border: 1px solid var(--divider);
+        padding: 0.75rem;
+        border-radius: 0.5rem;
       }
 
       @media (max-width: 768px) {
@@ -171,7 +179,7 @@ import { InvoicesService } from './invoices.service';
 
       .invoice-modal__details h3 {
         margin-top: 0;
-        color: #2196F3;
+        color: var(--primary);
         font-size: 1.1rem;
         margin-bottom: 0.75rem;
       }
@@ -196,40 +204,30 @@ import { InvoicesService } from './invoices.service';
         text-transform: uppercase;
       }
 
-      .status-draft {
-        background-color: #e3f2fd;
-        color: #1976d2;
-      }
-
-      .status-sent {
-        background-color: #fff3e0;
-        color: #f57c00;
-      }
-
-      .status-paid {
-        background-color: #e8f5e9;
-        color: #388e3c;
-      }
-
-      .status-overdue {
+      .status-unapproved {
         background-color: #ffebee;
         color: #d32f2f;
       }
 
-      .form-input {
-        padding: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 0.875rem;
-        font-family: inherit;
-        transition: border-color 0.3s, box-shadow 0.3s;
-        background-color: #fff;
+      .status-approved {
+        background-color: #e8f5e9;
+        color: #388e3c;
       }
+
+  .form-input {
+    padding: 0.5rem;
+  border: 1px solid var(--divider);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: var(--field-bg);
+  }
 
       .form-input:focus {
         outline: none;
-        border-color: #2196F3;
-        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        border-color: var(--field-focus-border);
+        box-shadow: 0 0 0 3px var(--field-focus-shadow);
       }
 
       .form-input--number {
@@ -246,7 +244,7 @@ import { InvoicesService } from './invoices.service';
       }
 
       .invoice-modal__items h3 {
-        color: #2196F3;
+        color: var(--primary);
         font-size: 1.1rem;
         margin-bottom: 0.75rem;
       }
@@ -255,6 +253,8 @@ import { InvoicesService } from './invoices.service';
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 1.5rem;
+        background: transparent;
+        color: var(--app-text);
       }
 
       @media (max-width: 768px) {
@@ -278,19 +278,19 @@ import { InvoicesService } from './invoices.service';
 
       .invoice-modal__items th,
       .invoice-modal__items td {
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--divider);
         padding: 0.75rem;
         text-align: left;
       }
 
       .invoice-modal__items th {
-        background-color: #f5f5f5;
+        background-color: transparent;
         font-weight: 600;
-        color: #555;
+        color: var(--app-text);
       }
 
       .invoice-modal__items td {
-        background-color: #fff;
+        background-color: transparent;
       }
 
       .invoice-modal__items td input {
@@ -300,13 +300,13 @@ import { InvoicesService } from './invoices.service';
       .invoice-modal__summary {
         text-align: right;
         padding: 1rem;
-        background-color: #f9f9f9;
+        background-color: color-mix(in srgb, var(--surface-card) 85%, var(--app-bg));
         border-radius: 4px;
         margin-bottom: 1rem;
       }
 
       .invoice-modal__summary h3 {
-        color: #2196F3;
+        color: var(--primary);
         font-size: 1.1rem;
         margin-top: 0;
         margin-bottom: 0.75rem;
@@ -325,19 +325,19 @@ import { InvoicesService } from './invoices.service';
         min-width: 100px;
       }
 
-      .invoice-modal__summary p:last-child {
-        font-size: 1.25rem;
-        font-weight: bold;
-        color: #2196F3;
-        margin-top: 0.75rem;
-        padding-top: 0.75rem;
-        border-top: 2px solid #ddd;
-      }
+  .invoice-modal__summary p:last-child {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--primary);
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  border-top: 2px solid var(--divider);
+  }
 
       mat-dialog-actions {
         padding: 1rem 0 0 0;
         margin: 0;
-        border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--divider);
       }
 
       mat-dialog-actions button {
@@ -383,10 +383,8 @@ export class InvoiceDetailModalComponent {
   originalFormValue: any;
   
   statuses = [
-    { value: 'Draft', label: 'Draft' },
-    { value: 'Sent', label: 'Sent' },
-    { value: 'Paid', label: 'Paid' },
-    { value: 'Overdue', label: 'Overdue' }
+    { value: 'Unapproved', label: 'Onaylanmadı' },
+    { value: 'Approved', label: 'Onaylandı' }
   ];
 
   constructor(
@@ -424,14 +422,15 @@ export class InvoiceDetailModalComponent {
   }
 
   getStatusLabel(statusValue: any): string {
-    // Sayısal veya string değer olabilir, == ile karşılaştır
-    const status = this.statuses.find(s => s.value == statusValue);
-    return status ? status.label : String(statusValue || 'Draft');
+    const normalized = normalizeInvoiceStatus(statusValue);
+    const status = this.statuses.find(s => s.value == normalized || s.value == (normalized as unknown));
+    return status ? status.label : String(statusValue || 'Unapproved');
   }
 
   getStatusClass(statusValue: any): string {
-    const status = this.statuses.find(s => s.value == statusValue);
-    return status ? status.value.toString().toLowerCase() : 'draft';
+    const normalized = normalizeInvoiceStatus(statusValue);
+    const status = this.statuses.find(s => s.value == normalized || s.value == (normalized as unknown));
+    return status ? status.value.toString().toLowerCase() : 'unapproved';
   }
 
   cancelEdit(): void {

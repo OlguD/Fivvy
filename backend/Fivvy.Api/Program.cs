@@ -90,6 +90,7 @@ builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IClientPortalTokenRepository, ClientPortalTokenRepository>();
 builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddScoped<PDFService>();
 

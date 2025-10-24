@@ -1,8 +1,6 @@
 export enum InvoiceStatus {
-  Draft = 'Draft',
-  Sent = 'Sent',
-  Paid = 'Paid',
-  Overdue = 'Overdue'
+  Unapproved = 'Unapproved',
+  Approved = 'Approved'
 }
 
 export interface InvoiceLineItemDto {
@@ -44,4 +42,25 @@ export interface SaveInvoicePayload {
     quantity: number;
     unitPrice: number;
   }>;
+}
+
+// Normalize different representations of invoice status (legacy strings or numeric enum values)
+export function normalizeInvoiceStatus(value: unknown): InvoiceStatus {
+  if (value === null || value === undefined) return InvoiceStatus.Unapproved;
+  if (typeof value === 'string') {
+    const v = value.trim();
+    const lower = v.toLowerCase();
+    if (lower === 'approved' || lower === 'paid') return InvoiceStatus.Approved;
+    // treat all other legacy names as unapproved
+    return InvoiceStatus.Unapproved;
+  }
+  if (typeof value === 'number') {
+    // legacy numeric enum mapping: Draft=0, Sent=1, Paid=2, Overdue=3
+      // numeric enum mapping: Unapproved=0, Approved=1
+      // map 1 -> Approved, others -> Unapproved
+      if (value === 1) return InvoiceStatus.Approved;
+    return InvoiceStatus.Unapproved;
+  }
+
+  return InvoiceStatus.Unapproved;
 }

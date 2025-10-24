@@ -7,13 +7,14 @@
   border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--surface-shadow);
+  border: 1px solid var(--divider);
   font-size: 0.875rem;
   line-height: 1.4;
   color: var(--app-text);
 }
 
 .data-table thead {
-  background: rgba(148, 163, 184, 0.12);
+  background: rgba(148, 163, 184, 0.06);
 }
 
 [data-theme='dark'] .data-table thead {
@@ -25,7 +26,7 @@
   /* slightly reduced padding to shift all columns left */
   padding: 10px 10px;
   text-align: left;
-  border-bottom: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider-strong);
   line-height: 1.4;
   color: var(--app-text);
   background: transparent;
@@ -39,7 +40,7 @@
   text-transform: uppercase;
 }
 [data-theme='dark'] .data-table th {
-  color: #e2e8f0;
+  color: var(--app-text);
 }
 
 .data-table tbody tr:last-child td {
@@ -63,7 +64,7 @@
   top: 0;
   width: 4px;
   height: 100%;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(135deg, var(--primary), #8b5cf6);
   transform: scaleY(0);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: center;
@@ -72,10 +73,10 @@
 }
 
 .data-table tbody .data-table__row:hover {
-  /* do not shift row horizontally (prevents clipping of actions). Keep a subtle scale and shadow for hover */
-  transform: scale(1.005);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06), 0 0 0 1px var(--divider);
-  background: linear-gradient(90deg, rgba(96, 165, 250, 0.08) 0%, var(--surface-card) 100%);
+  /* subtle lift and theme-aware highlight on hover */
+  transform: translateY(-1px) scale(1.002);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--app-text) 6%, transparent), 0 0 0 1px var(--divider-strong) !important;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 8%, transparent) 0%, var(--surface-card) 100%);
   z-index: 10;
 }
 
@@ -244,4 +245,51 @@
 .data-table tbody td:nth-child(5) {
   padding-left: 4px; /* keep others slightly reduced */
 }
+
+/* Additional theme-driven overrides to improve dark-theme readability and polish */
+
+/* Header surface: use color-mix to create subtle contrast across themes */
+.data-table thead {
+  background: color-mix(in srgb, var(--surface-card) 92%, transparent);
+}
+
+[data-theme='dark'] .data-table thead {
+  background: color-mix(in srgb, var(--surface-card) 78%, rgba(21,21,21,0.6));
+}
+
+/* Stronger field label color for headers */
+.data-table th {
+  color: var(--field-label) !important;
+}
+
+/* Row accent bar and hover visuals tuned to theme */
+.data-table tbody .data-table__row::after {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 90%, var(--app-bg) 10%), color-mix(in srgb, var(--primary-strong) 80%, var(--app-bg) 20%));
+}
+
+.data-table tbody .data-table__row:hover {
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--app-text) 6%, transparent), 0 0 0 1px var(--divider-strong) !important;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 8%, transparent) 0%, var(--surface-card) 100%);
+}
+
+/* Ensure action icons inherit a readable color */
+.data-table__actions button {
+  color: var(--app-text);
+}
+
+[data-theme='dark'] .data-table__actions button {
+  color: var(--btn-text);
+}
+
+/* Slightly increase contrast for table body text in dark theme */
+[data-theme='dark'] .data-table td,
+[data-theme='dark'] .data-table th {
+  color: var(--app-text);
+}
+
+/* Make borders a touch lighter on dark backgrounds for clarity */
+[data-theme='dark'] .data-table {
+  border: 1px solid var(--divider);
+}
+
 

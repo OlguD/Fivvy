@@ -1,0 +1,99 @@
+<div class="client-portal">
+  <div class="portal-card">
+    <header class="portal-header">
+      <div class="client-info">
+        <h1>{{ clientInfo?.companyName || clientInfo?.contactName || 'Müşteri Portalı' }}</h1>
+        <div class="client-sub">{{ clientInfo?.contactName }} · {{ clientInfo?.email }}</div>
+      </div>
+      <div class="portal-actions">
+        <div *ngIf="miniPortalLink" class="mini-link">
+          <input readonly [value]="miniPortalLink" />
+          <button (click)="copyLink()">Kopyala</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="portal-body">
+      <aside class="projects-panel" *ngIf="projects.length > 0">
+        <h3>Projeler</h3>
+        <div class="project-card" *ngFor="let p of projects">
+          <div class="proj-top">
+            <div class="proj-title">{{ p.name }}</div>
+            <div class="proj-price">{{ p.projectPrice | number:'1.0-0' }}₺</div>
+          </div>
+          <div class="proj-meta">Durum: <strong>{{ p.isActive ? 'Aktif' : 'Beklemede' }}</strong></div>
+        </div>
+      </aside>
+
+      <main class="invoices-panel">
+        <div class="panel-header">
+          <h3>Faturalar</h3>
+          <div class="panel-actions">
+            <div *ngIf="loading" class="loading-inline">Yükleniyor...</div>
+            <div *ngIf="error" class="error-inline">{{ error }}</div>
+          </div>
+        </div>
+
+        <div *ngIf="!loading && invoices.length === 0" class="empty">Henüz fatura bulunmamaktadır.</div>
+
+        <ul class="invoice-list">
+          <li *ngFor="let invoice of invoices" class="invoice-row" (click)="openInvoice(invoice)">
+            <div class="row-left">
+              <div class="num">{{ invoice.invoiceNumber || ('#' + invoice.id) }}</div>
+              <div class="meta">Fatura: {{ invoice.invoiceDate | date:'shortDate' }} · Vade: {{ invoice.dueDate | date:'shortDate' }}</div>
+            </div>
+            <div class="row-right">
+              <div class="amount">{{ invoice.total | number:'1.2-2' }}₺</div>
+              <div class="status">{{ statusLabel(invoice.status) }}</div>
+              <button class="btn" title="PDF indir" (click)="$event.stopPropagation(); downloadPdf(invoice)" [disabled]="downloadBusy">
+                {{ downloadBusy ? 'İndiriliyor...' : 'PDF' }}
+              </button>
+              <button class="btn primary" [disabled]="isApproved(invoice) || approveBusy" (click)="$event.stopPropagation(); approveInvoice(invoice)">
+                {{ isApproved(invoice) ? 'Onaylandı' : (approveBusy ? 'Onaylanıyor...' : 'Onayla') }}
+              </button>
+            </div>
+          </li>
+        </ul>
+      </main>
+    </div>
+
+    <div class="modal" *ngIf="selectedInvoice">
+      <div class="modal-backdrop" (click)="closeInvoice()"></div>
+      <div class="modal-content">
+        <button class="close" (click)="closeInvoice()">×</button>
+        <h3>Fatura {{ selectedInvoice.invoiceNumber || ('#' + selectedInvoice.id) }}</h3>
+        <div class="meta">
+          <div>Durum: {{ statusLabel(selectedInvoice.status) }}</div>
+          <div>Fatura Tarihi: {{ selectedInvoice.invoiceDate | date }}</div>
+          <div>Vade: {{ selectedInvoice.dueDate | date }}</div>
+        </div>
+
+        <table class="lines">
+          <thead>
+            <tr><th>Açıklama</th><th>Miktar</th><th>Birim Fiyat</th><th>Toplam</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let l of selectedInvoice.lineItems">
+              <td>{{ l.description }}</td>
+              <td>{{ l.quantity }}</td>
+              <td>{{ l.unitPrice | number:'1.2-2' }}₺</td>
+              <td>{{ l.total | number:'1.2-2' }}₺</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="totals">
+          <div>Alt toplam: {{ selectedInvoice.subTotal | number:'1.2-2' }}₺</div>
+          <div>KDV: {{ selectedInvoice.tax | number:'1.2-2' }}₺</div>
+          <div class="grand">Genel Toplam: {{ selectedInvoice.total | number:'1.2-2' }}₺</div>
+        </div>
+
+        <div class="actions">
+          <button class="btn" (click)="downloadPdf(selectedInvoice)" [disabled]="downloadBusy">{{ downloadBusy ? 'İndiriliyor...' : 'PDF İndir' }}</button>
+          <button class="btn" (click)="closeInvoice()">Kapat</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

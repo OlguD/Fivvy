@@ -78,7 +78,7 @@ public class ProjectRepository : IProjectRepository
                 ClientId = projectModel.ClientId,
                 InvoiceDate = projectModel.StartDate,
                 DueDate = projectModel.EndDate ?? newProject.StartDate.AddDays(30),
-                Status = InvoiceStatus.Draft,
+                Status = InvoiceStatus.Unapproved,
                 SubTotal = (decimal)newProject.ProjectPrice,
                 Tax = 0,
                 Total = (decimal)newProject.ProjectPrice,

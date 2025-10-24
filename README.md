@@ -1,82 +1,84 @@
-# Fivvy API (Detaylı Teknik Dokümantasyon)
+# Fivvy API (Detailed Technical Documentation)
 
-Aşağıdaki README, proje klasöründeki kaynak kodu inceleyerek hazırlanmış genişletilmiş ve teknik odaklı bir dokümandır. Türkçe olarak mimari, konfigürasyon, çalıştırma adımları, veri modeli ve önemli tasarım kararları yer almaktadır.
+The following README is an expanded, technically focused document prepared by reviewing the source code in the project folder. It covers the architecture, configuration, execution steps, data model, and key design decisions in Turkish.
 
-## Hızlı Özet
-Fivvy API, ASP.NET Core 9 üzerinde çalışan bir fatura, müşteri ve proje yönetim back-end'idir. Veri katmanı Entity Framework Core + SQLite ile, kimlik doğrulama JWT + refresh token ile sağlanır. API Swagger (OpenAPI) ile geliştirme ortamında keşfedilebilir.
+## Quick Summary
+Fivvy API is a billing, customer, and project management back-end running on ASP.NET Core 9. The data layer uses Entity Framework Core + SQLite, while authentication is provided by JWT + refresh token. The API can be explored in the development environment using Swagger (OpenAPI).
 
-Teknoloji yığını:
+
+Technology stack:
 - .NET 9 (ASP.NET Core)
 - Entity Framework Core 9 + SQLite
 - JWT: Microsoft.AspNetCore.Authentication.JwtBearer + custom `JwtHelper`
 - Password hashing: BCrypt
-- OpenAPI/Swagger (geliştirme için)
-- QuestPDF (PDF üretimi için kısmi entegrasyon)
+- OpenAPI/Swagger (for development)
+- QuestPDF (partial integration for PDF generation)
 
-## Proje Yapısı (kısaca)
+## Project Structure (briefly)
 
-- `Program.cs` — uygulama başlatma, servis kayıtları (DI), JWT konfigürasyonu, CORS, Swagger ve statik dosya sunucusu burada tanımlanır.
+- `Program.cs` — application startup, service registrations (DI), JWT configuration, CORS, Swagger, and static file server are defined here.
 - `Data/AppDbContext.cs` — EF Core DbContext (Users, Clients, Projects, Invoices, RefreshTokens)
-- `Controllers/` — REST uç noktaları (Auth, Profile, Client, Project, Invoice, Dashboard vb.)
-- `Repositories/` — Veri erişim ve iş kuralları (UserRepository, ClientRepository, ProjectRepository, InvoiceRepository vb.)
-- `Models/` — Entity modelleri (UserModel, ClientModel, ProjectModel, InvoiceModel, UserRefreshToken...)
-- `Helpers/` — JWT üretimi/validasyonu (`JwtHelper`) ve refresh token yardımcıları (`RefreshTokenHelper`)
-- `wwwroot/` — statik içerik, profile-image yüklemeleri buraya kaydedilir.
+- `Controllers/` — REST endpoints (Auth, Profile, Client, Project, Invoice, Dashboard, etc.)
+- `Repositories/` — Data access and business logic (UserRepository, ClientRepository, ProjectRepository, InvoiceRepository, etc.)
+- `Models/` — Entity models (UserModel, ClientModel, ProjectModel, InvoiceModel, UserRefreshToken...)
+- `Helpers/` — JWT generation/validation (`JwtHelper`) and refresh token helpers (`RefreshTokenHelper`)
+- `wwwroot/` — Static content, profile image uploads are stored here.
 
-## Başlatma & Geliştirme
 
-Ön koşullar:
+## Getting Started & Development
+
+Prerequisites:
 - .NET 9 SDK
-- dotnet-ef araçları (migrations uygulamak istiyorsanız)
+- dotnet-ef tools (if you want to apply migrations)
 
-Örnek geliştirme adımları:
+Sample development steps:
 
 ```bash
 cd backend/Fivvy.Api
 dotnet restore
-dotnet ef database update   # yalnızca migration'ları uygulamak istiyorsanız
+dotnet ef database update   # just if you want to apply migrations
 dotnet run
 ```
 
-Uygulama development modunda çalıştırıldığında kök (`/`) adresinde Swagger UI sunulur.
+When running in application development mode, Swagger UI is served at the root (`/`) address.
 
-Not: CORS politikası `http://localhost:4200` (Angular frontend) için önceden yapılandırılmıştır.
+Note: The CORS policy is preconfigured for `http://localhost:4200` (Angular frontend).
 
-## Konfigürasyon
+## Configuration
 
-Ana konfigürasyon dosyası: `appsettings.json`.
-Öne çıkan ayarlar:
+Main configuration file: `appsettings.json`.
+Notable settings:
 
-- `ConnectionStrings:DefaultConnection`: SQLite veritabanı dosyası (`Data Source=fivvy.db`).
+- `ConnectionStrings:DefaultConnection`: SQLite database file (`Data Source=fivvy.db`).
 - `JwtSettings`:
-  - `Secret`: HMAC için kullanılan gizli anahtar (appsettings üzerinde örnek var).
-  - `Issuer`: Token issuer değeri.
-  - `Audience`: Token audience değeri.
-  - `ExpiryMinutes`: Access token süresi (dakika).
+  - `Secret`: Secret key used for HMAC (example available in appsettings).
+  - `Issuer`: Token issuer value.
+  - `Audience`: Token audience value.
+  - `ExpiryMinutes`: Access token duration (minutes).
 
-Program.cs içinde JWT doğrulama parametreleri `JwtSettings`'ten okunur. Token doğrulamada `ClockSkew = TimeSpan.Zero` kullanılarak tolerans sıfırlanmıştır.
+The JWT verification parameters are read from `JwtSettings` in Program.cs. The tolerance is set to zero by using `ClockSkew = TimeSpan.Zero` in token verification.
 
-Güvenlik notu: Üretim ortamında gizli anahtarlar `appsettings.json` içinde düz metin olarak bırakılmamalı (secret manager, environment variables veya bir secret store kullanılmalı).
+Security note: In production environments, secret keys should not be left in plain text in `appsettings.json` (a secret manager, environment variables, or a secret store should be used).
 
-## Kimlik Doğrulama & Refresh Token Akışı
+## Identity Verification & Refresh Token Flow
 
-- Kullanıcı girişi (`POST /api/auth/login`):
-  - İstek body olarak `LoginRequestModel` alır (username, password).
-  - Şifre BCrypt ile doğrulanır.
-  - Başarılı ise `JwtHelper.GenerateToken` ile access token oluşturulur.
-  - Refresh token rastgele üretilir (`RefreshTokenHelper.CreateToken()`), veritabanında hash'lenmiş olarak saklanır (`UserRefreshToken.TokenHash`).
-  - Refresh token HTTP-only cookie olarak client'a gönderilir (SameSite=None, Secure=true).
+- User login (`POST /api/auth/login`):
+  - The request body receives `LoginRequestModel` (username, password).
+  - The password is verified with BCrypt.
+  - If successful, an access token is created with `JwtHelper.GenerateToken`.
+  - The refresh token is randomly generated (`RefreshTokenHelper.CreateToken()`) and stored in the database as a hash (`UserRefreshToken.TokenHash`).
+  - The refresh token is sent to the client as an HTTP-only cookie (SameSite=None, Secure=true).
 
 - Refresh (`POST /api/auth/refresh`):
-  - Cookie'deki refresh token alınır, veritabanında hash karşılaştırmasıyla doğrulanır.
-  - Yeni access token üretilir; yeni bir refresh token oluşturulur ve rotate (eski yerine yenisi) işlemi yapılır.
+  - The refresh token in the cookie is retrieved and verified by comparing the hash in the database.
+  - A new access token is generated; a new refresh token is created and rotated (the new one replaces the old one).
 
 - Logout (`POST /api/auth/logout`):
-  - Cookie içindeki refresh token veritabanında revoke edilir ve cookie silinir.
+  - The refresh token in the cookie is revoked in the database and the cookie is deleted.
 
-Repository tarafında refresh token'lar 7 gün için expire edilir ve birden fazla aktif token durumunda eskileri revoke edilerek `ReplacedByToken` alanı set edilir. Hash'leme için SHA256 kullanılır.
+On the repository side, refresh tokens expire after 7 days, and if there are multiple active tokens, the old ones are revoked and the `ReplacedByToken` field is set. SHA256 is used for hashing.
 
-## Veri Modelleri (özet)
+## Data Models (summary)
 
 - UserModel
   - Id (PK), Username, Name, Surname, Email, Password (hashed), CompanyName, Address, City, ProfileImagePath, TaxValue (int, default 20), TotalIncome (float), Role (string), CreatedAt
@@ -95,41 +97,41 @@ Repository tarafında refresh token'lar 7 gün için expire edilir ve birden faz
 - UserRefreshToken
   - Id, UserId, TokenHash, CreatedAt, ExpiresAt, RevokeAt, CreatedByIp, ReplacedByToken
 
-Detaylar: modellerde JSON dönüştürücüler (`JsonConverter`) ve bazı alanlarda `[JsonIgnore]` dekoratörleri bulunur; böylece ilişkili nesneler gerektiğinde serileştirmeden hariç tutulabiliyor.
+Details: Models contain JSON converters (`JsonConverter`) and `[JsonIgnore]` decorators in certain fields; this allows related objects to be excluded from serialization when necessary.
 
 ## Repository & Ownership Model
 
-Proje, client ve invoice kaynaklarına erişim kullanıcıya (owner) bağlıdır. `JwtHelper.ValidateToken` ile ClaimTypes.NameIdentifier üzerinden userId alınıp repo'lara iletilmektedir. `UserRepository.ExtractUserIdFromToken` bu işi kolaylaştırır.
+Access to project, client, and invoice resources is dependent on the user (owner). The userId is retrieved via ClaimTypes.NameIdentifier using `JwtHelper.ValidateToken` and passed to the repositories. `UserRepository.ExtractUserIdFromToken` simplifies this task.
 
-Controller'lar AuthHeaderHelper ile header içinden Bearer token'ı okumak için `AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token)` kullanır. (AuthHeaderHelper proje içinde bir yardımcıdır.)
+Controllers use `AuthHeaderHelper.TryGetBearerToken(HttpContext, out var token)` with AuthHeaderHelper to read the Bearer token from the header. (AuthHeaderHelper is a helper within the project.)
 
-Örnek: `ClientController.GetAllClients` sadece token sahibi kullanıcının client'larını döner.
+Example: `ClientController.GetAllClients` only returns the clients of the token holder.
 
-## Öne Çıkan Endpoints (özet)
+## Featured Endpoints (summary)
 
 - Auth
-  - POST /api/auth/login — Login, dönen: access token + user özet, refresh token cookie'de.
-  - POST /api/auth/register — Kayıt (şifre doğrulama kontrolü yapılır).
-  - POST /api/auth/refresh — Cookie'deki refresh token ile yeni access token alınır.
-  - POST /api/auth/logout — Refresh token revoke edilir ve cookie silinir.
+  - POST /api/auth/login — Login, returns: access token + user summary, refresh token in cookie.
+  - POST /api/auth/register — Registration (password validation check performed).
+  - POST /api/auth/refresh — New access token obtained using refresh token in cookie.
+  - POST /api/auth/logout — Revokes the refresh token and deletes the cookie.
 
 - Profile
-  - GET /api/profile/me — Kimlik doğrulama ile kullanıcı profili (clients, projects, invoices ile birlikte) döner.
-  - PUT /api/profile/me/update-profile — Profil güncelleme.
-  - PUT /api/profile/me/update-password — Şifre güncelleme.
-  - POST /api/profile/me/upload-profile-picture — Multipart/form-data ile profil fotoğrafı yükleme.
+  - GET /api/profile/me — Returns the user profile (along with clients, projects, invoices) with authentication.
+  - PUT /api/profile/me/update-profile — Profile update.
+  - PUT /api/profile/me/update-password — Password update.
+  - POST /api/profile/me/upload-profile-picture — Upload profile picture with multipart/form-data.
 
 - Clients
-  - GET /api/client/clients — Kullanıcının tüm client'ları.
-  - POST /api/client/add-client — Yeni client ekleme.
-  - PUT /api/client/update-client — Client güncelleme.
-  - DELETE /api/client/remove-client — Client silme.
+  - GET /api/client/clients — All clients of the user.
+  - POST /api/client/add-client — Add a new client.
+  - PUT /api/client/update-client — Update a client.
+  - DELETE /api/client/remove-client — Delete a client.
 
 - Projects
-  - GET /api/project/all-projects — Kullanıcının sahip olduğu client'lara bağlı projeler.
-  - POST /api/project/add-project — Proje ekleme (date/name validation & ownership kontrol repo tarafında yapılır).
-  - PUT /api/project/update-project — Proje güncelleme.
-  - DELETE /api/project/remove-project/{projectId} — Proje silme.
+  - GET /api/project/all-projects — Projects associated with the user's clients.
+  - POST /api/project/add-project — Add a project (date/name validation & ownership check performed on the repo side).
+  - PUT /api/project/update-project — Update a project.
+  - DELETE /api/project/remove-project/{projectId} — Delete project.
 
 - Invoices
   - GET /api/invoice/get-all-invoices
@@ -138,13 +140,13 @@ Controller'lar AuthHeaderHelper ile header içinden Bearer token'ı okumak için
   - PUT /api/invoice/update-invoice
   - DELETE /api/invoice/delete-invoice?invoiceId=NN
 
-Not: Bazı endpoint'ler repository tarafında iş mantığı gereği `Forbid()` veya `Unauthorized` dönebilmektedir.
+Note: Some endpoints may return `Forbid()` or `Unauthorized` due to business logic on the repository side.
 
-## Migrations & Veritabanı
+## Migrations & Database
 
-EF Core migration'ları `Migrations/` klasöründe saklanır. Var olan migrations ana hatlarıyla şunları içerir: başlangıç şeması (users, clients, projects, invoices), client-user ilişkisinin eklenmesi, createdAt alanlarının eklenmesi, refresh token tablosu, invoice modeli gibi değişiklikler.
+EF Core migrations are stored in the `Migrations/` folder. Existing migrations broadly include: the initial schema (users, clients, projects, invoices), adding the client-user relationship, adding createdAt fields, the refresh token table, changes to the invoice model, and so on.
 
-Yeni migration eklemek veya DB'yi tekrar oluşturmak için:
+To add a new migration or rebuild the DB:
 
 ```bash
 cd backend/Fivvy.Api
@@ -152,36 +154,36 @@ dotnet ef migrations add <Name>
 dotnet ef database update
 ```
 
-## Statik Dosya Sunumu & Profil Resimleri
+## Static File Serving & Profile Images
 
-`Program.cs` içinde `wwwroot/profile-images` dizini `RequestPath = "/profile-images"` ile statik olarak servis edilir. Upload işlemleri `ProfileController.UploadProfilePicture` tarafından yönetilir. CORS başlıkları static file response sırasında eklenir.
+The `wwwroot/profile-images` directory is served statically via `RequestPath = “/profile-images”` in `Program.cs`. Upload operations are managed by `ProfileController.UploadProfilePicture`. CORS headers are added during static file responses.
 
-## PDF Oluşturma
+## PDF Generation
 
-Projede QuestPDF kütüphanesi eklenmiş ve lisans `LicenseType.Community` olarak ayarlanmıştır. `PDFService` ve ilgili `InvoicePdfController`'lar kısmi implementasyon sağlar; tam özellikli PDF export senaryoları genişletilebilir.
+The QuestPDF library has been added to the project and the license is set to `LicenseType.Community`. `PDFService` and related `InvoicePdfController`s provide partial implementation; fully featured PDF export scenarios can be extended.
 
-## Güvenlik & Üretim Hazırlıkları (Öneriler)
+## Security & Production Readiness (Recommendations)
 
-- JWT Secret, connection string ve diğer hassas ayarlar environment variable veya secret manager ile yönetilmeli.
-- HTTPS zorunluluğu ve CORS yapılandırması üretim ortamına göre sıkılaştırılmalı.
-- Password policy (uzunluk, karmaşıklık) ve account lockout uygulanabilir.
-- Refresh token süreleri, rotate ve revoke davranışı gözden geçirilmeli (ör. refresh token blacklist/cleanup cron job).
+- JWT Secret, connection string, and other sensitive settings should be managed via environment variables or a secret manager.
+- HTTPS requirement and CORS configuration should be tightened according to the production environment.
+- Password policy (length, complexity) and account lockout can be implemented.
+- Refresh token durations, rotation, and revocation behavior should be reviewed (e.g., refresh token blacklist/cleanup cron job).
 
-## Testler ve CI
+## Tests and CI
 
-Projede şu an otomatik test bulunmuyor. Öneri:
-- xUnit + EF Core InMemory veya SQLite in-memory ile repository/integration testleri ekleyin.
-- GitHub Actions veya benzeri CI ile `dotnet build`, `dotnet test` ve `dotnet ef migrations` kontrolleri çalıştırın.
+There are currently no automated tests in the project. Suggestion:
+- Add repository/integration tests using xUnit + EF Core InMemory or SQLite in-memory.
+- Run `dotnet build`, `dotnet test`, and `dotnet ef migrations` checks using GitHub Actions or similar CI.
 
-## Bilinen Eksikler ve Gelecek İşler
+## Known Issues and Future Tasks
 
-- `PDFRepository` ve `IPDFRepository` gibi kısımlar tam implementasyon bekliyor.
-- Bazı controller/repository metotlarında daha detaylı validation response objeleri (FluentValidation) eklenebilir.
-- Rate limiting, logging (structured logs), ve health checks eklenmesi tavsiye edilir.
+- Sections such as `PDFRepository` and `IPDFRepository` are awaiting full implementation.
+- More detailed validation response objects (FluentValidation) can be added to some controller/repository methods.
+- Adding rate limiting, logging (structured logs), and health checks is recommended.
 
-## Veritabanı Mimarisi (Detaylı Şema)
+## Database Architecture (Detailed Schema)
 
-Aşağıda kod tabanındaki `Models/` içeriğine dayanarak her bir tablo/entitenin sütunları, tipleri, nullability ve ilişkileri özetlenmiştir. Bu, EF Core tarafından oluşturulacak SQLite şemasının mantıksal görünümünü verir.
+Below is a summary of the columns, types, nullability, and relationships for each table/entity based on the `Models/` content in the codebase. This provides a logical view of the SQLite schema that will be created by EF Core.
 
 1) Users (UserModel)
   - Id : int (PK, Identity)
@@ -234,7 +236,7 @@ Aşağıda kod tabanındaki `Models/` içeriğine dayanarak her bir tablo/entite
   - ClientId : int NOT NULL (FK -> Clients.Id)
   - InvoiceDate : DateTime NOT NULL
   - DueDate : DateTime NOT NULL
-  - Status : enum (Draft, Sent, Paid, Overdue) — DB tarafında tip olarak int ya da string (JsonConverter sadece serialization için)
+  - Status : enum (Unapproved, Approved) — DB tarafında tip olarak int ya da string (JsonConverter sadece serialization için)
   - SubTotal : decimal NOT NULL
   - Tax : decimal NOT NULL
   - Total : decimal NOT NULL
@@ -265,11 +267,11 @@ Aşağıda kod tabanındaki `Models/` içeriğine dayanarak her bir tablo/entite
   - Navigation
     - User : many-to-1 -> Users
 
-7) Admin / Dashboard DTO'ları
-  - Admin ile ilgili modeller (`AdminDashboardModel`, `AdminUserListItemModel`, `EntityTotalsModel`, `RoleDistributionModel`, `UserSummaryModel`) veritabanı tabloları değildir; yalnızca API tarafından döndürülen DTO'lardır (agregasyon sonuçları). Bu modeller tipik olarak repository tarafında LINQ sorgularıyla doldurulur.
+7) Admin / Dashboard DTOs
+  - Admin-related models (`AdminDashboardModel`, `AdminUserListItemModel`, `EntityTotalsModel`, `RoleDistributionModel`, `UserSummaryModel`) are not database tables; they are only DTOs returned by the API (aggregation results). These models are typically populated on the repository side using LINQ queries.
 
-8) Activity / Dashboard DTO'ları
-  - `ActivityModel`, `ActivityItemModel`, `DashboardModel` vb. yine DB tablosu olarak değil, API response / UI model'leri olarak kullanılır.
+8) Activity / Dashboard DTOs
+  - `ActivityModel`, `ActivityItemModel`, `DashboardModel`, etc. are also used as API response / UI models, not as database tables.
 
 
 

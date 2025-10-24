@@ -1,5 +1,5 @@
 <div class="shell">
-  <aside class="shell__sidebar" [ngClass]="{ 'shell__sidebar--open': sidebarOpen }">
+  <aside *ngIf="shouldShowSidebar()" class="shell__sidebar" [ngClass]="{ 'shell__sidebar--open': sidebarOpen }">
     <div class="shell__brand">
       <div class="shell__logo">
         <ng-container *ngIf="!logoError; else logoFallback">
@@ -41,6 +41,7 @@
     <header class="shell__topbar">
       <div class="shell__topbar-left">
         <button
+          *ngIf="shouldShowSidebar()"
           mat-icon-button
           type="button"
           class="shell__menu-btn"
