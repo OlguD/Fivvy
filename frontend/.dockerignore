@@ -1,0 +1,10 @@
+node_modules
+dist
+.angular
+/.git
+/.gitignore
+Dockerfile
+npm-debug.log
+package-lock.json
+.vscode
+README.md

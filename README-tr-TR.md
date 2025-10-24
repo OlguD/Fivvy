@@ -181,6 +181,58 @@ Projede şu an otomatik test bulunmuyor. Öneri:
 - Bazı controller/repository metotlarında daha detaylı validation response objeleri (FluentValidation) eklenebilir.
 - Rate limiting, logging (structured logs), ve health checks eklenmesi tavsiye edilir.
 
+## Docker (production) — build & run
+
+Bu depo backend ve frontend için Dockerfile'ları ve proje kökünde `docker-compose.yml` içerir; uygulamayı production modunda ayağa almak için aşağıdaki adımları kullanabilirsiniz.
+
+Hızlı adımlar (macOS / zsh):
+
+1. Repo kökünden servisleri derleyip başlatın:
+
+```bash
+cd /Users/olgudegirmenci/Desktop/Fivvy
+docker compose build
+docker compose up -d
+```
+
+2. Çalışan konteynerleri ve logları kontrol edin:
+
+```bash
+docker compose ps
+docker compose logs -f backend
+docker compose logs -f frontend
+```
+
+3. Uygulamalara erişin:
+
+- Frontend: http://localhost
+- Backend API: http://localhost:5000
+
+Ortam değişkenleri & `.env` kullanımı
+
+- Hassas veya ortama özgü değerleri repo kökünde `.env` dosyasında tutabilirsiniz; Docker Compose bu dosyayı otomatik yükler. Örnek `.env`:
+
+```ini
+JWT_SECRET=production_jwt_secret
+FRONTEND_BASE_URL=http://localhost
+CONNECTIONSTRINGS__DEFAULTCONNECTION=Data Source=/data/fivvy.db
+```
+
+- `docker-compose.yml` içinde backend servisi environment ile gelen değişkenleri ASP.NET konfigürasyonuna `KEY__SUBKEY` (ör. `JwtSettings__Secret`) şeklinde aktarır.
+
+Persist ve notlar
+
+- Compose dosyası `fivvy_db` adında bir named volume oluşturur ve backend konteyner içinde `/data`'ya mount eder; böylece SQLite DB konteyner yeniden başlasa da korunur.
+- Üretimde gizli anahtarları `appsettings.json` içinde bırakmayın; environment variable, Docker secrets veya bir secret manager kullanın.
+
+Geliştirmeler
+
+- HTTPS/TLS sonlandırma (reverse proxy veya load balancer) ekleyin.
+- CI pipeline (ör. GitHub Actions) ile image build & push otomasyonu kurun.
+
+Kısa çalışma talimatı ve hata giderme için `DOCKER_RUN.md` dosyasına bakabilirsiniz.
+
+
 ## Veritabanı Mimarisi (Detaylı Şema)
 
 Aşağıda kod tabanındaki `Models/` içeriğine dayanarak her bir tablo/entitenin sütunları, tipleri, nullability ve ilişkileri özetlenmiştir. Bu, EF Core tarafından oluşturulacak SQLite şemasının mantıksal görünümünü verir.

@@ -1,0 +1,37 @@
+services:
+  backend:
+    build:
+      context: ./backend/Fivvy.Api
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Data Source=/data/fivvy.db
+    volumes:
+      - fivvy_db:/data
+    ports:
+      - "5001:5000"
+    restart: unless-stopped
+
+  frontend:
+    image: fivvy-frontend-build
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  nginx:
+    image: fivvy-nginx
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
+
+volumes:
+  fivvy_db:

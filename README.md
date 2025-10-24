@@ -179,8 +179,57 @@ There are currently no automated tests in the project. Suggestion:
 
 ## Known Issues and Future Tasks
 
-- Sections such as `PDFRepository` and `IPDFRepository` are awaiting full implementation.
-- More detailed validation response objects (FluentValidation) can be added to some controller/repository methods.
+## Docker (production) — build & run
+
+This repository includes Dockerfiles for the backend and frontend plus a `docker-compose.yml` at the project root to run the application in production mode.
+
+Quick steps (macOS / zsh):
+
+1. From the repo root, build and start services:
+
+```bash
+cd /Users/olgudegirmenci/Desktop/Fivvy
+docker compose build
+docker compose up -d
+```
+
+2. Check running containers and logs:
+
+```bash
+docker compose ps
+docker compose logs -f backend
+docker compose logs -f frontend
+```
+
+3. Open the apps:
+
+- Frontend: http://localhost
+- Backend API: http://localhost:5000
+
+Environment variables & .env usage
+
+- You can store sensitive or environment-specific values in a `.env` file at the repo root and Docker Compose will load them automatically. Example `.env` entries:
+
+```ini
+JWT_SECRET=your_production_jwt_secret_here
+FRONTEND_BASE_URL=http://localhost
+# Overrides the backend connection string used inside the container
+CONNECTIONSTRINGS__DEFAULTCONNECTION=Data Source=/data/fivvy.db
+```
+
+- In `docker-compose.yml` the backend service reads environment variables using the `KEY__SUBKEY` convention (for nested config like `ConnectionStrings:DefaultConnection` or `JwtSettings:Secret`). For example `JwtSettings__Secret` will map to `JwtSettings:Secret` in ASP.NET configuration.
+
+Persistence & notes
+
+- The compose file creates a named Docker volume (`fivvy_db`) and mounts it at `/data` inside the backend container; the backend connection string points at `/data/fivvy.db` so the SQLite DB persists across container restarts.
+- For production, do not keep secrets in `appsettings.json`. Prefer environment variables, Docker secrets, or a secret manager.
+
+Further improvements
+
+- Add HTTPS / TLS termination (reverse proxy or load balancer) and configure nginx or Traefik as needed.
+- Consider CI pipeline to build and push images (GitHub Actions, etc.).
+
+See `DOCKER_RUN.md` for a short runbook and troubleshooting tips.
 - Adding rate limiting, logging (structured logs), and health checks is recommended.
 
 ## Database Architecture (Detailed Schema)

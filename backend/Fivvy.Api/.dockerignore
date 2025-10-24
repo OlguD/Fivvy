@@ -1,0 +1,10 @@
+bin
+obj
+fivvy.db
+*.db
+*.log
+.vs
+.git
+Dockerfile
+*.user
+*.suo

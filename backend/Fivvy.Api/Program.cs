@@ -10,6 +10,7 @@ using Microsoft.Extensions.FileProviders;
 using Fivvy.Api.Services;
 using QuestPDF;
 using QuestPDF.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -96,12 +97,13 @@ builder.Services.AddScoped<PDFService>();
 
 builder.Services.AddControllers();
 
-// CORS - Frontend portuna izin ver
+// CORS - Frontend portuna izin ver (frontend origin read from configuration)
+var frontendBaseUrl = builder.Configuration["FrontendBaseUrl"] ?? "http://localhost:4200";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins(frontendBaseUrl)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -143,8 +145,8 @@ app.UseStaticFiles(new StaticFileOptions
     DefaultContentType = "image/jpeg",
     OnPrepareResponse = ctx =>
     {
-        // CORS header'larını her response'a ekle
-        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:4200");
+        // CORS header'larını her response'a ekle (frontend origin comes from configuration)
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", frontendBaseUrl);
         ctx.Context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, OPTIONS");
         ctx.Context.Response.Headers.Append("Access-Control-Allow-Headers", "*");
         ctx.Context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
@@ -156,5 +158,22 @@ app.UseStaticFiles(); // Default wwwroot için
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Apply any pending EF Core migrations at startup so the SQLite schema is created
+// automatically when running with Docker. This is idempotent and safe for dev/test.
+try
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+    }
+}
+catch (Exception ex)
+{
+    // Log the migration failure to the console so it's visible in container logs.
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "Database migration at startup failed");
+}
 
 app.Run();
