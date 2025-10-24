@@ -84,7 +84,9 @@
 .client-info h1 { margin:0; font-size:1.4rem; }
 .client-sub { color: color-mix(in srgb, var(--app-text) 64%, transparent); font-size:0.95rem; }
 .mini-link input { width:260px; padding:6px 8px; border-radius:6px; border:1px solid var(--divider); margin-right:8px; background: var(--field-bg); color: var(--field-text); }
-.mini-link button { padding:6px 10px; border-radius:6px; border:none; background:var(--primary); color: var(--btn-text); }
+  .mini-link { display: inline-flex; align-items: center; gap: 8px; }
+  .mini-link input { width:260px; padding:6px 8px; border-radius:6px; border:1px solid var(--divider); margin-right:8px; background: var(--field-bg); color: var(--field-text); }
+  .mini-link button { padding:6px 10px; border-radius:6px; border:none; background:var(--primary); color: var(--btn-text); cursor: pointer; pointer-events: auto; }
 
 .content-grid { display:grid; grid-template-columns: 300px 1fr; gap:16px; }
 .projects-panel { background:var(--surface-card); padding:12px; border-radius:8px; }

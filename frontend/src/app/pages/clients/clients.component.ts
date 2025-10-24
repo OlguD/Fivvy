@@ -85,7 +85,10 @@ export class ClientsComponent implements OnInit, OnDestroy {
         label: this.translate.instant('pages.clients.actions.portalLink'),
         icon: 'link',
         action: (client) => this.generatePortalLinkForClient(client),
-        disabled: (client) => this.isClientBusy(client.id) || !this.canGeneratePortalForClient(client),
+        /* Allow the portal link action to be clickable; server will enforce permissions and return an error if not allowed.
+           Previously this used `canGeneratePortalForClient` which hid the button for non-admins and prevented hover/click.
+         */
+        disabled: (client) => this.isClientBusy(client.id),
         ariaLabel: (client) => `${this.translate.instant('pages.clients.actions.portalLink')} ${client.companyName}`
       }
     ];
@@ -146,7 +149,13 @@ export class ClientsComponent implements OnInit, OnDestroy {
 
   onRowClick(client: ClientDto): void {
     // Row click handling can be added here if needed
-    // For now, clients don't have row click functionality
+    // Open edit dialog when a row is clicked so users can view/edit client details
+    // (preserve existing behavior of explicit edit button elsewhere)
+    try {
+      this.openEditDialog(client);
+    } catch (e) {
+      console.error('Failed to open client edit dialog', e);
+    }
   }
 
   reload(): void {

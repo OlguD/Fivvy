@@ -182,6 +182,7 @@
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   overflow: hidden;
+  z-index: 3; /* ensure action buttons sit above row overlay/pseudo elements */
 }
 
 .data-table__actions button::before {
@@ -192,9 +193,11 @@
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(59, 130, 246, 0.2);
+  /* Use a subtle, theme-aware ripple tint and don't intercept pointer events */
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
   transform: translate(-50%, -50%);
   transition: width 0.4s ease, height 0.4s ease;
+  pointer-events: none;
 }
 
 .data-table__actions button:hover:not(:disabled)::before {

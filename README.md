@@ -1,4 +1,6 @@
 # Fivvy API (Detailed Technical Documentation)
+ 
+![Fivvy dashboard screenshot](assets/dashboard-fivvy.png)
 
 The following README is an expanded, technically focused document prepared by reviewing the source code in the project folder. It covers the architecture, configuration, execution steps, data model, and key design decisions in Turkish.
 

@@ -7,12 +7,13 @@
 
 h2 {
 	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-	margin: 0 0 1rem;
-	font-size: 1.35rem;
-	font-weight: 700;
-	color: var(--app-text);
+ 	align-items: center;
+ 	gap: 0.75rem;
+ 	margin: 0 0 1rem;
+ 	font-size: 1.35rem;
+ 	font-weight: 700;
+ 	/* Use button/text token so title is white in dark theme */
+ 	color: var(--btn-text) !important;
 }
 
 h2 mat-icon {

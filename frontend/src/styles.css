@@ -269,6 +269,20 @@ button {
 	background: rgba(96, 165, 250, 0.22);
 }
 
+/* Ensure mat-select option text and trigger value are readable in dark theme
+   (mat options render in an overlay outside component view encapsulation). */
+[data-theme='dark'] .mat-mdc-select-panel .mat-mdc-list-item,
+[data-theme='dark'] .mat-mdc-select-panel .mat-mdc-list-item .mat-mdc-list-item__primary-text,
+[data-theme='dark'] .mat-mdc-select-panel .mat-mdc-list-item .mdc-list-item__text,
+[data-theme='dark'] .mat-mdc-select-panel .mat-mdc-list-item .mat-mdc-option-text {
+	color: var(--btn-text) !important;
+}
+
+[data-theme='dark'] .mat-mdc-select .mat-mdc-select-value-text,
+[data-theme='dark'] .mat-mdc-select .mat-mdc-select-placeholder {
+	color: var(--btn-text) !important;
+}
+
 .mat-mdc-stroked-button:disabled {
 	background: var(--btn-disabled-bg);
 	color: var(--btn-disabled-text);
@@ -322,7 +336,7 @@ button {
 	gap: 0.75rem;
 	font-size: 1.3rem;
 	font-weight: 700;
-	color: var(--app-text);
+	color: var(--app-text) !important;
 }
 
 .mat-mdc-dialog-container .mdc-dialog__title mat-icon {

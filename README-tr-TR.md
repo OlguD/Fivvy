@@ -1,4 +1,6 @@
 # Fivvy API (Detaylı Teknik Dokümantasyon)
+ 
+![Fivvy dashboard ekran görüntüsü](assets/dashboard-fivvy.png)
 
 Aşağıdaki README, proje klasöründeki kaynak kodu inceleyerek hazırlanmış genişletilmiş ve teknik odaklı bir dokümandır. Türkçe olarak mimari, konfigürasyon, çalıştırma adımları, veri modeli ve önemli tasarım kararları yer almaktadır.
 
